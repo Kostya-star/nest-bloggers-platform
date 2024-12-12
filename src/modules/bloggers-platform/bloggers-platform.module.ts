@@ -3,8 +3,8 @@ import { BlogsController } from './api/blogs.controller';
 import { BlogsRepository } from './infrastructure/blogs.repository';
 import { BlogsService } from './application/blogs.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './domain/blogs-schema';
-import { BlogsQueryRepository } from './infrastructure/blogs-query-repository';
+import { Blog, BlogSchema } from './domain/blogs.schema';
+import { BlogsQueryRepository } from './infrastructure/blogs-query.repository';
 
 @Module({
   imports: [

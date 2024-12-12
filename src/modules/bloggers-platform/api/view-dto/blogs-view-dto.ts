@@ -1,4 +1,4 @@
-import { IBlogDocument } from '../../domain/blogs-schema';
+import { IBlogDocument } from '../../domain/blogs.schema';
 
 export class BlogsViewDto {
   id: string;
