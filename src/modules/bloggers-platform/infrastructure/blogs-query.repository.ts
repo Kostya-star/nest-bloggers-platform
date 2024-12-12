@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Blog, IBlogModel } from '../domain/blogs.schema';
 import { BlogsViewDto } from '../api/view-dto/blogs-view-dto';
 import { IBasePaginatedView } from 'src/core/types/base-paginated-entity-view';
+import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -37,13 +38,8 @@ export class BlogsQueryRepository {
     };
   }
 
-  async getBlogById(blogId: string): Promise<BlogsViewDto | null> {
+  async getBlogById(blogId: MongooseObjtId): Promise<BlogsViewDto | null> {
     const blog = await this.BlogModel.findOne({ _id: blogId });
-
-    if (!blog) {
-      throw new NotFoundException('user not found');
-    }
-
-    return new BlogsViewDto(blog);
+    return blog ? new BlogsViewDto(blog) : null;
   }
 }
