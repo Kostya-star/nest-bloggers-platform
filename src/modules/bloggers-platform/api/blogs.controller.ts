@@ -1,12 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { BlogsService } from '../application/blogs.service';
+import { GetBlogsQueryParams } from './input-dto/get-blogs-query-params';
+import { BlogsQueryRepository } from '../infrastructure/blogs-query-repository';
 
 @Controller('blogs')
 export class BlogsController {
-  constructor(private blogsService: BlogsService) {}
+  constructor(
+    private blogsService: BlogsService,
+    private blogsQueryRepository: BlogsQueryRepository,
+  ) {}
 
   @Get()
-  testController() {
-    return this.blogsService.testService()
+  async getAllBlogs(@Query() query: GetBlogsQueryParams) {
+    return this.blogsQueryRepository.getAllBlogs(query);
   }
 }
