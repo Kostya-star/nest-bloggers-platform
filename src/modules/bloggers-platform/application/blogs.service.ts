@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { BlogsRepository } from '../infrastructure/blogs.repository';
+import { BlogsCommandsRepository } from '../infrastructure/blogs-commands.repository';
 
 @Injectable()
 export class BlogsService {
-  constructor(private blogsRepository: BlogsRepository) {}
+  constructor(private blogsCommandsRepository: BlogsCommandsRepository) {}
+
+  async createBlog(blog: any): Promise<any> {
+    return await this.blogsCommandsRepository.createBlog(blog);
+  }
 }

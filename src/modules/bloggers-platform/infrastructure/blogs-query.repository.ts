@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetBlogsQueryParams } from '../api/input-dto/get-blogs-query-params';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, IBlogModel } from '../domain/blogs.schema';
@@ -35,5 +35,15 @@ export class BlogsQueryRepository {
       totalCount,
       items: blogs.map((b) => new BlogsViewDto(b)),
     };
+  }
+
+  async getBlogById(blogId: string): Promise<BlogsViewDto | null> {
+    const blog = await this.BlogModel.findOne({ _id: blogId });
+
+    if (!blog) {
+      throw new NotFoundException('user not found');
+    }
+
+    return new BlogsViewDto(blog);
   }
 }
