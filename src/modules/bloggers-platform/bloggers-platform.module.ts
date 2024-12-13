@@ -11,6 +11,8 @@ import { Like, LikeSchema } from './likes/domain/likes.schema';
 import { PostsController } from './posts/api/posts.controller';
 import { PostsCommandsRepository } from './posts/infrastructure/posts-commands.repository';
 import { PostsService } from './posts/application/posts.service';
+import { Comment, CommentSchema } from './comments/domain/comments.schema';
+import { CommentsQueryRepository } from './comments/infrastructure/comments-query.repository';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { PostsService } from './posts/application/posts.service';
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: Like.name, schema: LikeSchema },
+      { name: Comment.name, schema: CommentSchema },
     ]),
   ],
   controllers: [BlogsController, PostsController],
@@ -28,6 +31,7 @@ import { PostsService } from './posts/application/posts.service';
     PostsQueryRepository,
     PostsCommandsRepository,
     PostsService,
+    CommentsQueryRepository,
   ],
   exports: [],
 })

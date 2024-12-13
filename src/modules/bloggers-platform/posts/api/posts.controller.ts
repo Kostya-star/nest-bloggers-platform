@@ -19,6 +19,8 @@ import { PostsService } from '../application/posts.service';
 import { UpdatePostDto } from './input.dto/update-post.dto';
 import { BlogsQueryRepository } from '../../blogs/infrastructure/blogs-query.repository';
 import { GetPostsQueryParams } from './input.dto/get-posts-query-params';
+import { GetCommentsQueryParams } from '../../comments/api/input.dto/get-comments-query-params';
+import { CommentsQueryRepository } from '../../comments/infrastructure/comments-query.repository';
 
 @Controller('posts')
 export class PostsController {
@@ -26,6 +28,7 @@ export class PostsController {
     private postsQueryRepository: PostsQueryRepository,
     private blogsQueryRepository: BlogsQueryRepository,
     private postsService: PostsService,
+    private commentsQueryRepository: CommentsQueryRepository,
   ) {}
 
   @Get()
@@ -57,11 +60,11 @@ export class PostsController {
     @Body() post: Omit<CreatePostDto, 'blogName'>,
   ): Promise<PostsViewDto> {
     const blog = await this.blogsQueryRepository.getBlogById(post.blogId);
-
+    // __ASK__
     if (!blog) {
       throw new NotFoundException('blog not found');
     }
-
+    // __ASK__
     const postPayload: CreatePostDto = {
       ...post,
       blogName: blog.name,
@@ -105,5 +108,26 @@ export class PostsController {
     }
 
     await this.postsService.deletePost(postId);
+  }
+
+  @Get(':postId/comments')
+  async getCommentsOfPost(
+    @Param('postId') postId: string,
+    @Query() query: GetCommentsQueryParams,
+  ) {
+    // TODO. temporarily while no access token
+    const userId = '';
+
+    const post = await this.postsQueryRepository.getPostById(postId);
+
+    if (!post) {
+      throw new NotFoundException('post not found');
+    }
+
+    return await this.commentsQueryRepository.getCommentsForPost(
+      query,
+      postId,
+      userId,
+    );
   }
 }

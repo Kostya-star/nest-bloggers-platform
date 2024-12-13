@@ -22,6 +22,7 @@ import { CreatePostDto } from '../../posts/api/input.dto/create-post.dto';
 import { PostsService } from '../../posts/application/posts.service';
 import { PostsQueryRepository } from '../../posts/infrastructure/posts-query.repository';
 import { GetPostsQueryParams } from '../../posts/api/input.dto/get-posts-query-params';
+import { PostsViewDto } from '../../posts/api/view.dto/posts-view-dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -95,7 +96,7 @@ export class BlogsController {
   async createPostForBlog(
     @Param('blogId') blogId: string,
     @Body() post: Omit<CreatePostDto, 'blogName' | 'blogId'>,
-  ) {
+  ): Promise<PostsViewDto> {
     const blog = await this.blogsQueryRepository.getBlogById(blogId);
 
     if (!blog) {
@@ -124,7 +125,7 @@ export class BlogsController {
   async getPostsForBlog(
     @Param('blogId') blogId: string,
     @Query() query: GetPostsQueryParams,
-  ) {
+  ): Promise<BasePaginatedView<PostsViewDto>> {
     // TODO. temporarily while no access token
     const userId = '';
 

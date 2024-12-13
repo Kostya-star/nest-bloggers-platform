@@ -1,32 +1,16 @@
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
-import { LikeStatus } from '../../../likes/domain/likes-status';
 import { Post } from '../../domain/posts.schema';
 import { Like } from 'src/modules/bloggers-platform/likes/domain/likes.schema';
+import { LikesBaseViewDto } from 'src/modules/bloggers-platform/likes/api/likes-view.dto';
 
-export class LikeBaseView {
-  likesCount: number;
-  dislikesCount: number;
-  myStatus: LikeStatus;
-}
-
-export interface IExtendedLikesInfoView<T> {
-  extendedLikesInfo: LikeBaseView & {
-    newestLikes: T[];
+interface IExtendedLikesInfoView {
+  extendedLikesInfo: LikesBaseViewDto & {
+    newestLikes: Like[];
   };
 }
 
-interface IPostDBWIthExtendedLikesInfo
-  extends Post,
-    IExtendedLikesInfoView<Like> {
+interface IPostDBWIthExtendedLikesInfo extends Post, IExtendedLikesInfoView {
   _id: MongooseObjtId;
-}
-
-export class ExtendedLikesInfoDto extends LikeBaseView {
-  newestLikes: {
-    addedAt: Date;
-    userId: string;
-    login: string;
-  }[];
 }
 
 export class PostsViewDto {
@@ -37,7 +21,13 @@ export class PostsViewDto {
   blogId: string;
   blogName: string;
   createdAt: Date;
-  extendedLikesInfo: ExtendedLikesInfoDto;
+  extendedLikesInfo: LikesBaseViewDto & {
+    newestLikes: {
+      addedAt: Date;
+      userId: string;
+      login: string;
+    }[];
+  };
 
   constructor(post: IPostDBWIthExtendedLikesInfo) {
     this.id = post._id.toString();
