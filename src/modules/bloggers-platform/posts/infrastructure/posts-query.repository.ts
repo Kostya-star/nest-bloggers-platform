@@ -16,19 +16,20 @@ export class PostsQueryRepository {
 
   async getAllPosts(
     query: GetPostsQueryParams,
-    currentUserId?: string,
+    currentUserId: string | undefined = '',
+    blogId?: string,
   ): Promise<BasePaginatedView<PostsViewDto>> {
     const { pageNumber: page, pageSize } = query;
-
     const { sortOptions, limit, skip } = query.processQueryParams();
+    const find = blogId ? { blogId } : {};
 
-    const posts = await this.PostModel.find({})
+    const posts = await this.PostModel.find(find)
       .sort(sortOptions)
       .skip(skip)
       .limit(limit)
       .lean();
 
-    const totalCount = await this.PostModel.countDocuments();
+    const totalCount = await this.PostModel.countDocuments(find);
     const pagesCount = Math.ceil(totalCount / pageSize);
 
     const postIds = posts.map((post) => post._id);
@@ -65,7 +66,7 @@ export class PostsQueryRepository {
 
   async getPostById(
     postId: string,
-    currentUserId?: string,
+    currentUserId: string | undefined = '',
   ): Promise<PostsViewDto | null> {
     const post = await this.PostModel.findOne({ _id: postId }).lean();
     if (!post) return null;

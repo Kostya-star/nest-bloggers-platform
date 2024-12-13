@@ -10,7 +10,7 @@ interface ILikesInfoReturned {
 
 export function getLikesInfo(
   allLikes: Like[],
-  currentUserId?: string,
+  currentUserId: string,
 ): ILikesInfoReturned {
   const likes = allLikes.filter((like) => like.status === LikeStatus.Like);
   const dislikesCount = allLikes.filter(
