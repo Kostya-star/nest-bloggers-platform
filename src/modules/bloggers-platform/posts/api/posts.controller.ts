@@ -21,6 +21,7 @@ import { BlogsQueryRepository } from '../../blogs/infrastructure/blogs-query.rep
 import { GetPostsQueryParams } from './input.dto/get-posts-query-params';
 import { GetCommentsQueryParams } from '../../comments/api/input.dto/get-comments-query-params';
 import { CommentsQueryRepository } from '../../comments/infrastructure/comments-query.repository';
+import { CommentsViewDto } from '../../comments/api/view.dto/comments-view.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -114,7 +115,7 @@ export class PostsController {
   async getCommentsOfPost(
     @Param('postId') postId: string,
     @Query() query: GetCommentsQueryParams,
-  ) {
+  ): Promise<BasePaginatedView<CommentsViewDto>> {
     // TODO. temporarily while no access token
     const userId = '';
 

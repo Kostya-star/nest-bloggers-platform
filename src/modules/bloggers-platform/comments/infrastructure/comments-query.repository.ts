@@ -64,22 +64,22 @@ export class CommentsQueryRepository {
     };
   }
 
-  // async getCommentById(
-  //   commentId: MongooseObjtId,
-  //   currentUserId?: MongooseObjtId,
-  // ): Promise<ICommentView | null> {
-  //   const comment = await this.CommentModel.findOne({ _id: commentId }).lean();
-  //   if (!comment) return null;
+  async getCommentById(
+    commentId: string,
+    currentUserId: string | undefined = '',
+  ): Promise<CommentsViewDto | null> {
+    const comment = await this.CommentModel.findOne({ _id: commentId }).lean();
+    if (!comment) return null;
 
-  //   const commentLikes = await this.LikeModel.find({
-  //     likedEntityId: commentId,
-  //   }).lean();
+    const commentLikes = await this.LikeModel.find({
+      likedEntityId: commentId,
+    }).lean();
 
-  //   const { newestLikes, ...likesInfo } = getLikesInfo(
-  //     commentLikes,
-  //     currentUserId,
-  //   );
+    const { newestLikes, ...likesInfo } = getLikesInfo(
+      commentLikes,
+      currentUserId,
+    );
 
-  //   return commentObjMapper({ ...comment, likesInfo });
-  // }
+    return new CommentsViewDto({ ...comment, likesInfo });
+  }
 }
