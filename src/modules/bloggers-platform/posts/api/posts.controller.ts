@@ -11,25 +11,26 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { BaseSortablePaginationParams } from 'src/core/dto/base-query-params.dto';
-import { PostsSortBy } from './input.dto/posts-sort-by';
 import { PostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 import { PostsViewDto } from './view.dto/posts-view-dto';
 import { CreatePostDto } from './input.dto/create-post.dto';
 import { PostsService } from '../application/posts.service';
 import { UpdatePostDto } from './input.dto/update-post.dto';
+import { BlogsQueryRepository } from '../../blogs/infrastructure/blogs-query.repository';
+import { GetPostsQueryParams } from './input.dto/get-posts-query-params';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private postsQueryRepository: PostsQueryRepository,
+    private blogsQueryRepository: BlogsQueryRepository,
     private postsService: PostsService,
   ) {}
 
   @Get()
   async getAllPosts(
-    @Query() query: BaseSortablePaginationParams<PostsSortBy>,
+    @Query() query: GetPostsQueryParams,
   ): Promise<BasePaginatedView<PostsViewDto>> {
     // TODO. temporarily while no access token
     const userId = '';
@@ -37,7 +38,7 @@ export class PostsController {
     return await this.postsQueryRepository.getAllPosts(query, userId);
   }
 
-  @Get(':id')
+  @Get(':postId')
   async getPostById(@Param('postId') postId: string): Promise<PostsViewDto> {
     // TODO. temporarily while no access token
     const userId = '';
@@ -52,8 +53,22 @@ export class PostsController {
   }
 
   @Post()
-  async createPost(@Body() post: CreatePostDto): Promise<PostsViewDto> {
-    const postId = await this.postsService.createPost(post);
+  async createPost(
+    @Body() post: Omit<CreatePostDto, 'blogName'>,
+  ): Promise<PostsViewDto> {
+    const blog = await this.blogsQueryRepository.getBlogById(post.blogId);
+
+    if (!blog) {
+      throw new NotFoundException('blog not found');
+    }
+
+    const postPayload: CreatePostDto = {
+      ...post,
+      blogName: blog.name,
+    };
+
+    const postId = await this.postsService.createPost(postPayload);
+
     const newPost = await this.postsQueryRepository.getPostById(
       postId.toString(),
     );

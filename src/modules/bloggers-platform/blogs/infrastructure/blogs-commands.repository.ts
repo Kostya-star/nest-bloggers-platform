@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, IBlogDocument, IBlogModel } from '../domain/blogs.schema';
+import { Blog, IBlogModel } from '../domain/blogs.schema';
 import { CreateBlogDto } from '../api/input-dto/create-blog.dto';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { UpdateBlogDto } from '../api/input-dto/update-blog.dto';

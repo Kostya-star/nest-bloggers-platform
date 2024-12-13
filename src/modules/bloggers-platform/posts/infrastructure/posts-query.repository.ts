@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { BaseSortablePaginationParams } from 'src/core/dto/base-query-params.dto';
-import { PostsSortBy } from '../api/input.dto/posts-sort-by';
 import { InjectModel } from '@nestjs/mongoose';
 import { IPostModel, Post } from '../domain/posts.schema';
 import { ILikeModel, Like } from '../../likes/domain/likes.schema';
 import { getLikesInfo } from '../../utils/get-likes-info';
 import { PostsViewDto } from '../api/view.dto/posts-view-dto';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
+import { GetPostsQueryParams } from '../api/input.dto/get-posts-query-params';
 
 @Injectable()
 export class PostsQueryRepository {
@@ -16,7 +15,7 @@ export class PostsQueryRepository {
   ) {}
 
   async getAllPosts(
-    query: BaseSortablePaginationParams<PostsSortBy>,
+    query: GetPostsQueryParams,
     currentUserId?: string,
   ): Promise<BasePaginatedView<PostsViewDto>> {
     const { pageNumber: page, pageSize } = query;
