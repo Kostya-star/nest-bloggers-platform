@@ -18,8 +18,8 @@ export class Blog {
   @Prop({ type: Date })
   createdAt: Date;
 
-  // @Prop({ type: Date })
-  // createdAt: Date;
+  @Prop({ type: Date })
+  updatedAt: Date;
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);

@@ -1,4 +1,4 @@
-export interface IBasePaginatedView<T> {
+export class BasePaginatedView<T> {
   pagesCount: number;
   page: number;
   pageSize: number;

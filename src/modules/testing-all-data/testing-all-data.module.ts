@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TestingAllDataController } from './controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from '../bloggers-platform/domain/blogs.schema';
+import { Blog, BlogSchema } from '../bloggers-platform/blogs/domain/blogs.schema';
 
 @Module({
   imports: [

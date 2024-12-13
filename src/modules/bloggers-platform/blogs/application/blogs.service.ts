@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BlogsCommandsRepository } from '../infrastructure/blogs-commands.repository';
 import { CreateBlogDto } from '../api/input-dto/create-blog.dto';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
@@ -12,26 +12,11 @@ export class BlogsService {
     return await this.blogsCommandsRepository.createBlog(blog);
   }
 
-  async updateBlog(
-    blogId: MongooseObjtId,
-    updates: UpdateBlogDto,
-  ): Promise<void> {
-    const blog = await this.blogsCommandsRepository.getBlogById(blogId);
-
-    if (!blog) {
-      throw new NotFoundException('blog not found');
-    }
-
+  async updateBlog(blogId: string, updates: UpdateBlogDto): Promise<void> {
     return await this.blogsCommandsRepository.updateBlog(blogId, updates);
   }
 
-  async deleteBlog(blogId: MongooseObjtId): Promise<void> {
-    const blog = await this.blogsCommandsRepository.getBlogById(blogId);
-
-    if (!blog) {
-      throw new NotFoundException('blog not found');
-    }
-
+  async deleteBlog(blogId: string): Promise<void> {
     await this.blogsCommandsRepository.deleteBlog(blogId);
   }
 }

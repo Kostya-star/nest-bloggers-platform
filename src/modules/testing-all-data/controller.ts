@@ -1,6 +1,6 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, IBlogModel } from '../bloggers-platform/domain/blogs.schema';
+import { Blog, IBlogModel } from '../bloggers-platform/blogs/domain/blogs.schema';
 
 @Controller('testing/all-data')
 export class TestingAllDataController {
