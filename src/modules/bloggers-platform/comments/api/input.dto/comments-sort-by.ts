@@ -1,7 +1,7 @@
 export enum CommentsSortBy {
   Content = 'content',
   PostId = 'postId',
-  // __ASK__ ?? how to handle it
+  // temporarily not handle this
   // CommentatorInfo = {
   //   UserId: 'userId',
   //   UserLogin: 'userLogin',

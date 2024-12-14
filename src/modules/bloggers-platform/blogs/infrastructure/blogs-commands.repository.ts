@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, IBlogModel } from '../domain/blogs.schema';
+import { Blog, IBlogDocument, IBlogModel } from '../domain/blogs.schema';
 import { CreateBlogDto } from '../api/input-dto/create-blog.dto';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { UpdateBlogDto } from '../api/input-dto/update-blog.dto';
@@ -9,9 +9,9 @@ import { UpdateBlogDto } from '../api/input-dto/update-blog.dto';
 export class BlogsCommandsRepository {
   constructor(@InjectModel(Blog.name) private BlogModel: IBlogModel) {}
 
-  // async getBlogById(blogId: string): Promise<IBlogDocument | null> {
-  //   return await this.BlogModel.findOne({ _id: blogId });
-  // }
+  async getBlogById(blogId: string): Promise<IBlogDocument | null> {
+    return await this.BlogModel.findOne({ _id: blogId });
+  }
 
   async createBlog(newBlog: CreateBlogDto): Promise<MongooseObjtId> {
     const blog = await this.BlogModel.create(newBlog);

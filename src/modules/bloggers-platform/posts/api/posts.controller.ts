@@ -14,7 +14,6 @@ import {
 import { PostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 import { PostsViewDto } from './view.dto/posts-view-dto';
-import { CreatePostDto } from './input.dto/create-post.dto';
 import { PostsService } from '../application/posts.service';
 import { UpdatePostDto } from './input.dto/update-post.dto';
 import { BlogsQueryRepository } from '../../blogs/infrastructure/blogs-query.repository';
@@ -22,6 +21,7 @@ import { GetPostsQueryParams } from './input.dto/get-posts-query-params';
 import { GetCommentsQueryParams } from '../../comments/api/input.dto/get-comments-query-params';
 import { CommentsQueryRepository } from '../../comments/infrastructure/comments-query.repository';
 import { CommentsViewDto } from '../../comments/api/view.dto/comments-view.dto';
+import { CreatePostInputDto } from './input.dto/create-post-input.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -57,21 +57,8 @@ export class PostsController {
   }
 
   @Post()
-  async createPost(
-    @Body() post: Omit<CreatePostDto, 'blogName'>,
-  ): Promise<PostsViewDto> {
-    const blog = await this.blogsQueryRepository.getBlogById(post.blogId);
-    // __ASK__
-    if (!blog) {
-      throw new NotFoundException('blog not found');
-    }
-    // __ASK__
-    const postPayload: CreatePostDto = {
-      ...post,
-      blogName: blog.name,
-    };
-
-    const postId = await this.postsService.createPost(postPayload);
+  async createPost(@Body() post: CreatePostInputDto): Promise<PostsViewDto> {
+    const postId = await this.postsService.createPost(post);
 
     const newPost = await this.postsQueryRepository.getPostById(
       postId.toString(),
