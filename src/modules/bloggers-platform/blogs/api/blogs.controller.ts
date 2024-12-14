@@ -23,7 +23,6 @@ import { PostsService } from '../../posts/application/posts.service';
 import { PostsQueryRepository } from '../../posts/infrastructure/posts-query.repository';
 import { GetPostsQueryParams } from '../../posts/api/input.dto/get-posts-query-params';
 import { PostsViewDto } from '../../posts/api/view.dto/posts-view-dto';
-import { CreatePostDto } from '../../posts/api/input.dto/create-post.dto';
 import { CreatePostForBlogInputDto } from './input-dto/create-post-for-blog-input.dto';
 
 @Controller('blogs')
