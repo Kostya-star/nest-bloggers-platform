@@ -13,12 +13,14 @@ import {
   Like,
   LikeSchema,
 } from '../bloggers-platform/likes/domain/likes.schema';
+import { User, UserSchema } from '../user-accounts/domain/user.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [TestingAllDataController],
   providers: [],

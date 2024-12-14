@@ -47,7 +47,7 @@ export class UsersController {
 
   @Delete(':userId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@Param(':userId') userId: string): Promise<void> {
+  async deleteUser(@Param('userId') userId: string): Promise<void> {
     const user = await this.usersQueryRepository.getUserById(userId);
 
     if (!user) {

@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import { CreateUserInputDto } from '../api/input.dto/create-user-input.dto';
 import { CreateUserDto } from '../api/input.dto/create-user.dto';
 
-Injectable();
+@Injectable()
 export class UsersService {
   constructor(private usersCommandsRepository: UsersCommandsRepository) {}
 
@@ -32,7 +32,6 @@ export class UsersService {
     // }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser: CreateUserDto = {
       login,
       email,
