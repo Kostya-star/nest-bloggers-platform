@@ -5,7 +5,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { IUserModel, User } from '../domain/user.schema';
 import { FilterQuery } from 'mongoose';
 import { UserViewDto } from '../api/view.dto/users-view.dto';
-import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 
 @Injectable()
 export class UsersQueryRepository {
@@ -57,7 +56,7 @@ export class UsersQueryRepository {
     };
   }
 
-  async getUserById(userId: MongooseObjtId): Promise<UserViewDto | null> {
+  async getUserById(userId: string): Promise<UserViewDto | null> {
     const user = await this.UserModel.findOne({ _id: userId });
     return user ? new UserViewDto(user) : null;
   }

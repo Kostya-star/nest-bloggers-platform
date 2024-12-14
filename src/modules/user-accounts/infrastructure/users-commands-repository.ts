@@ -31,7 +31,7 @@ export class UsersCommandsRepository {
   //   await this.UserModel.updateOne({ _id: userId }, updates);
   // }
 
-  // async deleteUser(userId: MongooseObjtId): Promise<void> {
-  //   await this.UserModel.deleteOne({ _id: userId });
-  // }
+  async deleteUser(userId: string): Promise<void> {
+    await this.UserModel.deleteOne({ _id: userId });
+  }
 }

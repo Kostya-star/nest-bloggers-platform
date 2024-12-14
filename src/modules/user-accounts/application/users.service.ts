@@ -58,17 +58,7 @@ export class UsersService {
   //   await this.usersRepository.updateUserById(userId, newUser);
   // }
 
-  // async deleteUser(userId: MongooseObjtId): Promise<void> {
-  //   if (!ObjectId.isValid(userId)) {
-  //     throw ErrorService(UsersErrorsList.NOT_FOUND, HTTP_STATUS_CODES.NOT_FOUND_404);
-  //   }
-
-  //   const userToDelete = await this.usersRepository.findUserByFilter({ _id: userId });
-
-  //   if (!userToDelete) {
-  //     throw ErrorService(UsersErrorsList.NOT_FOUND, HTTP_STATUS_CODES.NOT_FOUND_404);
-  //   }
-
-  //   await this.usersRepository.deleteUser(userId);
-  // }
+  async deleteUser(userId: string): Promise<void> {
+    await this.usersCommandsRepository.deleteUser(userId);
+  }
 }
