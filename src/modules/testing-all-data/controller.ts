@@ -1,18 +1,9 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  Blog,
-  IBlogModel,
-} from '../bloggers-platform/blogs/domain/blogs.schema';
-import {
-  IPostModel,
-  Post,
-} from '../bloggers-platform/posts/domain/posts.schema';
-import {
-  ILikeModel,
-  Like,
-} from '../bloggers-platform/likes/domain/likes.schema';
-import { IUserModel, User } from '../user-accounts/domain/user.schema';
+import { Blog, IBlogModel } from '../bloggers-platform/blogs/domain/blogs.schema';
+import { IPostModel, Post } from '../bloggers-platform/posts/domain/posts.schema';
+import { ILikeModel, Like } from '../bloggers-platform/likes/domain/likes.schema';
+import { IUserModel, User } from '../user-accounts/users/domain/user.schema';
 
 @Controller('testing/all-data')
 export class TestingAllDataController {

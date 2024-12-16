@@ -13,9 +13,7 @@ export enum SortDirection {
   Desc = 'desc',
 }
 
-export abstract class BaseSortablePaginationParams<
-  T extends string,
-> extends PaginationParams {
+export abstract class BaseSortablePaginationParams<T extends string> extends PaginationParams {
   sortDirection: SortDirection = SortDirection.Desc;
   abstract sortBy: T;
 
@@ -23,9 +21,7 @@ export abstract class BaseSortablePaginationParams<
     const skip = (this.pageNumber - 1) * this.pageSize;
     const limit = this.pageSize;
     const sortOptions = {
-      [this.sortBy]: (this.sortDirection === SortDirection.Asc
-        ? 1
-        : -1) as SortOrder,
+      [this.sortBy]: (this.sortDirection === SortDirection.Asc ? 1 : -1) as SortOrder,
     };
 
     return { skip, limit, sortOptions };

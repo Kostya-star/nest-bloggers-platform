@@ -16,26 +16,23 @@ import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 import { PostsViewDto } from './view.dto/posts-view-dto';
 import { PostsService } from '../application/posts.service';
 import { UpdatePostDto } from './input.dto/update-post.dto';
-import { BlogsQueryRepository } from '../../blogs/infrastructure/blogs-query.repository';
 import { GetPostsQueryParams } from './input.dto/get-posts-query-params';
 import { GetCommentsQueryParams } from '../../comments/api/input.dto/get-comments-query-params';
 import { CommentsQueryRepository } from '../../comments/infrastructure/comments-query.repository';
 import { CommentsViewDto } from '../../comments/api/view.dto/comments-view.dto';
 import { CreatePostInputDto } from './input.dto/create-post-input.dto';
+import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private postsQueryRepository: PostsQueryRepository,
-    private blogsQueryRepository: BlogsQueryRepository,
     private postsService: PostsService,
     private commentsQueryRepository: CommentsQueryRepository,
   ) {}
 
   @Get()
-  async getAllPosts(
-    @Query() query: GetPostsQueryParams,
-  ): Promise<BasePaginatedView<PostsViewDto>> {
+  async getAllPosts(@Query() query: GetPostsQueryParams): Promise<BasePaginatedView<PostsViewDto>> {
     // TODO. temporarily while no access token
     const userId = '';
 
@@ -43,7 +40,7 @@ export class PostsController {
   }
 
   @Get(':postId')
-  async getPostById(@Param('postId') postId: string): Promise<PostsViewDto> {
+  async getPostById(@Param('postId', ObjectIdValidationPipe) postId: string): Promise<PostsViewDto> {
     // TODO. temporarily while no access token
     const userId = '';
 
@@ -60,9 +57,7 @@ export class PostsController {
   async createPost(@Body() post: CreatePostInputDto): Promise<PostsViewDto> {
     const postId = await this.postsService.createPost(post);
 
-    const newPost = await this.postsQueryRepository.getPostById(
-      postId.toString(),
-    );
+    const newPost = await this.postsQueryRepository.getPostById(postId.toString());
 
     if (!newPost) {
       throw new NotFoundException('post not found');
@@ -74,7 +69,7 @@ export class PostsController {
   @Put(':postId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePost(
-    @Param('postId') postId: string,
+    @Param('postId', ObjectIdValidationPipe) postId: string,
     @Body() updates: UpdatePostDto,
   ): Promise<void> {
     const post = await this.postsQueryRepository.getPostById(postId);
@@ -88,7 +83,7 @@ export class PostsController {
 
   @Delete(':postId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePost(@Param('postId') postId: string): Promise<void> {
+  async deletePost(@Param('postId', ObjectIdValidationPipe) postId: string): Promise<void> {
     const post = await this.postsQueryRepository.getPostById(postId);
 
     if (!post) {
@@ -100,7 +95,7 @@ export class PostsController {
 
   @Get(':postId/comments')
   async getCommentsOfPost(
-    @Param('postId') postId: string,
+    @Param('postId', ObjectIdValidationPipe) postId: string,
     @Query() query: GetCommentsQueryParams,
   ): Promise<BasePaginatedView<CommentsViewDto>> {
     // TODO. temporarily while no access token
@@ -112,10 +107,6 @@ export class PostsController {
       throw new NotFoundException('post not found');
     }
 
-    return await this.commentsQueryRepository.getCommentsForPost(
-      query,
-      postId,
-      userId,
-    );
+    return await this.commentsQueryRepository.getCommentsForPost(query, postId, userId);
   }
 }

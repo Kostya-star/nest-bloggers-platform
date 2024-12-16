@@ -9,21 +9,14 @@ import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 export class BlogsQueryRepository {
   constructor(@InjectModel(Blog.name) private BlogModel: IBlogModel) {}
 
-  async getAllBlogs(
-    query: GetBlogsQueryParams,
-  ): Promise<BasePaginatedView<BlogsViewDto>> {
+  async getAllBlogs(query: GetBlogsQueryParams): Promise<BasePaginatedView<BlogsViewDto>> {
     const { pageNumber: page, pageSize, searchNameTerm } = query;
 
     const { sortOptions, limit, skip } = query.processQueryParams();
 
-    const search = searchNameTerm
-      ? { name: { $regex: searchNameTerm, $options: 'i' } }
-      : {};
+    const search = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : {};
 
-    const blogs = await this.BlogModel.find(search)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limit);
+    const blogs = await this.BlogModel.find(search).sort(sortOptions).skip(skip).limit(limit);
 
     const totalCount = await this.BlogModel.countDocuments(search);
     const pagesCount = Math.ceil(totalCount / pageSize);

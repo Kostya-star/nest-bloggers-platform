@@ -1,19 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TestingAllDataController } from './controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  Blog,
-  BlogSchema,
-} from '../bloggers-platform/blogs/domain/blogs.schema';
-import {
-  Post,
-  PostSchema,
-} from '../bloggers-platform/posts/domain/posts.schema';
-import {
-  Like,
-  LikeSchema,
-} from '../bloggers-platform/likes/domain/likes.schema';
-import { User, UserSchema } from '../user-accounts/domain/user.schema';
+import { Blog, BlogSchema } from '../bloggers-platform/blogs/domain/blogs.schema';
+import { Post, PostSchema } from '../bloggers-platform/posts/domain/posts.schema';
+import { Like, LikeSchema } from '../bloggers-platform/likes/domain/likes.schema';
+import { User, UserSchema } from '../user-accounts/users/domain/user.schema';
 
 @Module({
   imports: [

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserEmailConfirmationDto } from '../api/input.dto/user-email-confirmation.dto';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { UsersCommandsRepository } from '../infrastructure/users-commands-repository';
@@ -10,26 +10,21 @@ import { CreateUserDto } from '../api/input.dto/create-user.dto';
 export class UsersService {
   constructor(private usersCommandsRepository: UsersCommandsRepository) {}
 
-  async createUser(
-    user: CreateUserInputDto,
-    emailConfirmation?: UserEmailConfirmationDto,
-  ): Promise<MongooseObjtId> {
+  async createUser(user: CreateUserInputDto, emailConfirmation?: UserEmailConfirmationDto): Promise<MongooseObjtId> {
     const { email, login, password } = user;
 
-    // no check for now
-    // const [userWithSameLogin, userWithSameEmail] = await Promise.all([
-    //   this.usersCommandsRepository.findUserByFilter({ login }),
-    //   this.usersCommandsRepository.findUserByFilter({ email }),
-    // ]);
+    const [userWithSameLogin, userWithSameEmail] = await Promise.all([
+      this.usersCommandsRepository.findUserByFilter({ login }),
+      this.usersCommandsRepository.findUserByFilter({ email }),
+    ]);
 
-    // if (userWithSameLogin || userWithSameEmail) {
-    //   throw {
-    //     field: userWithSameLogin ? 'login' : 'email',
-    //     message: userWithSameLogin
-    //       ? UsersErrorsList.LOGIN_ALREADY_EXIST
-    //       : UsersErrorsList.EMAIL_ALREADY_EXIST,
-    //   };
-    // }
+    if (userWithSameLogin || userWithSameEmail) {
+      // throw {
+      //   field: userWithSameLogin ? 'login' : 'email',
+      //   message: userWithSameLogin ? UsersErrorsList.LOGIN_ALREADY_EXIST : UsersErrorsList.EMAIL_ALREADY_EXIST,
+      // };
+      throw new BadRequestException();
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser: CreateUserDto = {

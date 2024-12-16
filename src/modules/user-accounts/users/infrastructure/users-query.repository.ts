@@ -9,15 +9,8 @@ import { UserViewDto } from '../api/view.dto/users-view.dto';
 @Injectable()
 export class UsersQueryRepository {
   constructor(@InjectModel(User.name) private UserModel: IUserModel) {}
-  async getAllUsers(
-    query: GetUsersQueryParams,
-  ): Promise<BasePaginatedView<UserViewDto>> {
-    const {
-      pageNumber: page,
-      pageSize,
-      searchEmailTerm,
-      searchLoginTerm,
-    } = query;
+  async getAllUsers(query: GetUsersQueryParams): Promise<BasePaginatedView<UserViewDto>> {
+    const { pageNumber: page, pageSize, searchEmailTerm, searchLoginTerm } = query;
 
     const { sortOptions, limit, skip } = query.processQueryParams();
 
@@ -35,14 +28,9 @@ export class UsersQueryRepository {
       });
     }
 
-    const queryFilter = searchConditions.length
-      ? { $or: searchConditions }
-      : {};
+    const queryFilter = searchConditions.length ? { $or: searchConditions } : {};
 
-    const users = await this.UserModel.find(queryFilter)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limit);
+    const users = await this.UserModel.find(queryFilter).sort(sortOptions).skip(skip).limit(limit);
 
     const totalCount = await this.UserModel.countDocuments(queryFilter);
     const pagesCount = Math.ceil(totalCount / pageSize);

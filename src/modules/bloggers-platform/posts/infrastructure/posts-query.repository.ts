@@ -23,11 +23,7 @@ export class PostsQueryRepository {
     const { sortOptions, limit, skip } = query.processQueryParams();
     const find = blogId ? { blogId } : {};
 
-    const posts = await this.PostModel.find(find)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limit)
-      .lean();
+    const posts = await this.PostModel.find(find).sort(sortOptions).skip(skip).limit(limit).lean();
 
     const totalCount = await this.PostModel.countDocuments(find);
     const pagesCount = Math.ceil(totalCount / pageSize);
@@ -38,17 +34,16 @@ export class PostsQueryRepository {
       .lean();
 
     const postsLikesInfo = postIds.map((postId) => {
-      const allPostLikes = likes.filter((like) =>
-        like.likedEntityId.equals(postId),
-      );
+      const allPostLikes = likes.filter((like) => like.likedEntityId.equals(postId));
       const likesInfo = getLikesInfo(allPostLikes, currentUserId);
 
       return { postId, ...likesInfo };
     });
 
     const finalItems = posts.map((basePost) => {
-      const { likesCount, dislikesCount, myStatus, newestLikes } =
-        postsLikesInfo.find((post) => post.postId.equals(basePost._id))!;
+      const { likesCount, dislikesCount, myStatus, newestLikes } = postsLikesInfo.find((post) =>
+        post.postId.equals(basePost._id),
+      )!;
       return {
         ...basePost,
         extendedLikesInfo: { likesCount, dislikesCount, myStatus, newestLikes },
@@ -64,16 +59,11 @@ export class PostsQueryRepository {
     };
   }
 
-  async getPostById(
-    postId: string,
-    currentUserId: string | undefined = '',
-  ): Promise<PostsViewDto | null> {
+  async getPostById(postId: string, currentUserId: string | undefined = ''): Promise<PostsViewDto | null> {
     const post = await this.PostModel.findOne({ _id: postId }).lean();
     if (!post) return null;
 
-    const allLikes = await this.LikeModel.find({ likedEntityId: postId })
-      .sort({ updatedAt: -1 })
-      .lean();
+    const allLikes = await this.LikeModel.find({ likedEntityId: postId }).sort({ updatedAt: -1 }).lean();
 
     const extendedLikesInfo = getLikesInfo(allLikes, currentUserId);
 

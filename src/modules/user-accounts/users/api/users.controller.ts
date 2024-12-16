@@ -16,6 +16,7 @@ import { UsersQueryRepository } from '../infrastructure/users-query.repository';
 import { UserViewDto } from './view.dto/users-view.dto';
 import { UsersService } from '../application/users.service';
 import { CreateUserInputDto } from './input.dto/create-user-input.dto';
+import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
 
 @Controller('users')
 export class UsersController {
@@ -25,16 +26,12 @@ export class UsersController {
   ) {}
 
   @Get()
-  async getAllUsers(
-    @Query() query: GetUsersQueryParams,
-  ): Promise<BasePaginatedView<UserViewDto>> {
+  async getAllUsers(@Query() query: GetUsersQueryParams): Promise<BasePaginatedView<UserViewDto>> {
     return await this.usersQueryRepository.getAllUsers(query);
   }
 
   @Post()
-  async adminCreatesUser(
-    @Body() userBody: CreateUserInputDto,
-  ): Promise<UserViewDto> {
+  async adminCreatesUser(@Body() userBody: CreateUserInputDto): Promise<UserViewDto> {
     const userId = await this.usersService.createUser(userBody);
     const user = await this.usersQueryRepository.getUserById(userId.toString());
 
@@ -47,7 +44,7 @@ export class UsersController {
 
   @Delete(':userId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@Param('userId') userId: string): Promise<void> {
+  async deleteUser(@Param('userId', ObjectIdValidationPipe) userId: string): Promise<void> {
     const user = await this.usersQueryRepository.getUserById(userId);
 
     if (!user) {

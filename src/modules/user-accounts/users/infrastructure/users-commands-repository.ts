@@ -12,9 +12,7 @@ export class UsersCommandsRepository {
   //   return await UserModel.findOne({ _id: userId });
   // }
 
-  async findUserByFilter(
-    filter: RootFilterQuery<IUserDocument>,
-  ): Promise<IUserDocument | null> {
+  async findUserByFilter(filter: RootFilterQuery<IUserDocument>): Promise<IUserDocument | null> {
     return await this.UserModel.findOne(filter);
   }
 

@@ -22,11 +22,7 @@ export class CommentsQueryRepository {
     const { pageNumber: page, pageSize } = query;
     const { sortOptions, limit, skip } = query.processQueryParams();
 
-    const items = await this.CommentModel.find({ postId })
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limit)
-      .lean();
+    const items = await this.CommentModel.find({ postId }).sort(sortOptions).skip(skip).limit(limit).lean();
 
     const totalCount = await this.CommentModel.countDocuments({ postId });
     const pagesCount = Math.ceil(totalCount / query.pageSize);
@@ -37,17 +33,15 @@ export class CommentsQueryRepository {
     }).lean();
 
     const commentsLikesInfo = commentIds.map((commentId) => {
-      const commentLikes = likes.filter((like) =>
-        like.likedEntityId.equals(commentId),
-      );
+      const commentLikes = likes.filter((like) => like.likedEntityId.equals(commentId));
       const likesInfo = getLikesInfo(commentLikes, currentUserId);
 
       return { commentId, ...likesInfo };
     });
 
     const finalItems = items.map((baseComm) => {
-      const { likesCount, dislikesCount, myStatus } = commentsLikesInfo.find(
-        (comm) => comm.commentId.equals(baseComm._id),
+      const { likesCount, dislikesCount, myStatus } = commentsLikesInfo.find((comm) =>
+        comm.commentId.equals(baseComm._id),
       )!;
       return {
         ...baseComm,
@@ -64,10 +58,7 @@ export class CommentsQueryRepository {
     };
   }
 
-  async getCommentById(
-    commentId: string,
-    currentUserId: string | undefined = '',
-  ): Promise<CommentsViewDto | null> {
+  async getCommentById(commentId: string, currentUserId: string | undefined = ''): Promise<CommentsViewDto | null> {
     const comment = await this.CommentModel.findOne({ _id: commentId }).lean();
     if (!comment) return null;
 
@@ -75,10 +66,7 @@ export class CommentsQueryRepository {
       likedEntityId: commentId,
     }).lean();
 
-    const { newestLikes, ...likesInfo } = getLikesInfo(
-      commentLikes,
-      currentUserId,
-    );
+    const { newestLikes, ...likesInfo } = getLikesInfo(commentLikes, currentUserId);
 
     return new CommentsViewDto({ ...comment, likesInfo });
   }

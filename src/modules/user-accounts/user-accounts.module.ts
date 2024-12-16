@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
-import { UsersController } from './api/users.controller';
-import { UsersQueryRepository } from './infrastructure/users-query.repository';
-import { User, UserSchema } from './domain/user.schema';
+import { User, UserSchema } from './users/domain/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersService } from './application/users.service';
-import { UsersCommandsRepository } from './infrastructure/users-commands-repository';
+import { UsersService } from './users/application/users.service';
+import { UsersController } from './users/api/users.controller';
+import { UsersCommandsRepository } from './users/infrastructure/users-commands-repository';
+import { UsersQueryRepository } from './users/infrastructure/users-query.repository';
+import { AuthController } from './auth/api/auth.controller';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { AuthService } from './auth/application/auth.service';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-  ],
-  controllers: [UsersController],
-  providers: [UsersService, UsersCommandsRepository, UsersQueryRepository],
+  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), NotificationsModule],
+  controllers: [UsersController, AuthController],
+  providers: [UsersService, UsersCommandsRepository, UsersQueryRepository, AuthService],
   exports: [],
 })
 export class UserAccountsModule {}
