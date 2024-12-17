@@ -19,11 +19,10 @@ export class UsersService {
     ]);
 
     if (userWithSameLogin || userWithSameEmail) {
-      // throw {
-      //   field: userWithSameLogin ? 'login' : 'email',
-      //   message: userWithSameLogin ? UsersErrorsList.LOGIN_ALREADY_EXIST : UsersErrorsList.EMAIL_ALREADY_EXIST,
-      // };
-      throw new BadRequestException();
+      const field = userWithSameLogin ? 'login' : 'email';
+      const message = `${field} already exists`;
+
+      throw new BadRequestException([{ field, message }]);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

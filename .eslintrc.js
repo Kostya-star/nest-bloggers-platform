@@ -23,6 +23,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     "prettier/prettier": ["warn", { endOfLine: "auto", singleQuote: true, printWidth: 120 }],
     '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/ban-ts-comment': 'off'
     // 'max-len': ['warn', { code: 120 }]
   },
 };

@@ -18,10 +18,10 @@ export const emailConstraints = {
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ type: String, required: true, ...loginConstraints })
+  @Prop({ type: String, required: true, unique: true, ...loginConstraints })
   login: string;
 
-  @Prop({ type: String, required: true, ...emailConstraints })
+  @Prop({ type: String, required: true, unique: true, ...emailConstraints })
   email: string;
 
   @Prop({ type: String, required: true })
@@ -33,6 +33,9 @@ export class User {
       expDate: { type: Date, default: null },
       isConfirmed: { type: Boolean, default: true },
     },
+    _id: false,
+    required: true,
+    default: {},
   })
   emailConfirmation: {
     code: string | null;
@@ -45,8 +48,11 @@ export class User {
       code: { type: String, default: null },
       expDate: { type: Date, default: null },
     },
+    _id: false,
+    required: true,
+    default: {},
   })
-  passwordConfirmation: {
+  passwordRecovery: {
     code: string | null;
     expDate: Date | null;
   };
