@@ -15,6 +15,12 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('MONGO_URI'),
         dbName: configService.get<string>('MONGO_DB_NAME'),
+        connectionFactory: (connection) => {
+          connection.on('error', (err) => {
+            console.error('Database connection error:', err);
+          });
+          return connection;
+        },
       }),
     }),
     BloggersPlatformModule,

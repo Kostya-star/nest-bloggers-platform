@@ -31,7 +31,6 @@ export function pipesSetup(app: INestApplication) {
       stopAtFirstError: true,
       exceptionFactory(errors) {
         const formattedErrors = errorFormatter(errors);
-        console.log('formattedErrors', formattedErrors)
         throw new BadRequestException(formattedErrors);
       },
     }),
