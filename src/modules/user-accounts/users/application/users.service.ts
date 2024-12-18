@@ -14,8 +14,8 @@ export class UsersService {
     const { email, login, password } = user;
 
     const [userWithSameLogin, userWithSameEmail] = await Promise.all([
-      this.usersCommandsRepository.findUserByFilter({ login }),
-      this.usersCommandsRepository.findUserByFilter({ email }),
+      this.usersCommandsRepository.findUserByLogin(login),
+      this.usersCommandsRepository.findUserByEmail(email),
     ]);
 
     if (userWithSameLogin || userWithSameEmail) {
@@ -37,6 +37,10 @@ export class UsersService {
     return await this.usersCommandsRepository.createUser(newUser);
   }
 
+  async deleteUser(userId: string): Promise<void> {
+    await this.usersCommandsRepository.deleteUser(userId);
+  }
+
   // async updateUserById(userId: MongooseObjtId, newUser: Partial<IUserDB>): Promise<void> {
   //   if (!ObjectId.isValid(userId)) {
   //     throw ErrorService(UsersErrorsList.NOT_FOUND, HTTP_STATUS_CODES.NOT_FOUND_404);
@@ -51,7 +55,7 @@ export class UsersService {
   //   await this.usersRepository.updateUserById(userId, newUser);
   // }
 
-  async deleteUser(userId: string): Promise<void> {
-    await this.usersCommandsRepository.deleteUser(userId);
-  }
+  // async deleteUser(userId: string): Promise<void> {
+  //   await this.usersCommandsRepository.deleteUser(userId);
+  // }
 }

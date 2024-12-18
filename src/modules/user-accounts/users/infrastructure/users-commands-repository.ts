@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { RootFilterQuery } from 'mongoose';
 import { IUserDocument, IUserModel, User } from '../domain/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from '../api/input.dto/create-user.dto';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
+import { UserEmailConfirmationDto } from '../api/input.dto/user-email-confirmation.dto';
 
 @Injectable()
 export class UsersCommandsRepository {
@@ -12,8 +12,23 @@ export class UsersCommandsRepository {
   //   return await UserModel.findOne({ _id: userId });
   // }
 
-  async findUserByFilter(filter: RootFilterQuery<IUserDocument>): Promise<IUserDocument | null> {
-    return await this.UserModel.findOne(filter);
+  async findUserByLogin(login: string) /*: Promise<IUserDocument | null> */ {
+    // __ASK__
+    return await this.UserModel.findOne({ login }).lean();
+  }
+
+  // __ASK__
+  async findUserByEmail(email: string) /*: Promise<IUserDocument | null> */ {
+    return await this.UserModel.findOne({ email }).lean();
+  }
+
+  // __ASK__
+  async findUserByCode(code: string) /*: Promise<IUserDocument | null> */ {
+    return await this.UserModel.findOne({ 'emailConfirmation.code': code }).lean();
+  }
+
+  async updateUserEmailConfirmation(userId: string, emailConfirmation: UserEmailConfirmationDto): Promise<void> {
+    await this.UserModel.updateOne({ _id: userId }, { emailConfirmation });
   }
 
   async createUser(newUser: CreateUserDto): Promise<MongooseObjtId> {
