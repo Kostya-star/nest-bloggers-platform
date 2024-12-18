@@ -25,15 +25,14 @@ export const errorFormatter = (errors: ValidationError[], errorMessage?: any): E
 
 export function pipesSetup(app: INestApplication) {
   app.useGlobalPipes(
-    // new ValidationPipe({
-    //   transform: true,
-    //   // give first error per field
-    //   stopAtFirstError: true,
-    //   exceptionFactory(errors) {
-    //     console.log('INSIDE GLOBAL PIPE exceptionFactory errors', errors);
-    //     const formattedErrors = errorFormatter(errors);
-    //     throw new BadRequestException(formattedErrors);
-    //   },
-    // }),
+    new ValidationPipe({
+      transform: true,
+      // give first error per field
+      stopAtFirstError: true,
+      exceptionFactory(errors) {
+        const formattedErrors = errorFormatter(errors);
+        throw new BadRequestException(formattedErrors);
+      },
+    }),
   );
 }

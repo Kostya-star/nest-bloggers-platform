@@ -1,9 +1,15 @@
 import { Type } from 'class-transformer';
+import { IsEnum, IsNumber, IsOptional } from 'class-validator';
 import { SortOrder } from 'mongoose';
 
 class PaginationParams {
+  @IsNumber()
+  @IsOptional()
   @Type(() => Number)
   pageNumber: number = 1;
+
+  @IsNumber()
+  @IsOptional()
   @Type(() => Number)
   pageSize: number = 10;
 }
@@ -14,7 +20,11 @@ export enum SortDirection {
 }
 
 export abstract class BaseSortablePaginationParams<T extends string> extends PaginationParams {
+  @IsEnum(SortDirection)
+  @IsOptional()
   sortDirection: SortDirection = SortDirection.Desc;
+
+  @IsOptional()
   abstract sortBy: T;
 
   processQueryParams() {
