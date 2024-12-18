@@ -2,7 +2,7 @@ import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { CreateUserInputDto } from '../../users/api/input.dto/create-user-input.dto';
 import { UserEmailConfirmationDto } from '../../users/api/input.dto/user-email-confirmation.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { add, isAfter } from 'date-fns';
+import { add } from 'date-fns';
 import { UsersService } from '../../users/application/users.service';
 import { EmailService } from 'src/modules/notifications/email.service';
 
@@ -15,7 +15,10 @@ export class AuthService {
   async registration(userBody: CreateUserInputDto): Promise<void> {
     const emailConfirmation = this.createEmailConfirmationDTO();
 
-    const newUser = await this.usersService.createUser(userBody, emailConfirmation);
+    const newUser = await this.usersService.createUser(
+      userBody,
+      emailConfirmation,
+    );
 
     const message = this.createEmailMessageDTO(
       'registration-confirmation',
@@ -34,7 +37,9 @@ export class AuthService {
     } catch (err) {
       await this.usersService.deleteUser(newUser._id.toString());
       console.error('Error sending email:', err);
-      throw new ServiceUnavailableException('Email service is currently unavailable');
+      throw new ServiceUnavailableException(
+        'Email service is currently unavailable',
+      );
     }
   }
 
@@ -48,7 +53,12 @@ export class AuthService {
     };
   }
 
-  createEmailMessageDTO(link: string, subj: string, queryParam: string, code: string): string {
+  createEmailMessageDTO(
+    link: string,
+    subj: string,
+    queryParam: string,
+    code: string,
+  ): string {
     return `
     <h1>${subj}</h1>
     <p>To finish, please follow the link below:

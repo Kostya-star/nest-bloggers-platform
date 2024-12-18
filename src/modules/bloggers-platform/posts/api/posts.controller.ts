@@ -32,7 +32,9 @@ export class PostsController {
   ) {}
 
   @Get()
-  async getAllPosts(@Query() query: GetPostsQueryParams): Promise<BasePaginatedView<PostsViewDto>> {
+  async getAllPosts(
+    @Query() query: GetPostsQueryParams,
+  ): Promise<BasePaginatedView<PostsViewDto>> {
     // TODO. temporarily while no access token
     const userId = '';
 
@@ -40,7 +42,9 @@ export class PostsController {
   }
 
   @Get(':postId')
-  async getPostById(@Param('postId', ObjectIdValidationPipe) postId: string): Promise<PostsViewDto> {
+  async getPostById(
+    @Param('postId', ObjectIdValidationPipe) postId: string,
+  ): Promise<PostsViewDto> {
     // TODO. temporarily while no access token
     const userId = '';
 
@@ -57,7 +61,9 @@ export class PostsController {
   async createPost(@Body() post: CreatePostInputDto): Promise<PostsViewDto> {
     const postId = await this.postsService.createPost(post);
 
-    const newPost = await this.postsQueryRepository.getPostById(postId.toString());
+    const newPost = await this.postsQueryRepository.getPostById(
+      postId.toString(),
+    );
 
     if (!newPost) {
       throw new NotFoundException('post not found');
@@ -83,7 +89,9 @@ export class PostsController {
 
   @Delete(':postId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePost(@Param('postId', ObjectIdValidationPipe) postId: string): Promise<void> {
+  async deletePost(
+    @Param('postId', ObjectIdValidationPipe) postId: string,
+  ): Promise<void> {
     const post = await this.postsQueryRepository.getPostById(postId);
 
     if (!post) {
@@ -107,6 +115,10 @@ export class PostsController {
       throw new NotFoundException('post not found');
     }
 
-    return await this.commentsQueryRepository.getCommentsForPost(query, postId, userId);
+    return await this.commentsQueryRepository.getCommentsForPost(
+      query,
+      postId,
+      userId,
+    );
   }
 }

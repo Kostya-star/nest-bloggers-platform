@@ -11,6 +11,8 @@ export class BadRequestExceptionFilter implements ExceptionFilter {
 
     const exceptionResponse = exception.getResponse();
 
+    console.log('INSIDE BadRequestExceptionFilter: exceptionResponse', exceptionResponse);
+
     const errorsMessages =
       exceptionResponse instanceof Object && 'message' in exceptionResponse ? exceptionResponse['message'] : [];
 
