@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserInputDto } from '../../users/api/input.dto/create-user-input.dto';
 import { UserEmailConfirmationDto } from '../../users/api/input.dto/user-email-confirmation.dto';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,7 +17,7 @@ export class AuthService {
   async registration(userBody: CreateUserInputDto): Promise<void> {
     const emailConfirmation = this.createEmailConfirmationDTO();
 
-    const newUser = await this.usersService.createUser(userBody, emailConfirmation);
+    await this.usersService.createUser(userBody, emailConfirmation);
 
     const message = this.createEmailMessageDTO(
       'registration-confirmation',
@@ -26,18 +26,18 @@ export class AuthService {
       emailConfirmation.code!,
     );
 
-    try {
-      await this.emailService.sendMail(
-        "'Igor' kostya.danilov.99@mail.ru",
-        userBody.email,
-        'Registration Confirmation',
-        message,
-      );
-    } catch (err) {
-      await this.usersService.deleteUser(newUser._id.toString());
-      console.error('Error sending email:', err);
-      throw new ServiceUnavailableException('Email service is currently unavailable');
-    }
+    // try {
+    this.emailService.sendMail(
+      "'Igor' kostya.danilov.99@mail.ru",
+      userBody.email,
+      'Registration Confirmation',
+      message,
+    );
+    // } catch (err) {
+    // await this.usersService.deleteUser(newUser._id.toString());
+    // console.error('Error sending email:', err);
+    // throw new ServiceUnavailableException('Email service is currently unavailable');
+    // }
   }
 
   async confirmRegistration(code: string): Promise<void> {
@@ -61,6 +61,31 @@ export class AuthService {
       ...user.emailConfirmation,
       isConfirmed: true,
     });
+  }
+
+  async resendCode(email: string): Promise<void> {
+    const user = await this.usersCommandsRepository.findUserByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException([{ field: 'email', message: 'Email is incorrect' }]);
+    }
+
+    if (user.emailConfirmation.isConfirmed) {
+      throw new BadRequestException([{ field: 'email', message: 'Code has been applied' }]);
+    }
+
+    const emailConfirmation = this.createEmailConfirmationDTO();
+
+    await this.usersCommandsRepository.updateUserEmailConfirmation(user._id.toString(), emailConfirmation);
+
+    const message = this.createEmailMessageDTO(
+      'registration-confirmation',
+      'Confirm registration',
+      'code',
+      emailConfirmation.code!,
+    );
+
+    this.emailService.sendMail("'Petr' kostya.danilov.99@mail.ru", user.email, 'Registration Confirmation', message);
   }
 
   createEmailConfirmationDTO(): UserEmailConfirmationDto {

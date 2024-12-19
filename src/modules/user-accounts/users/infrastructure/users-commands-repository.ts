@@ -5,6 +5,8 @@ import { CreateUserDto } from '../api/input.dto/create-user.dto';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { UserEmailConfirmationDto } from '../api/input.dto/user-email-confirmation.dto';
 
+type UserWithId = User & { _id: MongooseObjtId };
+
 @Injectable()
 export class UsersCommandsRepository {
   constructor(@InjectModel(User.name) private UserModel: IUserModel) {}
@@ -12,18 +14,15 @@ export class UsersCommandsRepository {
   //   return await UserModel.findOne({ _id: userId });
   // }
 
-  async findUserByLogin(login: string) /*: Promise<IUserDocument | null> */ {
-    // __ASK__
+  async findUserByLogin(login: string): Promise<UserWithId | null> {
     return await this.UserModel.findOne({ login }).lean();
   }
 
-  // __ASK__
-  async findUserByEmail(email: string) /*: Promise<IUserDocument | null> */ {
+  async findUserByEmail(email: string): Promise<UserWithId | null> {
     return await this.UserModel.findOne({ email }).lean();
   }
 
-  // __ASK__
-  async findUserByCode(code: string) /*: Promise<IUserDocument | null> */ {
+  async findUserByCode(code: string): Promise<UserWithId | null> {
     return await this.UserModel.findOne({ 'emailConfirmation.code': code }).lean();
   }
 

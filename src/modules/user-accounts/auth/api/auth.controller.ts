@@ -17,4 +17,10 @@ export class AuthController {
   async registrationConfirmation(@Body('code') code: string): Promise<void> {
     await this.authService.confirmRegistration(code);
   }
+
+  @Post('registration-email-resending')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async registrationEmailResending(@Body('email') email: string): Promise<void> {
+    await this.authService.resendCode(email);
+  }
 }
