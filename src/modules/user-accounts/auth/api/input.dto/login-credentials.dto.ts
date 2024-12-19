@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsString, Length, Validate } from 'class-validator';
 import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
+import { CheckIsStringAndTrim } from 'src/core/decorators/check-is-string-and-trim.decorator';
 import {
   emailConstraints,
   loginConstraints,
@@ -30,13 +31,11 @@ export class IsLoginOrEmailConstraint implements ValidatorConstraintInterface {
 }
 
 export class LoginCredentialsDto {
-  @IsString()
-  @Transform(({ value }: { value: string }) => value.trim())
+  @CheckIsStringAndTrim()
   @Validate(IsLoginOrEmailConstraint)
   loginOrEmail: string;
 
-  @IsString()
-  @Transform(({ value }: { value: string }) => value.trim())
+  @CheckIsStringAndTrim()
   @Length(passwordConstraints.minLength, passwordConstraints.maxLength)
   password: string;
 }

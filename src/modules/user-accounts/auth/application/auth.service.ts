@@ -6,11 +6,11 @@ import { add, isAfter } from 'date-fns';
 import { UsersService } from '../../users/application/users.service';
 import { EmailService } from 'src/modules/notifications/email.service';
 import { UsersCommandsRepository } from '../../users/infrastructure/users-commands-repository';
-import { UserContext } from 'src/core/dto/user-context';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { LoginCredentialsDto } from '../api/input.dto/login-credentials.dto';
 import { JwtService } from '@nestjs/jwt';
+import { NewPasswordInputDto } from '../api/input.dto/new-password-input.dto';
+import { User } from '../../users/domain/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +47,7 @@ export class AuthService {
   }
 
   async confirmRegistration(code: string): Promise<void> {
-    const user = await this.usersCommandsRepository.findUserByCode(code);
+    const user = await this.usersCommandsRepository.findUserByEmailConfirmationCode(code);
 
     if (!user) {
       throw new BadRequestException([{ field: 'code', message: 'Code is incorrect' }]);
@@ -134,6 +134,48 @@ export class AuthService {
     // });
 
     return { accessToken /*refreshToken*/ };
+  }
+
+  async recoverPassword(email: string): Promise<void> {
+    const user = await this.usersCommandsRepository.findUserByEmail(email);
+
+    const passwordConfirmation = this.createEmailConfirmationDTO();
+
+    if (user) {
+      await this.usersCommandsRepository.updateUserPasswordRecovery(user._id.toString(), passwordConfirmation);
+    } else return;
+
+    const message = this.createEmailMessageDTO(
+      'password-recovery',
+      'Recover password',
+      'recoveryCode',
+      passwordConfirmation.code!,
+    );
+
+    this.emailService.sendMail("'Kolya' kostya.danilov.99@mail.ru", email, 'Recover password', message);
+  }
+
+  async newPassword({ newPassword, recoveryCode }: NewPasswordInputDto): Promise<void> {
+    const user = await this.usersCommandsRepository.findUserByPasswordRecoveryCode(recoveryCode);
+
+    if (!user) {
+      throw new BadRequestException([{ field: 'recoveryCode', message: 'Code is incorrect' }]);
+    }
+
+    const isExpired = isAfter(new Date(), user.passwordRecovery.expDate!);
+
+    if (isExpired) {
+      throw new BadRequestException([{ field: 'recoveryCode', message: 'Code has expired' }]);
+    }
+
+    const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const updates: Partial<User> = {
+      hashedPassword: newHashedPassword,
+      passwordRecovery: { code: null, expDate: null },
+    };
+
+    await this.usersCommandsRepository.updateUser(user._id.toString(), updates);
   }
 
   createEmailConfirmationDTO(): UserEmailConfirmationDto {
