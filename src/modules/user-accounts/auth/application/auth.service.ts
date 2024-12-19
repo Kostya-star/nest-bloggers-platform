@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserInputDto } from '../../users/api/input.dto/create-user-input.dto';
 import { UserEmailConfirmationDto } from '../../users/api/input.dto/user-email-confirmation.dto';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,6 +6,11 @@ import { add, isAfter } from 'date-fns';
 import { UsersService } from '../../users/application/users.service';
 import { EmailService } from 'src/modules/notifications/email.service';
 import { UsersCommandsRepository } from '../../users/infrastructure/users-commands-repository';
+import { UserContext } from 'src/core/dto/user-context';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { LoginCredentialsDto } from '../api/input.dto/login-credentials.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +18,7 @@ export class AuthService {
     private usersService: UsersService,
     private usersCommandsRepository: UsersCommandsRepository,
     private emailService: EmailService,
+    private jwtService: JwtService,
   ) {}
   async registration(userBody: CreateUserInputDto): Promise<void> {
     const emailConfirmation = this.createEmailConfirmationDTO();
@@ -86,6 +92,48 @@ export class AuthService {
     );
 
     this.emailService.sendMail("'Petr' kostya.danilov.99@mail.ru", user.email, 'Registration Confirmation', message);
+  }
+
+  async login(
+    { loginOrEmail, password }: LoginCredentialsDto,
+    // userAgent: string,
+    // ipAddress: string,
+  ): Promise<{ accessToken: string /*refreshToken: string*/ }> {
+    const user = await this.usersCommandsRepository.findUserByLoginOrEmail(loginOrEmail);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.hashedPassword!);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException();
+    }
+
+    // const deviceId = uuidv4();
+
+    const accessToken = this.jwtService.sign({ userId: user._id.toString() });
+    // const refreshToken = jwt.sign({ userId: user._id, deviceId }, process.env.REFRESH_TOKEN_SECRET!, {
+    //   expiresIn: REFRESH_TOKEN_EXP_TIME,
+    // });
+
+    // const { iat, exp } = jwt.decode(refreshToken) as IRefreshTokenDecodedPayload;
+
+    // const iatISO = getISOFromUnixSeconds(iat);
+    // const expISO = getISOFromUnixSeconds(exp);
+
+    // await this.sessionsService.createSession({
+    //   deviceId,
+    //   userId: user._id,
+    //   issuedAt: iatISO,
+    //   expiresAt: expISO,
+    //   userAgent,
+    //   ipAddress,
+    //   lastActiveDate: iatISO,
+    // });
+
+    return { accessToken /*refreshToken*/ };
   }
 
   createEmailConfirmationDTO(): UserEmailConfirmationDto {

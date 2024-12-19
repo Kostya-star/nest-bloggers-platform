@@ -8,9 +8,22 @@ import { UsersQueryRepository } from './users/infrastructure/users-query.reposit
 import { AuthController } from './auth/api/auth.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { AuthService } from './auth/application/auth.service';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), NotificationsModule],
+  imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('ACCESS_TOKEN_SECRET'),
+        signOptions: { expiresIn: 600 },
+      }),
+      inject: [ConfigService],
+    }),
+    NotificationsModule,
+  ],
   controllers: [UsersController, AuthController],
   providers: [UsersService, UsersCommandsRepository, UsersQueryRepository, AuthService],
   exports: [],

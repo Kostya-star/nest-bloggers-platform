@@ -2,12 +2,12 @@ import { BadRequestException, INestApplication, ValidationError, ValidationPipe 
 
 type ErrorResponse = { message: string; field: string };
 
-export const errorFormatter = (errors: ValidationError[], errorMessage?: any): ErrorResponse[] => {
+export const badReqErrorFormatter = (errors: ValidationError[], errorMessage?: any): ErrorResponse[] => {
   const errorsForResponse = errorMessage || [];
 
   for (const error of errors) {
     if (!error?.constraints && error?.children?.length) {
-      errorFormatter(error.children, errorsForResponse);
+      badReqErrorFormatter(error.children, errorsForResponse);
     } else if (error?.constraints) {
       const constrainKeys = Object.keys(error.constraints);
 
@@ -30,7 +30,7 @@ export function pipesSetup(app: INestApplication) {
       // give first error per field
       stopAtFirstError: true,
       exceptionFactory(errors) {
-        const formattedErrors = errorFormatter(errors);
+        const formattedErrors = badReqErrorFormatter(errors);
         throw new BadRequestException(formattedErrors);
       },
     }),

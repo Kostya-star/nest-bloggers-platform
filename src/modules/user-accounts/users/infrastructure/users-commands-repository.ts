@@ -26,6 +26,10 @@ export class UsersCommandsRepository {
     return await this.UserModel.findOne({ 'emailConfirmation.code': code }).lean();
   }
 
+  async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserWithId | null> {
+    return await this.UserModel.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] }).lean();
+  }
+
   async updateUserEmailConfirmation(userId: string, emailConfirmation: UserEmailConfirmationDto): Promise<void> {
     await this.UserModel.updateOne({ _id: userId }, { emailConfirmation });
   }

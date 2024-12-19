@@ -12,7 +12,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       message: (exception as any).message || 'Internal server error',
-      statusCode: status,
+      status,
       // code: exception.code || 'UNKNOWN_ERROR',
       // extensions: ,
     });
