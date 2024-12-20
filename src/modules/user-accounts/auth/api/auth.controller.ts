@@ -1,13 +1,20 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, UseGuards } from '@nestjs/common';
 import { CreateUserInputDto } from '../../users/api/input.dto/create-user-input.dto';
 import { AuthService } from '../application/auth.service';
 import { LoginCredentialsDto } from './input.dto/login-credentials.dto';
 import { NewPasswordInputDto } from './input.dto/new-password-input.dto';
 import { PasswordRecoveryInputDto } from './input.dto/password-recovery-input.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { ExtractUserFromRequest } from 'src/core/decorators/extract-user-from-req.decorator';
+import { UserContext } from 'src/core/dto/user-context';
+import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private usersQueryRepository: UsersQueryRepository,
+  ) {}
 
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -45,5 +52,17 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(@Body() body: NewPasswordInputDto): Promise<void> {
     await this.authService.newPassword(body);
+  }
+
+  @Get('me')
+  @UseGuards(AuthGuard('jwt-auth-guard'))
+  me(@ExtractUserFromRequest() user: UserContext): any {
+    const me = this.usersQueryRepository.getMe(user.userId);
+
+    if (!me) {
+      throw new NotFoundException('user not found');
+    }
+
+    return me;
   }
 }
