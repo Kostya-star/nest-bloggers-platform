@@ -11,6 +11,7 @@ import { AuthService } from './auth/application/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
+import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
     NotificationsModule,
   ],
   controllers: [UsersController, AuthController],
-  providers: [UsersService, UsersCommandsRepository, UsersQueryRepository, AuthService, JwtAuthGuard],
+  providers: [UsersService, UsersCommandsRepository, UsersQueryRepository, AuthService, JwtAuthGuard, BasicAuthGuard],
   exports: [],
 })
 export class UserAccountsModule {}

@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { GetUsersQueryParams } from './input.dto/get-users-query-params';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
@@ -17,8 +18,10 @@ import { UserViewDto } from './view.dto/users-view.dto';
 import { UsersService } from '../application/users.service';
 import { CreateUserInputDto } from './input.dto/create-user-input.dto';
 import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
+import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
 
 @Controller('users')
+@UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
     private usersService: UsersService,
