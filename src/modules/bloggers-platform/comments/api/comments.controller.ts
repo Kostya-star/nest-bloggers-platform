@@ -1,5 +1,5 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
-import { CommentsViewDto } from './view.dto/comments-view.dto';
+import { CommentsViewDto } from './view-dto/comments-view.dto';
 import { CommentsQueryRepository } from '../infrastructure/comments-query.repository';
 import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
 

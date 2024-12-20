@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { IPostModel, Post } from '../domain/posts.schema';
-import { UpdatePostDto } from '../api/input.dto/update-post.dto';
-import { CreatePostDto } from '../api/input.dto/create-post.dto';
+import { UpdatePostDto } from '../api/input-dto/update-post.dto';
+import { CreatePostDto } from '../api/input-dto/create-post.dto';
 
 @Injectable()
 export class PostsCommandsRepository {

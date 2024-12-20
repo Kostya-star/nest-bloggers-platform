@@ -3,9 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { IPostModel, Post } from '../domain/posts.schema';
 import { ILikeModel, Like } from '../../likes/domain/likes.schema';
 import { getLikesInfo } from '../../utils/get-likes-info';
-import { PostsViewDto } from '../api/view.dto/posts-view-dto';
+import { PostsViewDto } from '../api/view-dto/posts-view-dto';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
-import { GetPostsQueryParams } from '../api/input.dto/get-posts-query-params';
+import { GetPostsQueryParams } from '../api/input-dto/get-posts-query-params';
 
 @Injectable()
 export class PostsQueryRepository {

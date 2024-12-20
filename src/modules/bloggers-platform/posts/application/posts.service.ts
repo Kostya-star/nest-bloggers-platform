@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { PostsCommandsRepository } from '../infrastructure/posts-commands.repository';
-import { UpdatePostDto } from '../api/input.dto/update-post.dto';
+import { UpdatePostDto } from '../api/input-dto/update-post.dto';
 import { BlogsCommandsRepository } from '../../blogs/infrastructure/blogs-commands.repository';
-import { CreatePostDto } from '../api/input.dto/create-post.dto';
-import { CreatePostInputDto } from '../api/input.dto/create-post-input.dto';
+import { CreatePostDto } from '../api/input-dto/create-post.dto';
+import { CreatePostInputDto } from '../api/input-dto/create-post-input.dto';
 
 @Injectable()
 export class PostsService {

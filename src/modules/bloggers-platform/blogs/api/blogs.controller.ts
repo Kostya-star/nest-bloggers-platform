@@ -18,11 +18,11 @@ import { BlogsViewDto } from './view-dto/blogs-view-dto';
 import { CreateBlogDto } from './input-dto/create-blog.dto';
 import { UpdateBlogDto } from './input-dto/update-blog.dto';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
-import { CreatePostInputDto } from '../../posts/api/input.dto/create-post-input.dto';
+import { CreatePostInputDto } from '../../posts/api/input-dto/create-post-input.dto';
 import { PostsService } from '../../posts/application/posts.service';
 import { PostsQueryRepository } from '../../posts/infrastructure/posts-query.repository';
-import { GetPostsQueryParams } from '../../posts/api/input.dto/get-posts-query-params';
-import { PostsViewDto } from '../../posts/api/view.dto/posts-view-dto';
+import { GetPostsQueryParams } from '../../posts/api/input-dto/get-posts-query-params';
+import { PostsViewDto } from '../../posts/api/view-dto/posts-view-dto';
 import { CreatePostForBlogInputDto } from './input-dto/create-post-for-blog-input.dto';
 import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
 

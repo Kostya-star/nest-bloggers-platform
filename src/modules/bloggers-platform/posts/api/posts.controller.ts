@@ -13,14 +13,14 @@ import {
 } from '@nestjs/common';
 import { PostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
-import { PostsViewDto } from './view.dto/posts-view-dto';
+import { PostsViewDto } from './view-dto/posts-view-dto';
 import { PostsService } from '../application/posts.service';
-import { UpdatePostDto } from './input.dto/update-post.dto';
-import { GetPostsQueryParams } from './input.dto/get-posts-query-params';
-import { GetCommentsQueryParams } from '../../comments/api/input.dto/get-comments-query-params';
+import { UpdatePostDto } from './input-dto/update-post.dto';
+import { GetPostsQueryParams } from './input-dto/get-posts-query-params';
+import { GetCommentsQueryParams } from '../../comments/api/input-dto/get-comments-query-params';
 import { CommentsQueryRepository } from '../../comments/infrastructure/comments-query.repository';
-import { CommentsViewDto } from '../../comments/api/view.dto/comments-view.dto';
-import { CreatePostInputDto } from './input.dto/create-post-input.dto';
+import { CommentsViewDto } from '../../comments/api/view-dto/comments-view.dto';
+import { CreatePostInputDto } from './input-dto/create-post-input.dto';
 import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
 
 @Controller('posts')

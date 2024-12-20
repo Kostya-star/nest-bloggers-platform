@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { GetCommentsQueryParams } from '../api/input.dto/get-comments-query-params';
+import { GetCommentsQueryParams } from '../api/input-dto/get-comments-query-params';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, ICommentModel } from '../domain/comments.schema';
 import { ILikeModel, Like } from '../../likes/domain/likes.schema';
 import { getLikesInfo } from '../../utils/get-likes-info';
-import { CommentsViewDto } from '../api/view.dto/comments-view.dto';
+import { CommentsViewDto } from '../api/view-dto/comments-view.dto';
 
 @Injectable()
 export class CommentsQueryRepository {

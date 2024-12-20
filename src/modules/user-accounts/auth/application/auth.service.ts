@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateUserInputDto } from '../../users/api/input.dto/create-user-input.dto';
-import { UserEmailConfirmationDto } from '../../users/api/input.dto/user-email-confirmation.dto';
+import { CreateUserInputDto } from '../../users/api/input-dto/create-user-input.dto';
+import { UserEmailConfirmationDto } from '../../users/api/input-dto/user-email-confirmation.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { add, isAfter } from 'date-fns';
 import { UsersService } from '../../users/application/users.service';
 import { EmailService } from 'src/modules/notifications/email.service';
 import { UsersCommandsRepository } from '../../users/infrastructure/users-commands-repository';
 import bcrypt from 'bcrypt';
-import { LoginCredentialsDto } from '../api/input.dto/login-credentials.dto';
+import { LoginCredentialsDto } from '../api/input-dto/login-credentials.dto';
 import { JwtService } from '@nestjs/jwt';
-import { NewPasswordInputDto } from '../api/input.dto/new-password-input.dto';
+import { NewPasswordInputDto } from '../api/input-dto/new-password-input.dto';
 import { User } from '../../users/domain/user.schema';
 
 @Injectable()

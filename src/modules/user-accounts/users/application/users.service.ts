@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UserEmailConfirmationDto } from '../api/input.dto/user-email-confirmation.dto';
+import { UserEmailConfirmationDto } from '../api/input-dto/user-email-confirmation.dto';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { UsersCommandsRepository } from '../infrastructure/users-commands-repository';
 import bcrypt from 'bcrypt';
-import { CreateUserInputDto } from '../api/input.dto/create-user-input.dto';
-import { CreateUserDto } from '../api/input.dto/create-user.dto';
+import { CreateUserInputDto } from '../api/input-dto/create-user-input.dto';
+import { CreateUserDto } from '../api/input-dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
