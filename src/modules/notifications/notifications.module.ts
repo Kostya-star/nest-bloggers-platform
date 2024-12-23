@@ -1,25 +1,24 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EmailService } from './email.service';
+import { CoreConfig } from 'src/core/core.config';
 
 @Module({
   imports: [
     MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (coreConfig: CoreConfig) => ({
         transport: {
           service: 'Mail.ru',
           auth: {
-            user: configService.get<string>('MAIL_SENDER_NAME'),
-            pass: configService.get<string>('MAIL_SENDER_PASSWORD'),
+            user: coreConfig.mailSenderName,
+            pass: coreConfig.mailSenderPassword,
           },
         },
         defaults: {
-          from: `"Nest App" <${configService.get<string>('MAIL_SENDER_NAME')}>`,
+          from: `"Nest App" <${coreConfig.mailSenderName}>`,
         },
       }),
+      inject: [CoreConfig],
     }),
   ],
   providers: [EmailService],

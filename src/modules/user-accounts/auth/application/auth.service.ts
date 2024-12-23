@@ -33,7 +33,7 @@ export class AuthService {
     );
 
     // try {
-    this.emailService.sendMail(
+    await this.emailService.sendMail(
       "'Igor' kostya.danilov.99@mail.ru",
       userBody.email,
       'Registration Confirmation',
@@ -91,7 +91,12 @@ export class AuthService {
       emailConfirmation.code!,
     );
 
-    this.emailService.sendMail("'Petr' kostya.danilov.99@mail.ru", user.email, 'Registration Confirmation', message);
+    await this.emailService.sendMail(
+      "'Petr' kostya.danilov.99@mail.ru",
+      user.email,
+      'Registration Confirmation',
+      message,
+    );
   }
 
   async login(
@@ -152,7 +157,7 @@ export class AuthService {
       passwordConfirmation.code!,
     );
 
-    this.emailService.sendMail("'Kolya' kostya.danilov.99@mail.ru", email, 'Recover password', message);
+    await this.emailService.sendMail("'Kolya' kostya.danilov.99@mail.ru", email, 'Recover password', message);
   }
 
   async newPassword({ newPassword, recoveryCode }: NewPasswordInputDto): Promise<void> {

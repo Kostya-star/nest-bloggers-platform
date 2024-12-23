@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IsBoolean, IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
-import { configValidationUtility } from 'src/setup/config-validation.utility';
+import { configValidationUtility } from 'src/core/config-validation.utility';
 
 export enum Environments {
   DEVELOPMENT = 'development',
@@ -65,4 +65,24 @@ export class CoreConfig {
     message: 'Set Env variable ACCESS_TOKEN_SECRET, dangerous for security!',
   })
   accessTokenSecret: string = this.configService.get('ACCESS_TOKEN_SECRET');
+
+  @IsNotEmpty({
+    message: 'Set Env variable MAIL_SENDER_NAME, dangerous for security!',
+  })
+  mailSenderName: string = this.configService.get('MAIL_SENDER_NAME');
+
+  @IsNotEmpty({
+    message: 'Set Env variable MAIL_SENDER_PASSWORD, dangerous for security!',
+  })
+  mailSenderPassword: string = this.configService.get('MAIL_SENDER_PASSWORD');
+
+  @IsNotEmpty({
+    message: 'Set Env variable BASIC_AUTH_USERNAME, dangerous for security!',
+  })
+  basicAuthUsername: string = this.configService.get('BASIC_AUTH_USERNAME');
+
+  @IsNotEmpty({
+    message: 'Set Env variable BASIC_AUTH_PASSWORD, dangerous for security!',
+  })
+  basicAuthPassword: string = this.configService.get('BASIC_AUTH_PASSWORD');
 }

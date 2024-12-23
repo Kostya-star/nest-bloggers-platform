@@ -1,15 +1,16 @@
 import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
+import { CoreConfig } from '../core.config';
 
 @Injectable()
 export class BasicAuthGuard {
   private validUsername: string;
   private validPassword: string;
 
-  constructor(configService: ConfigService) {
-    this.validUsername = configService.get<string>('BASIC_AUTH_USERNAME') || '';
-    this.validPassword = configService.get<string>('BASIC_AUTH_PASSWORD') || '';
+  constructor(coreConfig: CoreConfig) {
+    this.validUsername = coreConfig.basicAuthUsername || '';
+    this.validPassword = coreConfig.basicAuthPassword || '';
   }
 
   canActivate(context: ExecutionContext): boolean {
