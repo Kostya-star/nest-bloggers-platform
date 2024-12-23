@@ -1,7 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
+import { CoreConfig } from 'src/core/core.config';
 
-export function swaggerSetup(app: INestApplication) {
+export function swaggerSetup(app: INestApplication, coreConfig: CoreConfig) {
+  if (!coreConfig.isSwaggerEnabled) return;
+
   const config = new DocumentBuilder()
     .setTitle('Bloggers API')
     .setDescription('Basic auth- login: admin, password: qwerty')

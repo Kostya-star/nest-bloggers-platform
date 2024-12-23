@@ -69,14 +69,6 @@ export class AuthController {
     return await this.authService.login(body /*, userAgent, ipAddress!*/);
   }
 
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        email: { type: 'string', example: 'example@example.com' },
-      },
-    },
-  })
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
   async recoverPassword(@Body() body: PasswordRecoveryInputDto): Promise<void> {
