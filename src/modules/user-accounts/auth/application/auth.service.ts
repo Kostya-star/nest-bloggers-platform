@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserInputDto } from '../../users/api/input-dto/create-user-input.dto';
-import { UserEmailConfirmationDto } from '../../users/api/input-dto/user-email-confirmation.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { add, isAfter } from 'date-fns';
 // import { UsersService } from '../../users/application/users.service';
@@ -20,186 +19,186 @@ export class AuthService {
     private emailService: EmailService,
     private jwtService: JwtService,
   ) {}
-  async registration(userBody: CreateUserInputDto): Promise<void> {
-    const emailConfirmation = this.createEmailConfirmationDTO();
+  // async registration(userBody: CreateUserInputDto): Promise<void> {
+  //   const emailConfirmation = this.createEmailConfirmationDTO();
 
-    // await this.usersService.createUser(userBody, emailConfirmation);
+  //   // await this.usersService.createUser(userBody, emailConfirmation);
 
-    const message = this.createEmailMessageDTO(
-      'registration-confirmation',
-      'Confirm registration',
-      'code',
-      emailConfirmation.code!,
-    );
+  //   const message = this.createEmailMessageDTO(
+  //     'registration-confirmation',
+  //     'Confirm registration',
+  //     'code',
+  //     emailConfirmation.code!,
+  //   );
 
-    // try {
-    await this.emailService.sendMail(
-      "'Igor' kostya.danilov.99@mail.ru",
-      userBody.email,
-      'Registration Confirmation',
-      message,
-    );
-    // } catch (err) {
-    // await this.usersService.deleteUser(newUser._id.toString());
-    // console.error('Error sending email:', err);
-    // throw new ServiceUnavailableException('Email service is currently unavailable');
-    // }
-  }
+  //   // try {
+  //   await this.emailService.sendMail(
+  //     "'Igor' kostya.danilov.99@mail.ru",
+  //     userBody.email,
+  //     'Registration Confirmation',
+  //     message,
+  //   );
+  //   // } catch (err) {
+  //   // await this.usersService.deleteUser(newUser._id.toString());
+  //   // console.error('Error sending email:', err);
+  //   // throw new ServiceUnavailableException('Email service is currently unavailable');
+  //   // }
+  // }
 
-  async confirmRegistration(code: string): Promise<void> {
-    const user = await this.usersCommandsRepository.findUserByEmailConfirmationCode(code);
+  // async confirmRegistration(code: string): Promise<void> {
+  //   const user = await this.usersCommandsRepository.findUserByEmailConfirmationCode(code);
 
-    if (!user) {
-      throw new BadRequestException([{ field: 'code', message: 'Code is incorrect' }]);
-    }
+  //   if (!user) {
+  //     throw new BadRequestException([{ field: 'code', message: 'Code is incorrect' }]);
+  //   }
 
-    if (user.emailConfirmation.isConfirmed) {
-      throw new BadRequestException([{ field: 'code', message: 'Code has been applied' }]);
-    }
+  //   if (user.emailConfirmation.isConfirmed) {
+  //     throw new BadRequestException([{ field: 'code', message: 'Code has been applied' }]);
+  //   }
 
-    const isExpired = isAfter(new Date(), user.emailConfirmation.expDate as Date);
+  //   const isExpired = isAfter(new Date(), user.emailConfirmation.expDate as Date);
 
-    if (isExpired) {
-      throw new BadRequestException([{ field: 'code', message: 'Code expired' }]);
-    }
+  //   if (isExpired) {
+  //     throw new BadRequestException([{ field: 'code', message: 'Code expired' }]);
+  //   }
 
-    await this.usersCommandsRepository.updateUserEmailConfirmation(user._id.toString(), {
-      ...user.emailConfirmation,
-      isConfirmed: true,
-    });
-  }
+  //   await this.usersCommandsRepository.updateUserEmailConfirmation(user._id.toString(), {
+  //     ...user.emailConfirmation,
+  //     isConfirmed: true,
+  //   });
+  // }
 
-  async resendCode(email: string): Promise<void> {
-    const user = await this.usersCommandsRepository.findUserByEmail(email);
+  // async resendCode(email: string): Promise<void> {
+  //   const user = await this.usersCommandsRepository.findUserByEmail(email);
 
-    if (!user) {
-      throw new BadRequestException([{ field: 'email', message: 'Email is incorrect' }]);
-    }
+  //   if (!user) {
+  //     throw new BadRequestException([{ field: 'email', message: 'Email is incorrect' }]);
+  //   }
 
-    if (user.emailConfirmation.isConfirmed) {
-      throw new BadRequestException([{ field: 'email', message: 'Code has been applied' }]);
-    }
+  //   if (user.emailConfirmation.isConfirmed) {
+  //     throw new BadRequestException([{ field: 'email', message: 'Code has been applied' }]);
+  //   }
 
-    const emailConfirmation = this.createEmailConfirmationDTO();
+  //   const emailConfirmation = this.createEmailConfirmationDTO();
 
-    await this.usersCommandsRepository.updateUserEmailConfirmation(user._id.toString(), emailConfirmation);
+  //   await this.usersCommandsRepository.updateUserEmailConfirmation(user._id.toString(), emailConfirmation);
 
-    const message = this.createEmailMessageDTO(
-      'registration-confirmation',
-      'Confirm registration',
-      'code',
-      emailConfirmation.code!,
-    );
+  //   const message = this.createEmailMessageDTO(
+  //     'registration-confirmation',
+  //     'Confirm registration',
+  //     'code',
+  //     emailConfirmation.code!,
+  //   );
 
-    await this.emailService.sendMail(
-      "'Petr' kostya.danilov.99@mail.ru",
-      user.email,
-      'Registration Confirmation',
-      message,
-    );
-  }
+  //   await this.emailService.sendMail(
+  //     "'Petr' kostya.danilov.99@mail.ru",
+  //     user.email,
+  //     'Registration Confirmation',
+  //     message,
+  //   );
+  // }
 
-  async login(
-    { loginOrEmail, password }: LoginCredentialsDto,
-    // userAgent: string,
-    // ipAddress: string,
-  ): Promise<{ accessToken: string /*refreshToken: string*/ }> {
-    const user = await this.usersCommandsRepository.findUserByLoginOrEmail(loginOrEmail);
+  // async login(
+  //   { loginOrEmail, password }: LoginCredentialsDto,
+  //   // userAgent: string,
+  //   // ipAddress: string,
+  // ): Promise<{ accessToken: string /*refreshToken: string*/ }> {
+  //   const user = await this.usersCommandsRepository.findUserByLoginOrEmail(loginOrEmail);
 
-    if (!user) {
-      throw new UnauthorizedException();
-    }
+  //   if (!user) {
+  //     throw new UnauthorizedException();
+  //   }
 
-    const isPasswordValid = await bcrypt.compare(password, user.hashedPassword!);
+  //   const isPasswordValid = await bcrypt.compare(password, user.hashedPassword!);
 
-    if (!isPasswordValid) {
-      throw new UnauthorizedException();
-    }
+  //   if (!isPasswordValid) {
+  //     throw new UnauthorizedException();
+  //   }
 
-    // const deviceId = uuidv4();
+  //   // const deviceId = uuidv4();
 
-    const accessToken = this.jwtService.sign({ userId: user._id.toString() });
-    // const refreshToken = jwt.sign({ userId: user._id, deviceId }, process.env.REFRESH_TOKEN_SECRET!, {
-    //   expiresIn: REFRESH_TOKEN_EXP_TIME,
-    // });
+  //   const accessToken = this.jwtService.sign({ userId: user._id.toString() });
+  //   // const refreshToken = jwt.sign({ userId: user._id, deviceId }, process.env.REFRESH_TOKEN_SECRET!, {
+  //   //   expiresIn: REFRESH_TOKEN_EXP_TIME,
+  //   // });
 
-    // const { iat, exp } = jwt.decode(refreshToken) as IRefreshTokenDecodedPayload;
+  //   // const { iat, exp } = jwt.decode(refreshToken) as IRefreshTokenDecodedPayload;
 
-    // const iatISO = getISOFromUnixSeconds(iat);
-    // const expISO = getISOFromUnixSeconds(exp);
+  //   // const iatISO = getISOFromUnixSeconds(iat);
+  //   // const expISO = getISOFromUnixSeconds(exp);
 
-    // await this.sessionsService.createSession({
-    //   deviceId,
-    //   userId: user._id,
-    //   issuedAt: iatISO,
-    //   expiresAt: expISO,
-    //   userAgent,
-    //   ipAddress,
-    //   lastActiveDate: iatISO,
-    // });
+  //   // await this.sessionsService.createSession({
+  //   //   deviceId,
+  //   //   userId: user._id,
+  //   //   issuedAt: iatISO,
+  //   //   expiresAt: expISO,
+  //   //   userAgent,
+  //   //   ipAddress,
+  //   //   lastActiveDate: iatISO,
+  //   // });
 
-    return { accessToken /*refreshToken*/ };
-  }
+  //   return { accessToken /*refreshToken*/ };
+  // }
 
-  async recoverPassword(email: string): Promise<void> {
-    const user = await this.usersCommandsRepository.findUserByEmail(email);
+  // async recoverPassword(email: string): Promise<void> {
+  //   const user = await this.usersCommandsRepository.findUserByEmail(email);
 
-    const passwordConfirmation = this.createEmailConfirmationDTO();
+  //   const passwordConfirmation = this.createEmailConfirmationDTO();
 
-    if (user) {
-      await this.usersCommandsRepository.updateUserPasswordRecovery(user._id.toString(), passwordConfirmation);
-    } else return;
+  //   if (user) {
+  //     await this.usersCommandsRepository.updateUserPasswordRecovery(user._id.toString(), passwordConfirmation);
+  //   } else return;
 
-    const message = this.createEmailMessageDTO(
-      'password-recovery',
-      'Recover password',
-      'recoveryCode',
-      passwordConfirmation.code!,
-    );
+  //   const message = this.createEmailMessageDTO(
+  //     'password-recovery',
+  //     'Recover password',
+  //     'recoveryCode',
+  //     passwordConfirmation.code!,
+  //   );
 
-    await this.emailService.sendMail("'Kolya' kostya.danilov.99@mail.ru", email, 'Recover password', message);
-  }
+  //   await this.emailService.sendMail("'Kolya' kostya.danilov.99@mail.ru", email, 'Recover password', message);
+  // }
 
-  async newPassword({ newPassword, recoveryCode }: NewPasswordInputDto): Promise<void> {
-    const user = await this.usersCommandsRepository.findUserByPasswordRecoveryCode(recoveryCode);
+  // async newPassword({ newPassword, recoveryCode }: NewPasswordInputDto): Promise<void> {
+  //   const user = await this.usersCommandsRepository.findUserByPasswordRecoveryCode(recoveryCode);
 
-    if (!user) {
-      throw new BadRequestException([{ field: 'recoveryCode', message: 'Code is incorrect' }]);
-    }
+  //   if (!user) {
+  //     throw new BadRequestException([{ field: 'recoveryCode', message: 'Code is incorrect' }]);
+  //   }
 
-    const isExpired = isAfter(new Date(), user.passwordRecovery.expDate!);
+  //   const isExpired = isAfter(new Date(), user.passwordRecovery.expDate!);
 
-    if (isExpired) {
-      throw new BadRequestException([{ field: 'recoveryCode', message: 'Code has expired' }]);
-    }
+  //   if (isExpired) {
+  //     throw new BadRequestException([{ field: 'recoveryCode', message: 'Code has expired' }]);
+  //   }
 
-    const newHashedPassword = await bcrypt.hash(newPassword, 10);
+  //   const newHashedPassword = await bcrypt.hash(newPassword, 10);
 
-    const updates: Partial<User> = {
-      hashedPassword: newHashedPassword,
-      passwordRecovery: { code: null, expDate: null },
-    };
+  //   const updates: Partial<User> = {
+  //     hashedPassword: newHashedPassword,
+  //     passwordRecovery: { code: null, expDate: null },
+  //   };
 
-    await this.usersCommandsRepository.updateUser(user._id.toString(), updates);
-  }
+  //   await this.usersCommandsRepository.updateUser(user._id.toString(), updates);
+  // }
 
-  createEmailConfirmationDTO(): UserEmailConfirmationDto {
-    return {
-      code: uuidv4(),
-      expDate: add(new Date(), {
-        minutes: 5,
-      }),
-      isConfirmed: false,
-    };
-  }
+  // createEmailConfirmationDTO(): UserEmailConfirmationDto {
+  //   return {
+  //     code: uuidv4(),
+  //     expDate: add(new Date(), {
+  //       minutes: 5,
+  //     }),
+  //     isConfirmed: false,
+  //   };
+  // }
 
-  createEmailMessageDTO(link: string, subj: string, queryParam: string, code: string): string {
-    return `
-    <h1>${subj}</h1>
-    <p>To finish, please follow the link below:
-        <a href='http://localhost:8000/auth/${link}?${queryParam}=${code}'>${subj}</a>
-    </p>
-    <b>You have 5 minutes!</b>
-    `;
-  }
+  // createEmailMessageDTO(link: string, subj: string, queryParam: string, code: string): string {
+  //   return `
+  //   <h1>${subj}</h1>
+  //   <p>To finish, please follow the link below:
+  //       <a href='http://localhost:8000/auth/${link}?${queryParam}=${code}'>${subj}</a>
+  //   </p>
+  //   <b>You have 5 minutes!</b>
+  //   `;
+  // }
 }

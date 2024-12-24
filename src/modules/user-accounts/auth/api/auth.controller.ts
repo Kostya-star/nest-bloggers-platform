@@ -9,12 +9,19 @@ import { ExtractUserFromRequest } from 'src/core/decorators/extract-user-from-re
 import { UserContext } from 'src/core/dto/user-context';
 import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { CommandBus } from '@nestjs/cqrs';
+import { RegisterUserCommand } from '../application/use-cases/commands/register-user.usecase';
+import { ConfirmUserRegistrationCommand } from '../application/use-cases/commands/confirm-user-registration.usecase';
+import { RegistrationEmailResendingCommand } from '../application/use-cases/commands/registration-email-resending.usecase';
+import { LoginUserCommand } from '../application/use-cases/commands/login-user.usecase';
+import { UserPasswordRecoveryCommand } from '../application/use-cases/commands/user-password-recovery.usecase';
+import { UserNewPasswordCommand } from '../application/use-cases/commands/user-new-password.usecase';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    private authService: AuthService,
     private usersQueryRepository: UsersQueryRepository,
+    private commandBus: CommandBus,
   ) {}
 
   @ApiBody({
@@ -30,7 +37,7 @@ export class AuthController {
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() body: CreateUserInputDto): Promise<void> {
-    await this.authService.registration(body);
+    await this.commandBus.execute<RegisterUserCommand, void>(new RegisterUserCommand(body));
   }
 
   @ApiBody({
@@ -44,7 +51,7 @@ export class AuthController {
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(@Body('code') code: string): Promise<void> {
-    await this.authService.confirmRegistration(code);
+    await this.commandBus.execute<ConfirmUserRegistrationCommand, void>(new ConfirmUserRegistrationCommand(code));
   }
 
   @ApiBody({
@@ -58,7 +65,9 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(@Body('email') email: string): Promise<void> {
-    await this.authService.resendCode(email);
+    await this.commandBus.execute<RegistrationEmailResendingCommand, void>(
+      new RegistrationEmailResendingCommand(email),
+    );
   }
 
   @HttpCode(HttpStatus.OK)
@@ -66,19 +75,22 @@ export class AuthController {
   async login(@Body() body: LoginCredentialsDto): Promise<{ accessToken: string }> {
     // const userAgent = req.headers['user-agent'] || 'Unknown device';
     // const ipAddress = req.ip;
-    return await this.authService.login(body /*, userAgent, ipAddress!*/);
+
+    return await this.commandBus.execute<LoginUserCommand, { accessToken: string /*refreshToken: string*/ }>(
+      new LoginUserCommand(body /*, userAgent, ipAddress!*/),
+    );
   }
 
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
   async recoverPassword(@Body() body: PasswordRecoveryInputDto): Promise<void> {
-    await this.authService.recoverPassword(body.email);
+    await this.commandBus.execute<UserPasswordRecoveryCommand, void>(new UserPasswordRecoveryCommand(body));
   }
 
   @Post('new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(@Body() body: NewPasswordInputDto): Promise<void> {
-    await this.authService.newPassword(body);
+    await this.commandBus.execute<UserNewPasswordCommand, void>(new UserNewPasswordCommand(body));
   }
 
   @Get('me')

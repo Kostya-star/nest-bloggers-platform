@@ -1,16 +1,16 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateUserInputDto } from '../../../api/input-dto/create-user-input.dto';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
-import { UserEmailConfirmationDto } from '../../../api/input-dto/user-email-confirmation.dto';
 import { UsersCommandsRepository } from '../../../infrastructure/users-commands-repository';
 import { BadRequestException } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 import { CreateUserDto } from '../../../api/input-dto/create-user.dto';
+import { EmailConfirmationDto } from 'src/modules/user-accounts/auth/dto/email-confirmation.dto';
 
 export class CreateUserCommand {
   constructor(
     public user: CreateUserInputDto,
-    public emailConfirmation?: UserEmailConfirmationDto,
+    public emailConfirmation?: EmailConfirmationDto,
   ) {}
 }
 

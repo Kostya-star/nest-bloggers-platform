@@ -14,9 +14,24 @@ import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
 import { CoreConfig } from 'src/core/core.config';
 import { CreateUserUseCase } from './users/application/use-cases/commands/create-user.usecase';
 import { DeleteUserUseCase } from './users/application/use-cases/commands/delete-user.usecase';
+import { RegisterUserUseCase } from './auth/application/use-cases/commands/register-user.usecase';
+import { ConfirmUserRegistrationUseCase } from './auth/application/use-cases/commands/confirm-user-registration.usecase';
+import { RegistrationEmailResendingUseCase } from './auth/application/use-cases/commands/registration-email-resending.usecase';
+import { LoginUserUseCase } from './auth/application/use-cases/commands/login-user.usecase';
+import { UserPasswordRecoveryUseCase } from './auth/application/use-cases/commands/user-password-recovery.usecase';
+import { UserNewPasswordUseCase } from './auth/application/use-cases/commands/user-new-password.usecase';
 
 const repositories = [UsersCommandsRepository, UsersQueryRepository];
-const commands = [CreateUserUseCase, DeleteUserUseCase];
+const commands = [
+  CreateUserUseCase,
+  DeleteUserUseCase,
+  RegisterUserUseCase,
+  ConfirmUserRegistrationUseCase,
+  RegistrationEmailResendingUseCase,
+  LoginUserUseCase,
+  UserPasswordRecoveryUseCase,
+  UserNewPasswordUseCase,
+];
 const guards = [JwtAuthGuard, BasicAuthGuard];
 const services = [AuthService];
 
