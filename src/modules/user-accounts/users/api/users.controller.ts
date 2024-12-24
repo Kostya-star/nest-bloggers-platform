@@ -15,19 +15,22 @@ import { GetUsersQueryParams } from './input-dto/get-users-query-params';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 import { UsersQueryRepository } from '../infrastructure/users-query.repository';
 import { UserViewDto } from './view-dto/users-view.dto';
-import { UsersService } from '../application/users.service';
 import { CreateUserInputDto } from './input-dto/create-user-input.dto';
 import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
 import { ApiBasicAuth } from '@nestjs/swagger';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateUserCommand } from '../application/use-cases/commands/create-user.usecase';
+import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
+import { DeleteUserCommand } from '../application/use-cases/commands/delete-user.usecase';
 
 @ApiBasicAuth('basicAuth')
 @Controller('users')
 @UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
-    private usersService: UsersService,
     private usersQueryRepository: UsersQueryRepository,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Get()
@@ -37,7 +40,7 @@ export class UsersController {
 
   @Post()
   async adminCreatesUser(@Body() userBody: CreateUserInputDto): Promise<UserViewDto> {
-    const userId = await this.usersService.createUser(userBody);
+    const userId = await this.commandBus.execute<CreateUserCommand, MongooseObjtId>(new CreateUserCommand(userBody));
     const user = await this.usersQueryRepository.getUserById(userId.toString());
 
     if (!user) {
@@ -56,6 +59,6 @@ export class UsersController {
       throw new NotFoundException('user not found');
     }
 
-    await this.usersService.deleteUser(userId);
+    await this.commandBus.execute(new DeleteUserCommand(userId));
   }
 }

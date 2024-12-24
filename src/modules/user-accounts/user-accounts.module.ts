@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { User, UserSchema } from './users/domain/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersService } from './users/application/users.service';
 import { UsersController } from './users/api/users.controller';
 import { UsersCommandsRepository } from './users/infrastructure/users-commands-repository';
 import { UsersQueryRepository } from './users/infrastructure/users-query.repository';
@@ -13,6 +12,13 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
 import { CoreConfig } from 'src/core/core.config';
+import { CreateUserUseCase } from './users/application/use-cases/commands/create-user.usecase';
+import { DeleteUserUseCase } from './users/application/use-cases/commands/delete-user.usecase';
+
+const repositories = [UsersCommandsRepository, UsersQueryRepository];
+const commands = [CreateUserUseCase, DeleteUserUseCase];
+const guards = [JwtAuthGuard, BasicAuthGuard];
+const services = [AuthService];
 
 @Module({
   imports: [
@@ -28,7 +34,7 @@ import { CoreConfig } from 'src/core/core.config';
     NotificationsModule,
   ],
   controllers: [UsersController, AuthController],
-  providers: [UsersService, UsersCommandsRepository, UsersQueryRepository, AuthService, JwtAuthGuard, BasicAuthGuard],
+  providers: [...repositories, ...services, ...guards, ...commands],
   exports: [],
 })
 export class UserAccountsModule {}
