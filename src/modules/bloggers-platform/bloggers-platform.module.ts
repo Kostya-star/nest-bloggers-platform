@@ -16,8 +16,10 @@ import { CommentsQueryRepository } from './comments/infrastructure/comments-quer
 import { CreatePostCommentUseCase } from './comments/application/use-cases/create-post-comment.usecase';
 import { UserAccountsModule } from '../user-accounts/user-accounts.module';
 import { CommentsCommandsRepository } from './comments/infrastructure/comments-commands.repository';
+import { LikesCommandRepository } from './likes/infrastructure/likes-command.repository';
+import { HandleLikeUseCase } from './likes/application/use-cases/handle-like.usecase';
 
-const commands = [CreatePostCommentUseCase];
+const commands = [CreatePostCommentUseCase, HandleLikeUseCase];
 const repos = [
   BlogsCommandsRepository,
   BlogsQueryRepository,
@@ -25,6 +27,7 @@ const repos = [
   PostsCommandsRepository,
   CommentsQueryRepository,
   CommentsCommandsRepository,
+  LikesCommandRepository,
 ];
 const services = [BlogsService, PostsService];
 

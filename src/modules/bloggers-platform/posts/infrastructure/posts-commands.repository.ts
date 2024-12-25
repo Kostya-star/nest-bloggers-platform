@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
-import { IPostModel, Post } from '../domain/posts.schema';
+import { IPostDocument, IPostModel, Post } from '../domain/posts.schema';
 import { UpdatePostDto } from '../api/input-dto/update-post.dto';
 import { CreatePostDto } from '../api/input-dto/create-post.dto';
 
@@ -9,9 +9,9 @@ import { CreatePostDto } from '../api/input-dto/create-post.dto';
 export class PostsCommandsRepository {
   constructor(@InjectModel(Post.name) private PostModel: IPostModel) {}
 
-  // async getPostById(postId: string): Promise<IPostDocument | null> {
-  //   return await this.PostModel.findOne({ _id: postId });
-  // }
+  async getPostById(postId: string): Promise<IPostDocument | null> {
+    return await this.PostModel.findOne({ _id: postId });
+  }
 
   async createPost(newPost: CreatePostDto): Promise<MongooseObjtId> {
     const post = await this.PostModel.create(newPost);

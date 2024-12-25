@@ -24,15 +24,16 @@ import { CommentsViewDto } from '../../comments/api/view-dto/comments-view.dto';
 import { CreatePostInputDto } from './input-dto/create-post-input.dto';
 import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
-import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { CreatePostCommentInputDto } from './input-dto/create-post-comment-input.dto';
 import { ExtractUserFromRequest } from 'src/core/decorators/extract-user-from-req.decorator';
 import { UserContext } from 'src/core/dto/user-context';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreatePostCommentCommand } from '../../comments/application/use-cases/create-post-comment.usecase';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
-import { CommentsCommandsRepository } from '../../comments/infrastructure/comments-commands.repository';
 import { AuthGuard } from '@nestjs/passport';
+import { LikeStatusInputDto } from './input-dto/like-status-input.dto';
+import { UsersQueryRepository } from 'src/modules/user-accounts/users/infrastructure/users-query.repository';
+import { HandleLikeCommand } from '../../likes/application/use-cases/handle-like.usecase';
 
 @Controller('posts')
 export class PostsController {
@@ -40,6 +41,7 @@ export class PostsController {
     private postsQueryRepository: PostsQueryRepository,
     private postsService: PostsService,
     private commentsQueryRepository: CommentsQueryRepository,
+    private usersQueryRepository: UsersQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 
@@ -148,5 +150,30 @@ export class PostsController {
     }
 
     return await this.commentsQueryRepository.getCommentsForPost(query, postId, userId);
+  }
+
+  @Put(':postId/like-status')
+  @UseGuards(AuthGuard('jwt-auth-guard'))
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async handlePostLike(
+    @Param('postId', ObjectIdValidationPipe) postId: string,
+    @Body() body: LikeStatusInputDto,
+    @ExtractUserFromRequest() user: UserContext,
+  ): Promise<void> {
+    const post = await this.postsQueryRepository.getPostById(postId);
+
+    if (!post) {
+      throw new NotFoundException('post not found');
+    }
+
+    const userInfo = await this.usersQueryRepository.getUserById(user.userId);
+
+    if (!userInfo) {
+      throw new NotFoundException('user not found');
+    }
+
+    await this.commandBus.execute<HandleLikeCommand, void>(
+      new HandleLikeCommand(postId, body.likeStatus, user.userId, userInfo.login),
+    );
   }
 }
