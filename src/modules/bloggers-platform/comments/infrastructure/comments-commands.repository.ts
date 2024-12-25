@@ -3,6 +3,7 @@ import { CreatePostCommentDto } from '../dto/create-post-comment.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, ICommentModel } from '../domain/comments.schema';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
+import { UpdateCommentInputDto } from '../api/input-dto/update-comment-input.dto';
 
 @Injectable()
 export class CommentsCommandsRepository {
@@ -16,7 +17,7 @@ export class CommentsCommandsRepository {
     return comment._id;
   }
 
-  async updateComment(commentId: string, updates: { content: string }): Promise<void> {
+  async updateComment(commentId: string, updates: UpdateCommentInputDto): Promise<void> {
     await this.CommentModel.updateOne({ _id: commentId }, updates);
   }
 

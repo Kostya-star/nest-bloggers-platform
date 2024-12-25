@@ -19,8 +19,10 @@ import { CommentsCommandsRepository } from './comments/infrastructure/comments-c
 import { LikesCommandRepository } from './likes/infrastructure/likes-command.repository';
 import { HandleLikeUseCase } from './likes/application/use-cases/handle-like.usecase';
 import { CommnetsController } from './comments/api/comments.controller';
+import { UpdateCommentUseCase } from './comments/application/use-cases/update-comment.usecase';
+import { DeleteCommentUseCase } from './comments/application/use-cases/delete-comment.usecase';
 
-const commands = [CreatePostCommentUseCase, HandleLikeUseCase];
+const commands = [CreatePostCommentUseCase, HandleLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase];
 const repos = [
   BlogsCommandsRepository,
   BlogsQueryRepository,
