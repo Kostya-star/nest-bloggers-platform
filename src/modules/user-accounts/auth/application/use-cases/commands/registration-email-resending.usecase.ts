@@ -1,10 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
-import { EmailService } from 'src/modules/notifications/email.service';
 import { UsersCommandsRepository } from 'src/modules/user-accounts/users/infrastructure/users-commands-repository';
-import { EmailConfirmationDto } from '../../../dto/email-confirmation.dto';
-import { EmailMessageDto } from '../../../dto/email-message.dto';
 import { UserConfirmationEmailResendEvent } from 'src/modules/notifications/events/user-confirmation-email-resend.event';
+import { EmailService } from 'src/modules/notifications/email.service';
+import { User } from 'src/modules/user-accounts/users/domain/user.schema';
+import { UserEmailConfirmationDto } from 'src/modules/user-accounts/users/dto/user-email-confirmation.dto';
 
 export class RegistrationEmailResendingCommand {
   constructor(public email: string) {}
@@ -14,8 +14,8 @@ export class RegistrationEmailResendingCommand {
 export class RegistrationEmailResendingUseCase implements ICommandHandler<RegistrationEmailResendingCommand, void> {
   constructor(
     private usersCommandsRepository: UsersCommandsRepository,
-    private emailService: EmailService,
     private eventBus: EventBus,
+    private emailService: EmailService,
   ) {}
 
   async execute({ email }: RegistrationEmailResendingCommand): Promise<void> {
@@ -29,11 +29,11 @@ export class RegistrationEmailResendingUseCase implements ICommandHandler<Regist
       throw new BadRequestException([{ field: 'email', message: 'Code has been applied' }]);
     }
 
-    const emailConfirmation = new EmailConfirmationDto();
+    const emailConfirmation: UserEmailConfirmationDto = User.generateEmailConfirmationDetails();
 
     await this.usersCommandsRepository.updateUserEmailConfirmation(user._id.toString(), emailConfirmation);
 
-    const message = EmailMessageDto.create(
+    const message = this.emailService.getEmailMessageTemplate(
       'registration-confirmation',
       'Confirm registration',
       'code',

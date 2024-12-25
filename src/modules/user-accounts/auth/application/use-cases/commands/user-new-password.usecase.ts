@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NewPasswordInputDto } from '../../../api/input-dto/new-password-input.dto';
 import { UsersCommandsRepository } from 'src/modules/user-accounts/users/infrastructure/users-commands-repository';
-import { EmailService } from 'src/modules/notifications/email.service';
 import { BadRequestException } from '@nestjs/common';
 import { isAfter } from 'date-fns';
 import { User } from 'src/modules/user-accounts/users/domain/user.schema';

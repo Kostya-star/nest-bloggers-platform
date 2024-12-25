@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from '../api/input-dto/create-user.dto';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { UserPasswordRecoveryDto } from '../dto/user-password-recovery.dto';
-import { EmailConfirmationDto } from '../../auth/dto/email-confirmation.dto';
+import { UserEmailConfirmationDto } from '../dto/user-email-confirmation.dto';
 
 type UserWithId = User & { _id: MongooseObjtId };
 
@@ -35,7 +35,7 @@ export class UsersCommandsRepository {
     return await this.UserModel.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] }).lean();
   }
 
-  async updateUserEmailConfirmation(userId: string, emailConfirmation: EmailConfirmationDto): Promise<void> {
+  async updateUserEmailConfirmation(userId: string, emailConfirmation: UserEmailConfirmationDto): Promise<void> {
     await this.UserModel.updateOne({ _id: userId }, { emailConfirmation });
   }
 

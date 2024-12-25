@@ -2,7 +2,6 @@ import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { isAfter } from 'date-fns';
 import { UsersCommandsRepository } from 'src/modules/user-accounts/users/infrastructure/users-commands-repository';
-import { EmailConfirmationDto } from '../../../dto/email-confirmation.dto';
 
 export class ConfirmUserRegistrationCommand {
   constructor(public code: string) {}

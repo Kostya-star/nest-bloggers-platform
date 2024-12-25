@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { add } from 'date-fns';
 import { HydratedDocument, Model } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
 export const loginConstraints = {
   minLength: 3,
@@ -62,6 +64,21 @@ export class User {
 
   @Prop({ type: Date })
   updatedAt: Date;
+
+  static generateEmailConfirmationDetails() {
+    return {
+      code: uuidv4(),
+      expDate: add(new Date(), { minutes: 5 }),
+      isConfirmed: false,
+    };
+  }
+
+  static generatePasswordRecoveryDetails() {
+    return {
+      code: uuidv4(),
+      expDate: add(new Date(), { minutes: 5 }),
+    };
+  }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

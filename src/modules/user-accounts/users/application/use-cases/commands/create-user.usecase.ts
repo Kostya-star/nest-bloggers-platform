@@ -5,12 +5,12 @@ import { UsersCommandsRepository } from '../../../infrastructure/users-commands-
 import { BadRequestException } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 import { CreateUserDto } from '../../../api/input-dto/create-user.dto';
-import { EmailConfirmationDto } from 'src/modules/user-accounts/auth/dto/email-confirmation.dto';
+import { UserEmailConfirmationDto } from 'src/modules/user-accounts/users/dto/user-email-confirmation.dto';
 
 export class CreateUserCommand {
   constructor(
     public user: CreateUserInputDto,
-    public emailConfirmation?: EmailConfirmationDto,
+    public emailConfirmation?: UserEmailConfirmationDto,
   ) {}
 }
 
