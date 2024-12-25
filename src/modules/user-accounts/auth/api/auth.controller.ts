@@ -1,6 +1,5 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, UseGuards } from '@nestjs/common';
 import { CreateUserInputDto } from '../../users/api/input-dto/create-user-input.dto';
-import { AuthService } from '../application/auth.service';
 import { LoginCredentialsDto } from './input-dto/login-credentials.dto';
 import { NewPasswordInputDto } from './input-dto/new-password-input.dto';
 import { PasswordRecoveryInputDto } from './input-dto/password-recovery-input.dto';

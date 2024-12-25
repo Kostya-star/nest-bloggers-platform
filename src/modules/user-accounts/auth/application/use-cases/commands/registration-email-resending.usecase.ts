@@ -1,9 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { EmailService } from 'src/modules/notifications/email.service';
 import { UsersCommandsRepository } from 'src/modules/user-accounts/users/infrastructure/users-commands-repository';
 import { EmailConfirmationDto } from '../../../dto/email-confirmation.dto';
 import { EmailMessageDto } from '../../../dto/email-message.dto';
+import { UserConfirmationEmailResendEvent } from 'src/modules/notifications/events/user-confirmation-email-resend.event';
 
 export class RegistrationEmailResendingCommand {
   constructor(public email: string) {}
@@ -14,6 +15,7 @@ export class RegistrationEmailResendingUseCase implements ICommandHandler<Regist
   constructor(
     private usersCommandsRepository: UsersCommandsRepository,
     private emailService: EmailService,
+    private eventBus: EventBus,
   ) {}
 
   async execute({ email }: RegistrationEmailResendingCommand): Promise<void> {
@@ -38,6 +40,13 @@ export class RegistrationEmailResendingUseCase implements ICommandHandler<Regist
       emailConfirmation.code!,
     );
 
-    this.emailService.sendMail("'Petr' kostya.danilov.99@mail.ru", user.email, 'Registration Confirmation', message);
+    this.eventBus.publish(
+      new UserConfirmationEmailResendEvent(
+        "'Petr' kostya.danilov.99@mail.ru",
+        user.email,
+        'Registration Confirmation',
+        message,
+      ),
+    );
   }
 }
