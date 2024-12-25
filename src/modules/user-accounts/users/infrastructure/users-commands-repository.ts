@@ -11,9 +11,9 @@ type UserWithId = User & { _id: MongooseObjtId };
 @Injectable()
 export class UsersCommandsRepository {
   constructor(@InjectModel(User.name) private UserModel: IUserModel) {}
-  // async getUserById(userId: MongooseObjtId): Promise<IUserDB | null> {
-  //   return await UserModel.findOne({ _id: userId });
-  // }
+  async findUserById(userId: string): Promise<UserWithId | null> {
+    return await this.UserModel.findOne({ _id: userId });
+  }
 
   async findUserByLogin(login: string): Promise<UserWithId | null> {
     return await this.UserModel.findOne({ login }).lean();

@@ -1,9 +1,14 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model, SchemaTypes } from 'mongoose';
 
+export const commentContentConstraints = {
+  minLength: 200,
+  maxLength: 300,
+};
+
 @Schema({ timestamps: true })
 export class Comment {
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, ...commentContentConstraints })
   content: string;
 
   @Prop({ type: SchemaTypes.ObjectId, required: true })

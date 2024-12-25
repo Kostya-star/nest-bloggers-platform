@@ -13,6 +13,20 @@ import { PostsCommandsRepository } from './posts/infrastructure/posts-commands.r
 import { PostsService } from './posts/application/posts.service';
 import { Comment, CommentSchema } from './comments/domain/comments.schema';
 import { CommentsQueryRepository } from './comments/infrastructure/comments-query.repository';
+import { CreatePostCommentUseCase } from './comments/application/use-cases/create-post-comment.usecase';
+import { UserAccountsModule } from '../user-accounts/user-accounts.module';
+import { CommentsCommandsRepository } from './comments/infrastructure/comments-commands.repository';
+
+const commands = [CreatePostCommentUseCase];
+const repos = [
+  BlogsCommandsRepository,
+  BlogsQueryRepository,
+  PostsQueryRepository,
+  PostsCommandsRepository,
+  CommentsQueryRepository,
+  CommentsCommandsRepository,
+];
+const services = [BlogsService, PostsService];
 
 @Module({
   imports: [
@@ -22,17 +36,10 @@ import { CommentsQueryRepository } from './comments/infrastructure/comments-quer
       { name: Like.name, schema: LikeSchema },
       { name: Comment.name, schema: CommentSchema },
     ]),
+    UserAccountsModule,
   ],
   controllers: [BlogsController, PostsController],
-  providers: [
-    BlogsService,
-    BlogsCommandsRepository,
-    BlogsQueryRepository,
-    PostsQueryRepository,
-    PostsCommandsRepository,
-    PostsService,
-    CommentsQueryRepository,
-  ],
+  providers: [...services, ...repos, ...commands],
   exports: [],
 })
 export class BloggersPlatformModule {}

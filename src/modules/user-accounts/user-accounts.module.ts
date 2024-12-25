@@ -79,6 +79,6 @@ const guards = [JwtAuthGuard, BasicAuthGuard];
     },
     UserAccountsConfig,
   ],
-  exports: [],
+  exports: [UsersCommandsRepository],
 })
 export class UserAccountsModule {}

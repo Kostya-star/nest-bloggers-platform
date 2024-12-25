@@ -16,6 +16,7 @@ import { LoginUserCommand } from '../application/use-cases/commands/login-user.u
 import { UserPasswordRecoveryCommand } from '../application/use-cases/commands/user-password-recovery.usecase';
 import { UserNewPasswordCommand } from '../application/use-cases/commands/user-new-password.usecase';
 import { Response } from 'express';
+import { GetMeViewDto } from '../../users/api/view-dto/get-me-view.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -104,8 +105,8 @@ export class AuthController {
   @Get('me')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt-auth-guard'))
-  me(@ExtractUserFromRequest() user: UserContext): any {
-    const me = this.usersQueryRepository.getMe(user.userId);
+  async me(@ExtractUserFromRequest() user: UserContext): Promise<GetMeViewDto> {
+    const me = await this.usersQueryRepository.getMe(user.userId);
 
     if (!me) {
       throw new NotFoundException('user not found');

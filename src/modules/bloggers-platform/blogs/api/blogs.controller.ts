@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { BlogsService } from '../application/blogs.service';
 import { GetBlogsQueryParams } from './input-dto/get-blogs-query-params';
@@ -25,6 +26,7 @@ import { GetPostsQueryParams } from '../../posts/api/input-dto/get-posts-query-p
 import { PostsViewDto } from '../../posts/api/view-dto/posts-view-dto';
 import { CreatePostForBlogInputDto } from './input-dto/create-post-for-blog-input.dto';
 import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
+import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -51,6 +53,7 @@ export class BlogsController {
     return blog;
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createBlog(@Body() blog: CreateBlogDto): Promise<BlogsViewDto> {
     const blogId = await this.blogsService.createBlog(blog);
@@ -64,6 +67,7 @@ export class BlogsController {
   }
 
   @Put(':blogId')
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param('blogId', ObjectIdValidationPipe) blogId: string,
@@ -79,6 +83,7 @@ export class BlogsController {
   }
 
   @Delete(':blogId')
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlog(@Param('blogId', ObjectIdValidationPipe) blogId: string): Promise<void> {
     const blog = await this.blogsQueryRepository.getBlogById(blogId);
@@ -91,6 +96,7 @@ export class BlogsController {
   }
 
   @Post(':blogId/posts')
+  @UseGuards(BasicAuthGuard)
   async createPostForBlog(
     @Param('blogId', ObjectIdValidationPipe) blogId: string,
     @Body() post: CreatePostForBlogInputDto,
