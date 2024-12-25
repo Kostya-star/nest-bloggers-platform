@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { appSetup } from './setup/app.setup';
 import { CoreConfig } from './core/core.config';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const appContext = await NestFactory.createApplicationContext(AppModule);
@@ -11,6 +12,8 @@ async function bootstrap() {
   const DynamicAppModule = AppModule.forRoot(coreConfig);
 
   const app = await NestFactory.create(DynamicAppModule, { abortOnError: false });
+
+  app.use(cookieParser());
 
   appSetup(app, coreConfig);
 

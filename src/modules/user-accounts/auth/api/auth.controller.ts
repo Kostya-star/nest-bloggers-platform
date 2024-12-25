@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, Res, UseGuards } from '@nestjs/common';
 import { CreateUserInputDto } from '../../users/api/input-dto/create-user-input.dto';
 import { LoginCredentialsDto } from './input-dto/login-credentials.dto';
 import { NewPasswordInputDto } from './input-dto/new-password-input.dto';
@@ -15,6 +15,7 @@ import { RegistrationEmailResendingCommand } from '../application/use-cases/comm
 import { LoginUserCommand } from '../application/use-cases/commands/login-user.usecase';
 import { UserPasswordRecoveryCommand } from '../application/use-cases/commands/user-password-recovery.usecase';
 import { UserNewPasswordCommand } from '../application/use-cases/commands/user-new-password.usecase';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -71,13 +72,21 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Body() body: LoginCredentialsDto): Promise<{ accessToken: string }> {
+  async login(
+    @Body() body: LoginCredentialsDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ accessToken: string }> {
     // const userAgent = req.headers['user-agent'] || 'Unknown device';
     // const ipAddress = req.ip;
 
-    return await this.commandBus.execute<LoginUserCommand, { accessToken: string /*refreshToken: string*/ }>(
-      new LoginUserCommand(body /*, userAgent, ipAddress!*/),
-    );
+    const { refreshToken, accessToken } = await this.commandBus.execute<
+      LoginUserCommand,
+      { accessToken: string; refreshToken: string }
+    >(new LoginUserCommand(body /*, userAgent, ipAddress!*/));
+
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+
+    return { accessToken };
   }
 
   @Post('password-recovery')
