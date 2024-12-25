@@ -34,6 +34,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { UsersQueryRepository } from 'src/modules/user-accounts/users/infrastructure/users-query.repository';
 import { HandleLikeCommand } from '../../likes/application/use-cases/handle-like.usecase';
 import { LikePostStatusInputDto } from './input-dto/like-post-status-input.dto';
+import { JwtAuthOptionalGuard } from 'src/core/guards/jwt-auth-optional.guard';
+import { ExtractUserFromRequestIfExist } from 'src/core/decorators/extract-user-from-req-if-exist.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -54,11 +56,12 @@ export class PostsController {
   }
 
   @Get(':postId')
-  async getPostById(@Param('postId', ObjectIdValidationPipe) postId: string): Promise<PostsViewDto> {
-    // TODO. temporarily while no access token
-    const userId = '';
-
-    const post = await this.postsQueryRepository.getPostById(postId, userId);
+  @UseGuards(JwtAuthOptionalGuard)
+  async getPostById(
+    @Param('postId', ObjectIdValidationPipe) postId: string,
+    @ExtractUserFromRequestIfExist() user: UserContext | null,
+  ): Promise<PostsViewDto> {
+    const post = await this.postsQueryRepository.getPostById(postId, user?.userId);
 
     if (!post) {
       throw new NotFoundException('post not found');
