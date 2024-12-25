@@ -1,4 +1,4 @@
-import { LikeStatus } from '../domain/likes-status';
+import { LikeStatus } from '../const/like-status';
 
 export class LikesBaseViewDto {
   likesCount: number;

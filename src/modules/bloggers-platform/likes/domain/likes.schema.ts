@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model, Types } from 'mongoose';
-import { LikeStatus } from './likes-status';
+import { LikeStatus } from '../const/like-status';
 
 @Schema({ timestamps: true })
 export class Like {

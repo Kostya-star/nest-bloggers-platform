@@ -31,9 +31,9 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreatePostCommentCommand } from '../../comments/application/use-cases/create-post-comment.usecase';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { AuthGuard } from '@nestjs/passport';
-import { LikeStatusInputDto } from './input-dto/like-status-input.dto';
 import { UsersQueryRepository } from 'src/modules/user-accounts/users/infrastructure/users-query.repository';
 import { HandleLikeCommand } from '../../likes/application/use-cases/handle-like.usecase';
+import { LikePostStatusInputDto } from './input-dto/like-post-status-input.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -155,9 +155,9 @@ export class PostsController {
   @Put(':postId/like-status')
   @UseGuards(AuthGuard('jwt-auth-guard'))
   @HttpCode(HttpStatus.NO_CONTENT)
-  async handlePostLike(
+  async likePost(
     @Param('postId', ObjectIdValidationPipe) postId: string,
-    @Body() body: LikeStatusInputDto,
+    @Body() body: LikePostStatusInputDto,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<void> {
     const post = await this.postsQueryRepository.getPostById(postId);

@@ -1,7 +1,7 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { ILikeModel, Like } from '../domain/likes.schema';
-import { LikeStatus } from '../domain/likes-status';
 import { Injectable } from '@nestjs/common';
+import { LikeStatus } from '../const/like-status';
 
 @Injectable()
 export class LikesCommandRepository {

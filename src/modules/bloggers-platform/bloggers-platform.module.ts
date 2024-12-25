@@ -18,6 +18,7 @@ import { UserAccountsModule } from '../user-accounts/user-accounts.module';
 import { CommentsCommandsRepository } from './comments/infrastructure/comments-commands.repository';
 import { LikesCommandRepository } from './likes/infrastructure/likes-command.repository';
 import { HandleLikeUseCase } from './likes/application/use-cases/handle-like.usecase';
+import { CommnetsController } from './comments/api/comments.controller';
 
 const commands = [CreatePostCommentUseCase, HandleLikeUseCase];
 const repos = [
@@ -41,7 +42,7 @@ const services = [BlogsService, PostsService];
     ]),
     UserAccountsModule,
   ],
-  controllers: [BlogsController, PostsController],
+  controllers: [BlogsController, PostsController, CommnetsController],
   providers: [...services, ...repos, ...commands],
   exports: [],
 })

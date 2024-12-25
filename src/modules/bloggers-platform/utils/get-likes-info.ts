@@ -1,4 +1,4 @@
-import { LikeStatus } from '../likes/domain/likes-status';
+import { LikeStatus } from '../likes/const/like-status';
 import { Like } from '../likes/domain/likes.schema';
 
 interface ILikesInfoReturned {
