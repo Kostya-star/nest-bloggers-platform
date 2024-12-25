@@ -6,7 +6,6 @@ import { UsersCommandsRepository } from './users/infrastructure/users-commands-r
 import { UsersQueryRepository } from './users/infrastructure/users-query.repository';
 import { AuthController } from './auth/api/auth.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { AuthService } from './auth/application/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
@@ -33,7 +32,6 @@ const commands = [
   UserNewPasswordUseCase,
 ];
 const guards = [JwtAuthGuard, BasicAuthGuard];
-const services = [AuthService];
 
 @Module({
   imports: [
@@ -49,7 +47,7 @@ const services = [AuthService];
     NotificationsModule,
   ],
   controllers: [UsersController, AuthController],
-  providers: [...repositories, ...services, ...guards, ...commands],
+  providers: [...repositories, ...guards, ...commands],
   exports: [],
 })
 export class UserAccountsModule {}
