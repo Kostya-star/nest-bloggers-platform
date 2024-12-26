@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { appSetup } from './setup/app.setup';
 import { CoreConfig } from './core/core.config';
 import cookieParser from 'cookie-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   const appContext = await NestFactory.createApplicationContext(AppModule);
@@ -11,9 +12,10 @@ async function bootstrap() {
 
   const DynamicAppModule = AppModule.forRoot(coreConfig);
 
-  const app = await NestFactory.create(DynamicAppModule, { abortOnError: false });
+  const app = await NestFactory.create<NestExpressApplication>(DynamicAppModule, { abortOnError: false });
 
   app.use(cookieParser());
+  app.set('trust proxy', true); // to correctly extract user id from req.id
 
   appSetup(app, coreConfig);
 

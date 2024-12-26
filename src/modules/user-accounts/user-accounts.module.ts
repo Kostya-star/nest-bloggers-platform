@@ -7,7 +7,6 @@ import { UsersQueryRepository } from './users/infrastructure/users-query.reposit
 import { AuthController } from './auth/api/auth.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
 import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
 import { CoreConfig } from 'src/core/core.config';
@@ -24,8 +23,10 @@ import {
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from './auth/const/auth-tokens-consts.injection';
 import { UserAccountsConfig } from './config/user-accounts.config';
+import { Device, DeviceSchema } from './devices/domain/device.schema';
+import { DevicesCommandsRepository } from './devices/infrastructure/devices-commands.repository';
 
-const repositories = [UsersCommandsRepository, UsersQueryRepository];
+const repositories = [UsersCommandsRepository, UsersQueryRepository, DevicesCommandsRepository];
 const commands = [
   CreateUserUseCase,
   DeleteUserUseCase,
@@ -40,15 +41,9 @@ const guards = [JwtAuthGuard, BasicAuthGuard];
 
 @Module({
   imports: [
+    JwtModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (coreConfig: CoreConfig) => ({
-        secret: coreConfig.accessTokenSecret,
-        signOptions: { expiresIn: 600 },
-      }),
-      inject: [CoreConfig],
-    }),
+    MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
     NotificationsModule,
   ],
   controllers: [UsersController, AuthController],

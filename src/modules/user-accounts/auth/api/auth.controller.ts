@@ -1,4 +1,15 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateUserInputDto } from '../../users/api/input-dto/create-user-input.dto';
 import { LoginCredentialsDto } from './input-dto/login-credentials.dto';
 import { NewPasswordInputDto } from './input-dto/new-password-input.dto';
@@ -15,7 +26,7 @@ import { RegistrationEmailResendingCommand } from '../application/use-cases/comm
 import { LoginUserCommand } from '../application/use-cases/commands/login-user.usecase';
 import { UserPasswordRecoveryCommand } from '../application/use-cases/commands/user-password-recovery.usecase';
 import { UserNewPasswordCommand } from '../application/use-cases/commands/user-new-password.usecase';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { GetMeViewDto } from '../../users/api/view-dto/get-me-view.dto';
 
 @Controller('auth')
@@ -76,14 +87,15 @@ export class AuthController {
   async login(
     @Body() body: LoginCredentialsDto,
     @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
   ): Promise<{ accessToken: string }> {
-    // const userAgent = req.headers['user-agent'] || 'Unknown device';
-    // const ipAddress = req.ip;
+    const userAgent = req.headers['user-agent'] || 'Unknown device';
+    const ipAddress = req.ip!;
 
     const { refreshToken, accessToken } = await this.commandBus.execute<
       LoginUserCommand,
       { accessToken: string; refreshToken: string }
-    >(new LoginUserCommand(body /*, userAgent, ipAddress!*/));
+    >(new LoginUserCommand(body, userAgent, ipAddress));
 
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 
