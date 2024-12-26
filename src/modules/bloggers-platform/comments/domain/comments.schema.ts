@@ -16,9 +16,6 @@ export class Comment {
 
   @Prop({
     type: {
-      // __ASK__ what if we keep String instead of SchemaTypes.ObjectId in DB coz to my experience
-      // it's more convenient to work with strings and less error-prone, for ex with 403 forbidden errors
-      // and coz of that and coz of many other reasons as i can see, in general, mongoose sucks
       userId: { type: SchemaTypes.ObjectId, required: true },
       userLogin: { type: String, required: true },
       _id: false,

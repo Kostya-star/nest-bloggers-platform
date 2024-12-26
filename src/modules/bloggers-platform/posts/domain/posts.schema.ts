@@ -1,15 +1,27 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 
+export const postTitleConstraints = {
+  maxLength: 30,
+};
+
+export const postDescriptionConstraints = {
+  maxLength: 100,
+};
+
+export const postContentConstraints = {
+  maxLength: 1000,
+};
+
 @Schema({ timestamps: true })
 export class Post {
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, ...postTitleConstraints })
   title: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, ...postDescriptionConstraints })
   shortDescription: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, ...postContentConstraints })
   content: string;
 
   @Prop({ type: String, required: true })

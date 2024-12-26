@@ -48,11 +48,12 @@ export class PostsController {
   ) {}
 
   @Get()
-  async getAllPosts(@Query() query: GetPostsQueryParams): Promise<BasePaginatedView<PostsViewDto>> {
-    // TODO. temporarily while no access token
-    const userId = '';
-
-    return await this.postsQueryRepository.getAllPosts(query, userId);
+  @UseGuards(JwtAuthOptionalGuard)
+  async getAllPosts(
+    @Query() query: GetPostsQueryParams,
+    @ExtractUserFromRequestIfExist() user: UserContext | null,
+  ): Promise<BasePaginatedView<PostsViewDto>> {
+    return await this.postsQueryRepository.getAllPosts(query, user?.userId);
   }
 
   @Get(':postId')
@@ -139,20 +140,19 @@ export class PostsController {
   }
 
   @Get(':postId/comments')
+  @UseGuards(JwtAuthOptionalGuard)
   async getCommentsOfPost(
     @Param('postId', ObjectIdValidationPipe) postId: string,
     @Query() query: GetCommentsQueryParams,
+    @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<BasePaginatedView<CommentsViewDto>> {
-    // TODO. temporarily while no access token
-    const userId = '';
-
     const post = await this.postsQueryRepository.getPostById(postId);
 
     if (!post) {
       throw new NotFoundException('post not found');
     }
 
-    return await this.commentsQueryRepository.getCommentsForPost(query, postId, userId);
+    return await this.commentsQueryRepository.getCommentsForPost(query, postId, user?.userId);
   }
 
   @Put(':postId/like-status')

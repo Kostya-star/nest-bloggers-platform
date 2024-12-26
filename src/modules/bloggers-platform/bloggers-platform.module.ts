@@ -21,6 +21,7 @@ import { HandleLikeUseCase } from './likes/application/use-cases/handle-like.use
 import { CommnetsController } from './comments/api/comments.controller';
 import { UpdateCommentUseCase } from './comments/application/use-cases/update-comment.usecase';
 import { DeleteCommentUseCase } from './comments/application/use-cases/delete-comment.usecase';
+import { IsBlogIdValidAndExist } from './posts/api/validation/is-blogId-valid-and-exist-custom-validator.constraint';
 
 const commands = [CreatePostCommentUseCase, HandleLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase];
 const repos = [
@@ -45,7 +46,7 @@ const services = [BlogsService, PostsService];
     UserAccountsModule,
   ],
   controllers: [BlogsController, PostsController, CommnetsController],
-  providers: [...services, ...repos, ...commands],
+  providers: [...services, ...repos, ...commands, IsBlogIdValidAndExist],
   exports: [],
 })
 export class BloggersPlatformModule {}

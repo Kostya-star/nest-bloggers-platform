@@ -24,6 +24,8 @@ import { HandleLikeCommand } from '../../likes/application/use-cases/handle-like
 import { UpdateCommentInputDto } from './input-dto/update-comment-input.dto';
 import { UpdateCommentCommand } from '../application/use-cases/update-comment.usecase';
 import { DeleteCommentCommand } from '../application/use-cases/delete-comment.usecase';
+import { JwtAuthOptionalGuard } from 'src/core/guards/jwt-auth-optional.guard';
+import { ExtractUserFromRequestIfExist } from 'src/core/decorators/extract-user-from-req-if-exist.decorator';
 
 @Controller('comments')
 export class CommnetsController {
@@ -34,11 +36,12 @@ export class CommnetsController {
   ) {}
 
   @Get(':commId')
-  async getCommentById(@Param('commId', ObjectIdValidationPipe) commId: string): Promise<CommentsViewDto> {
-    // TODO. temporarily while no access token
-    const userId = '';
-
-    const comment = await this.commentsQueryRepository.getCommentById(commId, userId);
+  @UseGuards(JwtAuthOptionalGuard)
+  async getCommentById(
+    @Param('commId', ObjectIdValidationPipe) commId: string,
+    @ExtractUserFromRequestIfExist() user: UserContext | null,
+  ): Promise<CommentsViewDto> {
+    const comment = await this.commentsQueryRepository.getCommentById(commId, user?.userId);
 
     if (!comment) {
       throw new NotFoundException('comment not found');

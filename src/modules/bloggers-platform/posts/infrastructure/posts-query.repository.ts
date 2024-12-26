@@ -28,21 +28,22 @@ export class PostsQueryRepository {
     const totalCount = await this.PostModel.countDocuments(find);
     const pagesCount = Math.ceil(totalCount / pageSize);
 
-    const postIds = posts.map((post) => post._id);
+    const postIds = posts.map((post) => post._id.toString());
+
     const likes = await this.LikeModel.find({ likedEntityId: { $in: postIds } })
       .sort({ updatedAt: -1 })
       .lean();
 
     const postsLikesInfo = postIds.map((postId) => {
-      const allPostLikes = likes.filter((like) => like.likedEntityId.equals(postId));
+      const allPostLikes = likes.filter((like) => like.likedEntityId.toString() === postId.toString());
       const likesInfo = getLikesInfo(allPostLikes, currentUserId);
 
       return { postId, ...likesInfo };
     });
 
     const finalItems = posts.map((basePost) => {
-      const { likesCount, dislikesCount, myStatus, newestLikes } = postsLikesInfo.find((post) =>
-        post.postId.equals(basePost._id),
+      const { likesCount, dislikesCount, myStatus, newestLikes } = postsLikesInfo.find(
+        (post) => post.postId.toString() === basePost._id.toString(),
       )!;
       return {
         ...basePost,

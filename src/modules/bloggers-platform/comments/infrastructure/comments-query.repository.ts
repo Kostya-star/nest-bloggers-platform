@@ -27,21 +27,22 @@ export class CommentsQueryRepository {
     const totalCount = await this.CommentModel.countDocuments({ postId });
     const pagesCount = Math.ceil(totalCount / query.pageSize);
 
-    const commentIds = items.map((comm) => comm._id);
+    const commentIds = items.map((comm) => comm._id.toString());
+
     const likes = await this.LikeModel.find({
       likedEntityId: { $in: commentIds },
     }).lean();
 
     const commentsLikesInfo = commentIds.map((commentId) => {
-      const commentLikes = likes.filter((like) => like.likedEntityId.equals(commentId));
+      const commentLikes = likes.filter((like) => like.likedEntityId.toString() === commentId);
       const likesInfo = getLikesInfo(commentLikes, currentUserId);
 
       return { commentId, ...likesInfo };
     });
 
     const finalItems = items.map((baseComm) => {
-      const { likesCount, dislikesCount, myStatus } = commentsLikesInfo.find((comm) =>
-        comm.commentId.equals(baseComm._id),
+      const { likesCount, dislikesCount, myStatus } = commentsLikesInfo.find(
+        (comm) => comm.commentId.toString() === baseComm._id.toString(),
       )!;
       return {
         ...baseComm,

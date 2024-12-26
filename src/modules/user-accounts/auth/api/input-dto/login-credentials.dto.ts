@@ -1,5 +1,4 @@
-import { Transform } from 'class-transformer';
-import { IsString, Length, Validate } from 'class-validator';
+import { Length, Validate } from 'class-validator';
 import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
 import { CheckIsStringAndTrim } from 'src/core/decorators/check-is-string-and-trim.decorator';
 import {

@@ -16,6 +16,8 @@ export class PostsService {
   async createPost(post: CreatePostInputDto): Promise<MongooseObjtId> {
     const blog = await this.blogsCommandsRepository.getBlogById(post.blogId);
 
+    // this only checks for blog presence via /blod/:blogId/posts.
+    // if the blogId is comming in body, the 404 validation takes place in the validation class dto
     if (!blog) {
       throw new NotFoundException('blog not found');
     }

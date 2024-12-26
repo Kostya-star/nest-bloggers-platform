@@ -27,6 +27,9 @@ import { PostsViewDto } from '../../posts/api/view-dto/posts-view-dto';
 import { CreatePostForBlogInputDto } from './input-dto/create-post-for-blog-input.dto';
 import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
+import { JwtAuthOptionalGuard } from 'src/core/guards/jwt-auth-optional.guard';
+import { ExtractUserFromRequestIfExist } from 'src/core/decorators/extract-user-from-req-if-exist.decorator';
+import { UserContext } from 'src/core/dto/user-context';
 
 @Controller('blogs')
 export class BlogsController {
@@ -117,19 +120,18 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts')
+  @UseGuards(JwtAuthOptionalGuard)
   async getPostsForBlog(
     @Param('blogId', ObjectIdValidationPipe) blogId: string,
     @Query() query: GetPostsQueryParams,
+    @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<BasePaginatedView<PostsViewDto>> {
-    // TODO. temporarily while no access token
-    const userId = '';
-
     const blog = await this.blogsQueryRepository.getBlogById(blogId);
 
     if (!blog) {
       throw new NotFoundException('blog not found');
     }
 
-    return await this.postsQueryRepository.getAllPosts(query, userId, blogId);
+    return await this.postsQueryRepository.getAllPosts(query, user?.userId, blogId);
   }
 }
