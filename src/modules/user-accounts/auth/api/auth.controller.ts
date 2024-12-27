@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Ip,
   NotFoundException,
   Post,
   Req,
@@ -28,8 +29,6 @@ import { UserPasswordRecoveryCommand } from '../application/use-cases/commands/u
 import { UserNewPasswordCommand } from '../application/use-cases/commands/user-new-password.usecase';
 import { Request, Response } from 'express';
 import { GetMeViewDto } from '../../users/api/view-dto/get-me-view.dto';
-import { ExtractUserFromRequestIfExist } from 'src/core/decorators/extract-user-from-req-if-exist.decorator';
-import { RefreshJwtContext } from 'src/core/dto/refresh-jwt-context';
 import { RefreshTokenCommand } from '../application/use-cases/commands/refresh-token.usecase';
 import { TokensPairDto } from '../dto/tokens-pair.dto';
 import { RefreshJwtPayload } from 'src/core/dto/refresh-jwt-payload';
@@ -94,10 +93,9 @@ export class AuthController {
     @Body() body: LoginCredentialsDto,
     @Res({ passthrough: true }) res: Response,
     @Req() req: Request,
+    @Ip() ipAddress: string,
   ): Promise<{ accessToken: string }> {
-    // REDO!!!
     const userAgent = req.headers['user-agent'] || 'Unknown device';
-    const ipAddress = req.ip!;
 
     const { refreshToken, accessToken } = await this.commandBus.execute<
       LoginUserCommand,
@@ -160,7 +158,3 @@ export class AuthController {
     res.clearCookie('refreshToken');
   }
 }
-
-// is it okay that i use req.user for both access and refresh according to the strategy
-// do we really have to check for 403 when deleting the session(device)
-// how do we handle the case when the user logs in again and again. the problem is that the new devices sessions are created in DB

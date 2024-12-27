@@ -10,8 +10,8 @@ import {
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from '../../../const/auth-tokens-consts.injection';
 import { RefreshJwtContext } from 'src/core/dto/refresh-jwt-context';
-import { getISOFromUnixSeconds } from '../../../util/get-iso-from-unix-seconds';
 import { DevicesCommandsRepository } from 'src/modules/user-accounts/devices/infrastructure/devices-commands.repository';
+import { getISOFromUnixSeconds } from 'src/core/util/get-iso-from-unix-seconds';
 
 export class LoginUserCommand {
   constructor(
@@ -53,13 +53,11 @@ export class LoginUserUseCase
     const accessToken = this.accessTokenContext.sign({ userId: user._id.toString() });
     const refreshToken = this.refreshTokenContext.sign({ userId: user._id.toString(), deviceId });
 
-    // __ASK__
     const { iat, exp } = this.refreshTokenContext.decode(refreshToken) as RefreshJwtContext;
 
     const iatISO = getISOFromUnixSeconds(iat);
     const expISO = getISOFromUnixSeconds(exp);
 
-    // __ASK__
     await this.devicesCommandsRepository.registerDevice({
       deviceId,
       userId: user._id,

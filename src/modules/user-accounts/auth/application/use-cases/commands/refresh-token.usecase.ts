@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RefreshJwtContext } from 'src/core/dto/refresh-jwt-context';
 import { DevicesCommandsRepository } from 'src/modules/user-accounts/devices/infrastructure/devices-commands.repository';
-import { getISOFromUnixSeconds } from '../../../util/get-iso-from-unix-seconds';
+import { getISOFromUnixSeconds } from '../../../../../../core/util/get-iso-from-unix-seconds';
 import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,

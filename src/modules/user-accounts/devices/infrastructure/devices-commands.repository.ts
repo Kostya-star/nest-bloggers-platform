@@ -22,9 +22,9 @@ export class DevicesCommandsRepository {
     await this.DeviceModel.updateOne({ deviceId }, updates);
   }
 
-  // async deleteDevicesExceptCurrent(userId: MongooseObjtId, deviceId: string) {
-  //   await this.DeviceModel.deleteMany({ userId, deviceId: { $ne: deviceId } });
-  // }
+  async deleteOtherDevicesExceptCurrent(deviceId: string) {
+    await this.DeviceModel.deleteMany({ deviceId: { $ne: deviceId } });
+  }
 
   async deleteDeviceByDeviceId(deviceId: string) {
     await this.DeviceModel.deleteOne({ deviceId });

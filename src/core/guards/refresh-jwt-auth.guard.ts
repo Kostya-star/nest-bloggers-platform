@@ -6,7 +6,7 @@ import { Request } from 'express';
 import { RefreshJwtContext } from '../dto/refresh-jwt-context';
 import { UsersCommandsRepository } from 'src/modules/user-accounts/users/infrastructure/users-commands-repository';
 import { DevicesCommandsRepository } from 'src/modules/user-accounts/devices/infrastructure/devices-commands.repository';
-import { getISOFromUnixSeconds } from 'src/modules/user-accounts/auth/util/get-iso-from-unix-seconds';
+import { getISOFromUnixSeconds } from 'src/core/util/get-iso-from-unix-seconds';
 import { RefreshJwtPayload } from '../dto/refresh-jwt-payload';
 
 @Injectable()
