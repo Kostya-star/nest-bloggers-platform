@@ -28,6 +28,10 @@ import { UserPasswordRecoveryCommand } from '../application/use-cases/commands/u
 import { UserNewPasswordCommand } from '../application/use-cases/commands/user-new-password.usecase';
 import { Request, Response } from 'express';
 import { GetMeViewDto } from '../../users/api/view-dto/get-me-view.dto';
+import { ExtractUserFromRequestIfExist } from 'src/core/decorators/extract-user-from-req-if-exist.decorator';
+import { RefreshJwtContext } from 'src/core/dto/refresh-jwt-context';
+import { RefreshTokenCommand } from '../application/use-cases/commands/refresh-token.usecase';
+import { TokensPairDto } from '../dto/tokens-pair.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -82,13 +86,14 @@ export class AuthController {
     );
   }
 
-  @HttpCode(HttpStatus.OK)
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   async login(
     @Body() body: LoginCredentialsDto,
     @Res({ passthrough: true }) res: Response,
     @Req() req: Request,
   ): Promise<{ accessToken: string }> {
+    // __ASK__
     const userAgent = req.headers['user-agent'] || 'Unknown device';
     const ipAddress = req.ip!;
 
@@ -99,6 +104,24 @@ export class AuthController {
 
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 
+    return { accessToken };
+  }
+
+  @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('refresh-jwt-auth-guard'))
+
+  // __ASK__ whether its ok to use ExtractUserFromRequestIfExist here coz it might return 'null'
+  // also whats the best practice for naming-collisions
+  async refreshToken(
+    @ExtractUserFromRequestIfExist() token: RefreshJwtContext,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const { accessToken, refreshToken } = await this.commandBus.execute<RefreshTokenCommand, TokensPairDto>(
+      new RefreshTokenCommand(token),
+    );
+
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
     return { accessToken };
   }
 

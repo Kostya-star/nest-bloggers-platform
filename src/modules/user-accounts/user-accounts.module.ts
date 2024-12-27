@@ -25,6 +25,7 @@ import {
 import { UserAccountsConfig } from './config/user-accounts.config';
 import { Device, DeviceSchema } from './devices/domain/device.schema';
 import { DevicesCommandsRepository } from './devices/infrastructure/devices-commands.repository';
+import { RefreshTokenUseCase } from './auth/application/use-cases/commands/refresh-token.usecase';
 
 const repositories = [UsersCommandsRepository, UsersQueryRepository, DevicesCommandsRepository];
 const commands = [
@@ -36,6 +37,7 @@ const commands = [
   LoginUserUseCase,
   UserPasswordRecoveryUseCase,
   UserNewPasswordUseCase,
+  RefreshTokenUseCase
 ];
 const guards = [JwtAuthGuard, BasicAuthGuard];
 
