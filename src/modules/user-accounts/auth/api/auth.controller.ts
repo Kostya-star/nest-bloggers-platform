@@ -33,6 +33,7 @@ import { RefreshJwtContext } from 'src/core/dto/refresh-jwt-context';
 import { RefreshTokenCommand } from '../application/use-cases/commands/refresh-token.usecase';
 import { TokensPairDto } from '../dto/tokens-pair.dto';
 import { RefreshJwtPayload } from 'src/core/dto/refresh-jwt-payload';
+import { LogoutUserCommand } from '../application/use-cases/commands/logout-user.usecase';
 
 @Controller('auth')
 export class AuthController {
@@ -94,7 +95,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @Req() req: Request,
   ): Promise<{ accessToken: string }> {
-    // __ASK__
+    // REDO!!!
     const userAgent = req.headers['user-agent'] || 'Unknown device';
     const ipAddress = req.ip!;
 
@@ -112,11 +113,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('refresh-jwt-auth-guard'))
   async refreshToken(
-    @ExtractUserFromRequestIfExist() tokenPayload: RefreshJwtPayload,
+    @ExtractUserFromRequest() userTokenPayload: RefreshJwtPayload,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<any> {
+  ): Promise<{ accessToken: string }> {
     const { accessToken, refreshToken } = await this.commandBus.execute<RefreshTokenCommand, TokensPairDto>(
-      new RefreshTokenCommand(tokenPayload),
+      new RefreshTokenCommand(userTokenPayload),
     );
 
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
@@ -147,4 +148,19 @@ export class AuthController {
 
     return me;
   }
+
+  @Post('logout')
+  @UseGuards(AuthGuard('refresh-jwt-auth-guard'))
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(
+    @ExtractUserFromRequest() userTokenPayload: RefreshJwtPayload,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
+    await this.commandBus.execute<LogoutUserCommand, void>(new LogoutUserCommand(userTokenPayload.deviceId));
+    res.clearCookie('refreshToken');
+  }
 }
+
+// is it okay that i use req.user for both access and refresh according to the strategy
+// do we really have to check for 403 when deleting the session(device)
+// how do we handle the case when the user logs in again and again. the problem is that the new devices sessions are created in DB

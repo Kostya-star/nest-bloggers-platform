@@ -1,8 +1,7 @@
-import { Inject, UnauthorizedException } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RefreshJwtContext } from 'src/core/dto/refresh-jwt-context';
 import { DevicesCommandsRepository } from 'src/modules/user-accounts/devices/infrastructure/devices-commands.repository';
-import { UsersCommandsRepository } from 'src/modules/user-accounts/users/infrastructure/users-commands-repository';
 import { getISOFromUnixSeconds } from '../../../util/get-iso-from-unix-seconds';
 import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
@@ -19,7 +18,6 @@ export class RefreshTokenCommand {
 @CommandHandler(RefreshTokenCommand)
 export class RefreshTokenUseCase implements ICommandHandler<RefreshTokenCommand, TokensPairDto> {
   constructor(
-    // private usersCommandsRepository: UsersCommandsRepository,
     private devicesCommandsRepository: DevicesCommandsRepository,
     @Inject(ACCESS_TOKEN_STRATEGY_INJECT_TOKEN) private accessTokenContext: JwtService,
     @Inject(REFRESH_TOKEN_STRATEGY_INJECT_TOKEN) private refreshTokenContext: JwtService,
@@ -27,23 +25,6 @@ export class RefreshTokenUseCase implements ICommandHandler<RefreshTokenCommand,
 
   async execute({ tokenPayload }: RefreshTokenCommand): Promise<TokensPairDto> {
     const { deviceId, userId } = tokenPayload;
-
-    // const user = await this.usersCommandsRepository.findUserById(userId);
-
-    // if (!user) {
-    //   throw new UnauthorizedException();
-    // }
-
-    // const device = await this.devicesCommandsRepository.findDeviceByDeviceId(deviceId);
-
-    // if (!device) {
-    //   throw new UnauthorizedException();
-    // }
-
-    // // make sure the token isn't revoked
-    // if (getISOFromUnixSeconds(iat) !== device.issuedAt) {
-    //   throw new UnauthorizedException();
-    // }
 
     const accessToken = this.accessTokenContext.sign({ userId });
     const refreshToken = this.refreshTokenContext.sign({ userId, deviceId });

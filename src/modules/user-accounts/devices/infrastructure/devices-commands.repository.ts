@@ -26,7 +26,7 @@ export class DevicesCommandsRepository {
   //   await this.DeviceModel.deleteMany({ userId, deviceId: { $ne: deviceId } });
   // }
 
-  // async deleteDeviceById(deviceId: string) {
-  //   await this.DeviceModel.deleteOne({ deviceId });
-  // }
+  async deleteDeviceByDeviceId(deviceId: string) {
+    await this.DeviceModel.deleteOne({ deviceId });
+  }
 }
