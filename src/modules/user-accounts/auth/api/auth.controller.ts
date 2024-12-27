@@ -33,6 +33,7 @@ import { RefreshTokenCommand } from '../application/use-cases/commands/refresh-t
 import { TokensPairDto } from '../dto/tokens-pair.dto';
 import { RefreshJwtPayload } from 'src/core/dto/refresh-jwt-payload';
 import { LogoutUserCommand } from '../application/use-cases/commands/logout-user.usecase';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -51,6 +52,7 @@ export class AuthController {
       },
     },
   })
+  @UseGuards(ThrottlerGuard)
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() body: CreateUserInputDto): Promise<void> {
@@ -65,6 +67,7 @@ export class AuthController {
       },
     },
   })
+  @UseGuards(ThrottlerGuard)
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(@Body('code') code: string): Promise<void> {
@@ -79,6 +82,7 @@ export class AuthController {
       },
     },
   })
+  @UseGuards(ThrottlerGuard)
   @Post('registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(@Body('email') email: string): Promise<void> {
@@ -87,6 +91,7 @@ export class AuthController {
     );
   }
 
+  @UseGuards(ThrottlerGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
@@ -122,12 +127,14 @@ export class AuthController {
     return { accessToken };
   }
 
+  @UseGuards(ThrottlerGuard)
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
   async recoverPassword(@Body() body: PasswordRecoveryInputDto): Promise<void> {
     await this.commandBus.execute<UserPasswordRecoveryCommand, void>(new UserPasswordRecoveryCommand(body));
   }
 
+  @UseGuards(ThrottlerGuard)
   @Post('new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(@Body() body: NewPasswordInputDto): Promise<void> {

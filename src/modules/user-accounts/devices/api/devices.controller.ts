@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  NotFoundException,
-  Param,
-  ParseUUIDPipe,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common';
 import { DevicesQueryRepository } from '../infrastructure/devices-query.repository';
 import { AuthGuard } from '@nestjs/passport';
 import { ExtractUserFromRequest } from 'src/core/decorators/extract-user-from-req.decorator';

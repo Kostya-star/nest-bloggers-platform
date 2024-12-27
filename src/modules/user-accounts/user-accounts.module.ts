@@ -31,6 +31,8 @@ import { DevicesQueryRepository } from './devices/infrastructure/devices-query.r
 import { DevicesController } from './devices/api/devices.controller';
 import { TerminateUserDeviceUseCase } from './devices/application/use-cases/commands/terminate-user-device-by-device-id.usecase';
 import { TerminateOtherUserDevicesUseCase } from './devices/application/use-cases/commands/terminate-other-user-devices-except-current.usecase';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { ConfigService } from '@nestjs/config';
 
 const repositories = [UsersCommandsRepository, UsersQueryRepository, DevicesCommandsRepository, DevicesQueryRepository];
 const commands = [
@@ -52,9 +54,29 @@ const guards = [JwtAuthGuard, BasicAuthGuard];
 @Module({
   imports: [
     JwtModule,
+    NotificationsModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
-    NotificationsModule,
+    // __ASK__
+    // ThrottlerModule.forRootAsync({
+    //   inject: [UserAccountsConfig],
+    //   useFactory: (userAccountConfig: UserAccountsConfig) => [
+    //     {
+    //       ttl: +userAccountConfig.authRequestsTtl,
+    //       limit: +userAccountConfig.authRequestsLimitWithinTtl,
+    //     },
+    //   ],
+    // }),
+    // __ASK__
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => [
+        {
+          ttl: +configService.get('AUTH_REQUESTS_TTL_MS'),
+          limit: +configService.get('AUTH_REQUESTS_LIMIT_WITHIN_TTL'),
+        },
+      ],
+    }),
   ],
   controllers: [UsersController, AuthController, DevicesController],
   providers: [
