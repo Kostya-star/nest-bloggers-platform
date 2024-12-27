@@ -32,6 +32,7 @@ import { ExtractUserFromRequestIfExist } from 'src/core/decorators/extract-user-
 import { RefreshJwtContext } from 'src/core/dto/refresh-jwt-context';
 import { RefreshTokenCommand } from '../application/use-cases/commands/refresh-token.usecase';
 import { TokensPairDto } from '../dto/tokens-pair.dto';
+import { RefreshJwtPayload } from 'src/core/dto/refresh-jwt-payload';
 
 @Controller('auth')
 export class AuthController {
@@ -110,15 +111,12 @@ export class AuthController {
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('refresh-jwt-auth-guard'))
-
-  // __ASK__ whether its ok to use ExtractUserFromRequestIfExist here coz it might return 'null'
-  // also whats the best practice for naming-collisions
   async refreshToken(
-    @ExtractUserFromRequestIfExist() token: RefreshJwtContext,
+    @ExtractUserFromRequestIfExist() tokenPayload: RefreshJwtPayload,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const { accessToken, refreshToken } = await this.commandBus.execute<RefreshTokenCommand, TokensPairDto>(
-      new RefreshTokenCommand(token),
+      new RefreshTokenCommand(tokenPayload),
     );
 
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });

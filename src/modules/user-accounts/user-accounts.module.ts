@@ -37,7 +37,7 @@ const commands = [
   LoginUserUseCase,
   UserPasswordRecoveryUseCase,
   UserNewPasswordUseCase,
-  RefreshTokenUseCase
+  RefreshTokenUseCase,
 ];
 const guards = [JwtAuthGuard, BasicAuthGuard];
 
@@ -76,6 +76,6 @@ const guards = [JwtAuthGuard, BasicAuthGuard];
     },
     UserAccountsConfig,
   ],
-  exports: [UsersCommandsRepository, UsersQueryRepository],
+  exports: [UsersCommandsRepository, DevicesCommandsRepository, UsersQueryRepository],
 })
 export class UserAccountsModule {}
