@@ -8,9 +8,20 @@ import { UserAccountsModule } from './modules/user-accounts/user-accounts.module
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { CoreConfig } from './core/core.config';
 import { CoreModule } from './core/core.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5433,
+      username: 'postgres',
+      password: 'admin',
+      database: 'bloggers',
+      autoLoadEntities: false,
+      synchronize: false,
+    }),
     MongooseModule.forRootAsync({
       useFactory: (coreConfig: CoreConfig) => ({
         uri: coreConfig.mongoURI,

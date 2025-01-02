@@ -23,6 +23,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../application/use-cases/commands/create-user.usecase';
 import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { DeleteUserCommand } from '../application/use-cases/commands/delete-user.usecase';
+import { DataSource } from 'typeorm';
 
 @ApiBasicAuth('basicAuth')
 @Controller('users')

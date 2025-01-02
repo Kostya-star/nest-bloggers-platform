@@ -1,4 +1,4 @@
-import { IUserDocument } from '../../domain/user.schema';
+import { User } from '../../domain/user.schema-typeorm';
 
 export class UserViewDto {
   id: string;
@@ -6,8 +6,8 @@ export class UserViewDto {
   email: string;
   createdAt: Date;
 
-  constructor(user: IUserDocument) {
-    this.id = user._id.toString();
+  constructor(user: User) {
+    this.id = user.id.toString();
     this.login = user.login;
     this.email = user.email;
     this.createdAt = user.createdAt;
