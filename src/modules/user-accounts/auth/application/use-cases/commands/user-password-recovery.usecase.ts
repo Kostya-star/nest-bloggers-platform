@@ -25,6 +25,7 @@ export class UserPasswordRecoveryUseCase implements ICommandHandler<UserPassword
     const passwordConfirmation: UserPasswordRecoveryDto = User.generatePasswordRecoveryDetails();
 
     if (user) {
+      // @ts-ignore
       await this.usersCommandsRepository.updateUserPasswordRecovery(user._id.toString(), passwordConfirmation);
     } else return;
 

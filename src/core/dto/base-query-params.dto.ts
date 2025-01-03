@@ -27,6 +27,7 @@ export abstract class BaseSortablePaginationParams<T extends string> extends Pag
   @IsOptional()
   abstract sortBy: T;
 
+  // TODO delete
   processQueryParams() {
     const skip = (this.pageNumber - 1) * this.pageSize;
     const limit = this.pageSize;

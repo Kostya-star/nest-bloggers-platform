@@ -10,6 +10,6 @@ export class UserViewDto {
     this.id = user.id.toString();
     this.login = user.login;
     this.email = user.email;
-    this.createdAt = user.createdAt;
+    this.createdAt = user.created_at;
   }
 }

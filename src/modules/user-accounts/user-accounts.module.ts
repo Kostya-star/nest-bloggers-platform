@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { User, UserSchema } from './users/domain/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersController } from './users/api/users.controller';
@@ -32,7 +32,7 @@ import { DevicesController } from './devices/api/devices.controller';
 import { TerminateUserDeviceUseCase } from './devices/application/use-cases/commands/terminate-user-device-by-device-id.usecase';
 import { TerminateOtherUserDevicesUseCase } from './devices/application/use-cases/commands/terminate-other-user-devices-except-current.usecase';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 const repositories = [UsersCommandsRepository, UsersQueryRepository, DevicesCommandsRepository, DevicesQueryRepository];
 const commands = [
@@ -60,6 +60,8 @@ const guards = [JwtAuthGuard, BasicAuthGuard];
     // __ASK__
     // ThrottlerModule.forRootAsync({
     //   inject: [UserAccountsConfig],
+    //   // imports: [forwardRef(() => UserAccountsConfig)],
+    //   imports: [ConfigModule],
     //   useFactory: (userAccountConfig: UserAccountsConfig) => [
     //     {
     //       ttl: +userAccountConfig.authRequestsTtl,

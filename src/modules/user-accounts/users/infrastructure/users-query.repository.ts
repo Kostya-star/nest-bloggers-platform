@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { GetUsersQueryParams } from '../api/input-dto/get-users-query-params';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
-import { InjectModel } from '@nestjs/mongoose';
-import { IUserModel, User } from '../domain/user.schema';
-import { FilterQuery } from 'mongoose';
 import { UserViewDto } from '../api/view-dto/users-view.dto';
 import { GetMeViewDto } from '../api/view-dto/get-me-view.dto';
 import { DataSource } from 'typeorm';
+import { User } from '../domain/user.schema-typeorm';
+import { InjectModel } from '@nestjs/mongoose';
+import { IUserModel } from '../domain/user.schema';
 
 @Injectable()
 export class UsersQueryRepository {
@@ -20,23 +20,23 @@ export class UsersQueryRepository {
 
     const skip = (page - 1) * pageSize;
 
-    const users = await this.dataSource.query(
+    const users = await this.dataSource.query<User[]>(
       `
         SELECT * FROM users
         WHERE login ILIKE '%' || $1 || '%'
-        AND
+        OR
         email ILIKE '%' || $2 || '%'
-        ORDER BY $3 ${sortDirection}
-        LIMIT $4 OFFSET $5
+        ORDER BY ${sortBy} ${sortDirection} 
+        LIMIT $3 OFFSET ${skip}
       `,
-      [searchLoginTerm || '', searchEmailTerm || '', sortBy, pageSize, skip],
+      [searchLoginTerm || '', searchEmailTerm || '', pageSize],
     );
 
-    const totalCountRes = await this.dataSource.query(
+    const totalCountRes = await this.dataSource.query<{ count: string }[]>(
       `
         SELECT COUNT(*) FROM users
         WHERE login ILIKE '%' || $1 || '%'
-        AND
+        OR
         email ILIKE '%' || $2 || '%'
       `,
       [searchLoginTerm || '', searchEmailTerm || ''],
@@ -55,45 +55,15 @@ export class UsersQueryRepository {
     };
   }
 
-  // async getAllUsers(query: GetUsersQueryParams): Promise<BasePaginatedView<UserViewDto>> {
-  //   const { pageNumber: page, pageSize, searchEmailTerm, searchLoginTerm } = query;
-
-  //   const { sortOptions, limit, skip } = query.processQueryParams();
-
-  //   const searchConditions: FilterQuery<User>[] = [];
-
-  //   if (searchLoginTerm) {
-  //     searchConditions.push({
-  //       login: { $regex: searchLoginTerm, $options: 'i' },
-  //     });
-  //   }
-
-  //   if (searchEmailTerm) {
-  //     searchConditions.push({
-  //       email: { $regex: searchEmailTerm, $options: 'i' },
-  //     });
-  //   }
-
-  //   const queryFilter = searchConditions.length ? { $or: searchConditions } : {};
-
-  //   const users = await this.UserModel.find(queryFilter).sort(sortOptions).skip(skip).limit(limit);
-
-  //   const totalCount = await this.UserModel.countDocuments(queryFilter);
-  //   const pagesCount = Math.ceil(totalCount / pageSize);
-
-  //   return {
-  //     pagesCount,
-  //     page,
-  //     pageSize,
-  //     totalCount,
-  //     items: users.map((u) => new UserViewDto(u)),
-  //   };
-  // }
-
   async getUserById(userId: string): Promise<UserViewDto | null> {
-    const user = await this.UserModel.findOne({ _id: userId });
-    // return user ? new UserViewDto(user) : null;
-    return user as any // TODO!!!!
+    const user = await this.dataSource.query<User[]>(
+      `
+        SELECT * FROM users
+        WHERE id = $1 
+      `,
+      [userId],
+    );
+    return user[0] ? new UserViewDto(user[0]) : null;
   }
 
   async getMe(userId: string): Promise<GetMeViewDto | null> {

@@ -1,73 +1,65 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-@Entity('users') // Maps to the 'users' table
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
-  id: number; // Auto-incrementing primary key (matches `SERIAL`)
+  id: number;
 
   @Column({
     type: 'char varying',
     // length: 10,
     // unique: true,
   })
-  login: string; // Must be unique and between 3-10 characters
+  login: string;
 
   @Column({
     type: 'char varying',
     // unique: true,
   })
-  email: string; // Must be unique and follow email pattern
+  email: string;
 
   @Column({
-    name: 'hashed_password',
     type: 'char varying',
   })
-  hashedPassword: string; // Hashed password
+  hashed_password: string;
 
   @Column({
-    name: 'email_confirmation_code',
     type: 'uuid',
     nullable: true,
   })
-  emailConfirmationCode?: string; // UUID code for email confirmation
+  email_confirmation_code: string;
 
   @Column({
-    name: 'email_confirmation_expiration',
     type: 'timestamptz',
     nullable: true,
   })
-  emailConfirmationExpiration?: Date; // Expiration timestamp for email confirmation
+  email_confirmation_exp_date: Date;
 
   @Column({
-    name: 'email_confirmed',
     type: 'boolean',
     default: true,
   })
-  emailConfirmed: boolean; // Indicates if the email is confirmed
+  email_confirmation_is_confirmed: boolean;
 
   @Column({
-    name: 'password_recovery_code',
     type: 'uuid',
     nullable: true,
   })
-  passwordRecoveryCode?: string; // UUID for password recovery
+  password_recovery_code: string;
 
   @Column({
-    name: 'password_recovery_expiration',
     type: 'timestamptz',
     nullable: true,
   })
-  passwordRecoveryExpiration?: Date; // Expiration timestamp for password recovery
+  password_recovery_exp_date: Date;
 
   @CreateDateColumn({
-    name: 'created_at',
     type: 'timestamptz',
   })
-  createdAt: Date; // Automatically set to the current timestamp
+  created_at: Date;
 
   @UpdateDateColumn({
-    name: 'updated_at',
     type: 'timestamptz',
   })
-  updatedAt: Date; // Automatically updated on record modification
+  updated_at: Date;
 }

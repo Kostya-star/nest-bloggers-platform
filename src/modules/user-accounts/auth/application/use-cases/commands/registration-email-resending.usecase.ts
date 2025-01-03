@@ -25,12 +25,14 @@ export class RegistrationEmailResendingUseCase implements ICommandHandler<Regist
       throw new BadRequestException([{ field: 'email', message: 'Email is incorrect' }]);
     }
 
+    // @ts-ignore
     if (user.emailConfirmation.isConfirmed) {
       throw new BadRequestException([{ field: 'email', message: 'Code has been applied' }]);
     }
-
+    
     const emailConfirmation: UserEmailConfirmationDto = User.generateEmailConfirmationDetails();
-
+    
+    // @ts-ignore
     await this.usersCommandsRepository.updateUserEmailConfirmation(user._id.toString(), emailConfirmation);
 
     const message = this.emailService.getEmailMessageTemplate(

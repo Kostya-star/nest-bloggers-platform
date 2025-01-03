@@ -15,10 +15,10 @@ export class CreateUserCommand {
 }
 
 @CommandHandler(CreateUserCommand)
-export class CreateUserUseCase implements ICommandHandler<CreateUserCommand, MongooseObjtId> {
+export class CreateUserUseCase implements ICommandHandler<CreateUserCommand, string> {
   constructor(private usersCommandsRepository: UsersCommandsRepository) {}
 
-  async execute(command: CreateUserCommand): Promise<MongooseObjtId> {
+  async execute(command: CreateUserCommand): Promise<string> {
     const { email, login, password } = command.user;
     const emailConfirmation = command.emailConfirmation;
 
@@ -34,13 +34,14 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand, Mon
       throw new BadRequestException([{ field, message }]);
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashed_password = await bcrypt.hash(password, 10);
     const newUser: CreateUserDto = {
       login,
       email,
-      hashedPassword,
-      // emailConfirmation and passowrdConfirmation - default values
-      emailConfirmation,
+      hashed_password,
+      email_confirmation_code: emailConfirmation?.code ?? null,
+      email_confirmation_exp_date: emailConfirmation?.expDate ?? null,
+      email_confirmation_is_confirmed: emailConfirmation?.isConfirmed ?? true,
     };
 
     return await this.usersCommandsRepository.createUser(newUser);
