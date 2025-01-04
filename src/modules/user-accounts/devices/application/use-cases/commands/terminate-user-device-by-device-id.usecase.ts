@@ -19,7 +19,7 @@ export class TerminateUserDeviceUseCase implements ICommandHandler<TerminateUser
       throw new NotFoundException('device not found');
     }
 
-    const isOwner = device!.userId.toString() === userId.toString();
+    const isOwner = device.userId.toString() === userId.toString();
     if (!isOwner) {
       throw new ForbiddenException();
     }

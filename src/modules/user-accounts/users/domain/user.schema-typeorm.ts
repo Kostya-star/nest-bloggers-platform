@@ -45,13 +45,13 @@ export class User {
     type: 'uuid',
     nullable: true,
   })
-  password_recovery_code: string;
+  password_recovery_code: string | null;
 
   @Column({
     type: 'timestamptz',
     nullable: true,
   })
-  password_recovery_exp_date: Date;
+  password_recovery_exp_date: Date | null;
 
   @CreateDateColumn({
     type: 'timestamptz',

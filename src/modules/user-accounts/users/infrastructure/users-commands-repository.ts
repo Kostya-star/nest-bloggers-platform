@@ -14,8 +14,15 @@ export class UsersCommandsRepository {
     @InjectModel(User.name) private UserModel: IUserModel,
     private dataSource: DataSource,
   ) {}
-  async findUserById(userId: string): Promise<any | null> {
-    return await this.UserModel.findOne({ _id: userId });
+  async findUserById(userId: string): Promise<User | null> {
+    const user = await this.dataSource.query<User[]>(
+      `
+        SELECT * FROM users
+        WHERE id = $1 
+      `,
+      [userId],
+    );
+    return user[0] ?? null;
   }
 
   async findUserByLogin(login: string): Promise<User | null> {
@@ -40,30 +47,67 @@ export class UsersCommandsRepository {
     return user[0] ?? null;
   }
 
-  async findUserByEmailConfirmationCode(code: string): Promise<any | null> {
-    return await this.UserModel.findOne({ 'emailConfirmation.code': code }).lean();
+  async findUserByEmailConfirmationCode(code: string): Promise<User | null> {
+    const user = await this.dataSource.query<User[]>(
+      `
+        SELECT * FROM users
+        WHERE email_confirmation_code = $1 
+      `,
+      [code],
+    );
+    return user[0] ?? null;
   }
 
-  async findUserByPasswordRecoveryCode(code: string): Promise<any | null> {
-    return await this.UserModel.findOne({ 'passwordRecovery.code': code }).lean();
+  async findUserByPasswordRecoveryCode(code: string): Promise<User | null> {
+    const user = await this.dataSource.query<User[]>(
+      `
+        SELECT * FROM users
+        WHERE password_recovery_code = $1
+      `,
+      [code],
+    );
+
+    return user[0] ?? null;
   }
 
-  async findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null> {
-    return await this.UserModel.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] }).lean();
+  async findUserByLoginOrEmail(loginOrEmail: string): Promise<User | null> {
+    const user = await this.dataSource.query<User[]>(
+      `
+        SELECT * FROM users
+        WHERE login = $1
+        OR email = $1
+      `,
+      [loginOrEmail],
+    );
+
+    return user[0] ?? null;
   }
 
-  async updateUserEmailConfirmation(userId: string, emailConfirmation: UserEmailConfirmationDto): Promise<void> {
-    await this.UserModel.updateOne({ _id: userId }, { emailConfirmation });
-  }
+  // async updateUserEmailConfirmation(userId: string, emailConfirmation: UserEmailConfirmationDto): Promise<void> {
+  //   await this.UserModel.updateOne({ _id: userId }, { emailConfirmation });
+  // }
 
-  async updateUserPasswordRecovery(userId: string, passwordRecovery: UserPasswordRecoveryDto): Promise<void> {
-    await this.UserModel.updateOne({ _id: userId }, { passwordRecovery });
-  }
+  // async updateUserPasswordRecovery(userId: string, passwordRecovery: UserPasswordRecoveryDto): Promise<void> {
+  //   await this.UserModel.updateOne({ _id: userId }, { passwordRecovery });
+  // }
 
+  // __ASK__
   async updateUser(userId: string, updates: Partial<User>): Promise<void> {
-    await this.UserModel.updateOne({ _id: userId }, updates);
+    const keys = Object.keys(updates);
+    const values = Object.values(updates);
+    const setClause = keys.map((key, index) => `${key} = $${index + 2}`).join(', ');
+
+    await this.dataSource.query(
+      `
+        UPDATE users
+        SET ${setClause}
+        WHERE id = $1
+      `,
+      [userId, ...values],
+    );
   }
 
+  // __ASK__
   async createUser({
     login,
     email,

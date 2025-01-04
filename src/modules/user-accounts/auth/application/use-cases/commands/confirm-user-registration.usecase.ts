@@ -18,19 +18,16 @@ export class ConfirmUserRegistrationUseCase implements ICommandHandler<ConfirmUs
       throw new BadRequestException([{ field: 'code', message: 'Code is incorrect' }]);
     }
 
-    if (user.emailConfirmation.isConfirmed) {
+    if (user.email_confirmation_is_confirmed) {
       throw new BadRequestException([{ field: 'code', message: 'Code has been applied' }]);
     }
 
-    const isExpired = isAfter(new Date(), user.emailConfirmation.expDate as Date);
+    const isExpired = isAfter(new Date(), user.email_confirmation_exp_date);
 
     if (isExpired) {
       throw new BadRequestException([{ field: 'code', message: 'Code expired' }]);
     }
 
-    await this.usersCommandsRepository.updateUserEmailConfirmation(user._id.toString(), {
-      ...user.emailConfirmation,
-      isConfirmed: true,
-    });
+    await this.usersCommandsRepository.updateUser(user.id.toString(), { email_confirmation_is_confirmed: true });
   }
 }

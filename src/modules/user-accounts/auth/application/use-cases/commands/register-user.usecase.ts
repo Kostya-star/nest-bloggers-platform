@@ -6,6 +6,7 @@ import { UserRegisteredConfirmationEmailEvent } from 'src/modules/notifications/
 import { EmailService } from 'src/modules/notifications/email.service';
 import { User } from 'src/modules/user-accounts/users/domain/user.schema';
 import { UserEmailConfirmationDto } from 'src/modules/user-accounts/users/dto/user-email-confirmation.dto';
+
 export class RegisterUserCommand {
   constructor(public userBody: CreateUserInputDto) {}
 }
@@ -21,9 +22,7 @@ export class RegisterUserUseCase implements ICommandHandler<RegisterUserCommand,
   async execute({ userBody }: RegisterUserCommand): Promise<void> {
     const emailConfirmation: UserEmailConfirmationDto = User.generateEmailConfirmationDetails();
 
-    await this.commandBus.execute<CreateUserCommand, MongooseObjtId>(
-      new CreateUserCommand(userBody, emailConfirmation),
-    );
+    await this.commandBus.execute<CreateUserCommand, string>(new CreateUserCommand(userBody, emailConfirmation));
 
     const message = this.emailService.getEmailMessageTemplate(
       'registration-confirmation',

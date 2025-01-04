@@ -1,4 +1,4 @@
-import { DeviceDocument } from '../../domain/device.schema';
+import { Device } from '../../domain/device.schema-typeorm';
 
 export class DeviceViewDto {
   ip: string;
@@ -6,7 +6,7 @@ export class DeviceViewDto {
   lastActiveDate: string;
   deviceId: string;
 
-  constructor(device: DeviceDocument) {
+  constructor(device: Device) {
     this.ip = device.ipAddress;
     this.title = device.userAgent;
     this.lastActiveDate = device.lastActiveDate;

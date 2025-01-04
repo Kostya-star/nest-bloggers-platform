@@ -22,18 +22,20 @@ export class UserPasswordRecoveryUseCase implements ICommandHandler<UserPassword
 
     const user = await this.usersCommandsRepository.findUserByEmail(email);
 
-    const passwordConfirmation: UserPasswordRecoveryDto = User.generatePasswordRecoveryDetails();
+    const { code, expDate }: UserPasswordRecoveryDto = User.generatePasswordRecoveryDetails();
 
     if (user) {
-      // @ts-ignore
-      await this.usersCommandsRepository.updateUserPasswordRecovery(user._id.toString(), passwordConfirmation);
+      await this.usersCommandsRepository.updateUser(user.id.toString(), {
+        password_recovery_code: code,
+        password_recovery_exp_date: expDate,
+      });
     } else return;
 
     const message = this.emailService.getEmailMessageTemplate(
       'password-recovery',
       'Recover password',
       'recoveryCode',
-      passwordConfirmation.code!,
+      code,
     );
 
     this.eventsBus.publish(

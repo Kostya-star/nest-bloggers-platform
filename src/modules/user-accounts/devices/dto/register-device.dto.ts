@@ -1,8 +1,6 @@
-import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
-
 export class RegisterDeviceDto {
   deviceId: string;
-  userId: MongooseObjtId;
+  userId: number;
   issuedAt: string;
   expiresAt: string;
   userAgent: string;

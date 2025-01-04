@@ -3,8 +3,8 @@ import { NewPasswordInputDto } from '../../../api/input-dto/new-password-input.d
 import { UsersCommandsRepository } from 'src/modules/user-accounts/users/infrastructure/users-commands-repository';
 import { BadRequestException } from '@nestjs/common';
 import { isAfter } from 'date-fns';
-import { User } from 'src/modules/user-accounts/users/domain/user.schema';
 import bcrypt from 'bcrypt';
+import { User } from 'src/modules/user-accounts/users/domain/user.schema-typeorm';
 
 export class UserNewPasswordCommand {
   constructor(public body: NewPasswordInputDto) {}
@@ -22,7 +22,7 @@ export class UserNewPasswordUseCase implements ICommandHandler<UserNewPasswordCo
       throw new BadRequestException([{ field: 'recoveryCode', message: 'Code is incorrect' }]);
     }
 
-    const isExpired = isAfter(new Date(), user.passwordRecovery.expDate!);
+    const isExpired = isAfter(new Date(), user.password_recovery_exp_date!);
 
     if (isExpired) {
       throw new BadRequestException([{ field: 'recoveryCode', message: 'Code has expired' }]);
@@ -31,10 +31,11 @@ export class UserNewPasswordUseCase implements ICommandHandler<UserNewPasswordCo
     const newHashedPassword = await bcrypt.hash(newPassword, 10);
 
     const updates: Partial<User> = {
-      hashedPassword: newHashedPassword,
-      passwordRecovery: { code: null, expDate: null },
+      hashed_password: newHashedPassword,
+      password_recovery_code: null,
+      password_recovery_exp_date: null,
     };
 
-    await this.usersCommandsRepository.updateUser(user._id.toString(), updates);
+    await this.usersCommandsRepository.updateUser(user.id.toString(), updates);
   }
 }

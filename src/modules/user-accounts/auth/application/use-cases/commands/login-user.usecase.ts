@@ -42,7 +42,7 @@ export class LoginUserUseCase
       throw new UnauthorizedException();
     }
 
-    const isPasswordValid = await bcrypt.compare(creds.password, user.hashedPassword!);
+    const isPasswordValid = await bcrypt.compare(creds.password, user.hashed_password);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException();
@@ -50,8 +50,8 @@ export class LoginUserUseCase
 
     const deviceId = uuidv4();
 
-    const accessToken = this.accessTokenContext.sign({ userId: user._id.toString() });
-    const refreshToken = this.refreshTokenContext.sign({ userId: user._id.toString(), deviceId });
+    const accessToken = this.accessTokenContext.sign({ userId: user.id.toString() });
+    const refreshToken = this.refreshTokenContext.sign({ userId: user.id.toString(), deviceId });
 
     const { iat, exp } = this.refreshTokenContext.decode(refreshToken) as RefreshJwtContext;
 
@@ -60,7 +60,7 @@ export class LoginUserUseCase
 
     await this.devicesCommandsRepository.registerDevice({
       deviceId,
-      userId: user._id,
+      userId: user.id,
       issuedAt: iatISO,
       expiresAt: expISO,
       userAgent,
