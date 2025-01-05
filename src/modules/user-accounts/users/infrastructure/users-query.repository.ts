@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 import { User } from '../domain/user.schema-typeorm';
 import { InjectModel } from '@nestjs/mongoose';
 import { IUserModel } from '../domain/user.schema';
+import { UsersSortBy } from '../api/input-dto/users-sort-by';
 
 @Injectable()
 export class UsersQueryRepository {
@@ -26,7 +27,7 @@ export class UsersQueryRepository {
         WHERE login ILIKE '%' || $1 || '%'
         OR
         email ILIKE '%' || $2 || '%'
-        ORDER BY ${sortBy} ${sortDirection} 
+        ORDER BY ${sortBy} ${sortDirection}
         LIMIT $3 OFFSET ${skip}
       `,
       [searchLoginTerm || '', searchEmailTerm || '', pageSize],
@@ -74,6 +75,6 @@ export class UsersQueryRepository {
       `,
       [userId],
     );
-    return user[0] ? new GetMeViewDto(user) : null;
+    return user[0] ? new GetMeViewDto(user[0]) : null;
   }
 }

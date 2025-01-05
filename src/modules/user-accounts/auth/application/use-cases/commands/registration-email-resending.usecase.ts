@@ -1,7 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { UsersCommandsRepository } from 'src/modules/user-accounts/users/infrastructure/users-commands-repository';
-import { UserConfirmationEmailResendEvent } from 'src/modules/notifications/events/user-confirmation-email-resend.event';
 import { EmailService } from 'src/modules/notifications/email.service';
 import { User } from 'src/modules/user-accounts/users/domain/user.schema';
 import { UserEmailConfirmationDto } from 'src/modules/user-accounts/users/dto/user-email-confirmation.dto';
@@ -44,13 +43,13 @@ export class RegistrationEmailResendingUseCase implements ICommandHandler<Regist
       code,
     );
 
-    this.eventBus.publish(
-      new UserConfirmationEmailResendEvent(
-        "'Petr' kostya.danilov.99@mail.ru",
-        user.email,
-        'Registration Confirmation',
-        message,
-      ),
+    await this.emailService.sendMail(
+      "'Petr' kostya.danilov.99@mail.ru",
+      user.email,
+      'Registration Confirmation',
+      message,
     );
+
+    // await new Promise((resolve) => setTimeout(resolve, 500));
   }
 }

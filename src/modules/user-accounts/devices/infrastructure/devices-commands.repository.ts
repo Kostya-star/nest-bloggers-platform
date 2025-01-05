@@ -25,7 +25,6 @@ export class DevicesCommandsRepository {
     return device[0] ?? null;
   }
 
-  // __ASK__
   async registerDevice({
     deviceId,
     userId,
@@ -37,18 +36,18 @@ export class DevicesCommandsRepository {
   }: RegisterDeviceDto): Promise<void> {
     await this.dataSource.query<Device[]>(
       `
-            INSERT INTO devices (
-              "deviceId",
-              "userId",
-              "issuedAt",
-              "expiresAt",
-              "userAgent",
-              "ipAddress",
-              "lastActiveDate"
-            )
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            RETURNING *;
-          `,
+        INSERT INTO devices (
+          "deviceId",
+          "userId",
+          "issuedAt",
+          "expiresAt",
+          "userAgent",
+          "ipAddress",
+          "lastActiveDate"
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *;
+      `,
       [deviceId, userId, issuedAt, expiresAt, userAgent, ipAddress, lastActiveDate],
     );
 

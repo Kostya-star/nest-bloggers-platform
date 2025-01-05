@@ -91,7 +91,6 @@ export class UsersCommandsRepository {
   //   await this.UserModel.updateOne({ _id: userId }, { passwordRecovery });
   // }
 
-  // __ASK__
   async updateUser(userId: string, updates: Partial<User>): Promise<void> {
     const keys = Object.keys(updates);
     const values = Object.values(updates);
@@ -107,7 +106,6 @@ export class UsersCommandsRepository {
     );
   }
 
-  // __ASK__
   async createUser({
     login,
     email,

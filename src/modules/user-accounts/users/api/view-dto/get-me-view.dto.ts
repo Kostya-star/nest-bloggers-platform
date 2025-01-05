@@ -1,12 +1,12 @@
-import { IUserDocument } from '../../domain/user.schema';
+import { User } from '../../domain/user.schema-typeorm';
 
 export class GetMeViewDto {
   userId: string;
   login: string;
   email: string;
 
-  constructor(user: IUserDocument) {
-    this.userId = user._id.toString();
+  constructor(user: User) {
+    this.userId = user.id.toString();
     this.login = user.login;
     this.email = user.email;
   }
