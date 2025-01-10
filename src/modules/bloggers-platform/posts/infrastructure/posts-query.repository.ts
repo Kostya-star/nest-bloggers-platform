@@ -6,12 +6,14 @@ import { getLikesInfo } from '../../utils/get-likes-info';
 import { PostsViewDto } from '../api/view-dto/posts-view-dto';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 import { GetPostsQueryParams } from '../api/input-dto/get-posts-query-params';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class PostsQueryRepository {
   constructor(
     @InjectModel(Post.name) private PostModel: IPostModel,
     @InjectModel(Like.name) private LikeModel: ILikeModel,
+    private dataSource: DataSource,
   ) {}
 
   async getAllPosts(
@@ -23,7 +25,13 @@ export class PostsQueryRepository {
     const { sortOptions, limit, skip } = query.processQueryParams();
     const find = blogId ? { blogId } : {};
 
-    const posts = await this.PostModel.find(find).sort(sortOptions).skip(skip).limit(limit).lean();
+    // const posts = await this.PostModel.find(find).sort(sortOptions).skip(skip).limit(limit).lean();
+    const posts = await this.dataSource.query(
+      `
+        SELECT * FROM posts
+        
+      `
+    );
 
     const totalCount = await this.PostModel.countDocuments(find);
     const pagesCount = Math.ceil(totalCount / pageSize);

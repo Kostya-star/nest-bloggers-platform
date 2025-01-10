@@ -46,7 +46,7 @@ export class BlogsController {
   }
 
   @Get(':blogId')
-  async getBlogById(@Param('blogId', ObjectIdValidationPipe) blogId: string): Promise<BlogsViewDto> {
+  async getBlogById(@Param('blogId') blogId: string): Promise<BlogsViewDto> {
     const blog = await this.blogsQueryRepository.getBlogById(blogId);
 
     if (!blog) {
@@ -122,7 +122,7 @@ export class BlogsController {
   @Get(':blogId/posts')
   @UseGuards(JwtAuthOptionalGuard)
   async getPostsForBlog(
-    @Param('blogId', ObjectIdValidationPipe) blogId: string,
+    @Param('blogId') blogId: string,
     @Query() query: GetPostsQueryParams,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<BasePaginatedView<PostsViewDto>> {

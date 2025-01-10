@@ -1,4 +1,4 @@
-import { IBlogDocument } from '../../domain/blogs.schema';
+import { Blog } from '../../domain/blogs.schema-typeorm';
 
 export class BlogsViewDto {
   id: string;
@@ -8,12 +8,12 @@ export class BlogsViewDto {
   createdAt: Date;
   isMembership: boolean;
 
-  constructor(blog: IBlogDocument) {
-    this.id = blog._id.toString();
+  constructor(blog: Blog) {
+    this.id = blog.id.toString();
     this.name = blog.name;
     this.description = blog.description;
-    this.websiteUrl = blog.websiteUrl;
-    this.createdAt = blog.createdAt;
-    this.isMembership = blog.isMembership;
+    this.websiteUrl = blog.website_url;
+    this.createdAt = blog.created_at;
+    this.isMembership = blog.is_membership;
   }
 }
