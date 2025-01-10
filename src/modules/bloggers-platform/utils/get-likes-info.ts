@@ -1,5 +1,5 @@
 import { LikeStatus } from '../likes/const/like-status';
-import { Like } from '../likes/domain/likes.schema';
+import { Like } from '../likes/domain/likes.schema-typeorm';
 
 interface ILikesInfoReturned {
   likesCount: number;
@@ -12,7 +12,7 @@ export function getLikesInfo(allLikes: Like[], currentUserId: string): ILikesInf
   const likes = allLikes.filter((like) => like.status === LikeStatus.Like);
   const dislikesCount = allLikes.filter((like) => like.status === LikeStatus.Dislike).length;
   const myStatus =
-    allLikes.find((like) => currentUserId.toString() === like.userId.toString())?.status ?? LikeStatus.None;
+    allLikes.find((like) => currentUserId.toString() === like.user_id.toString())?.status ?? LikeStatus.None;
   const newestLikes = likes.slice(0, 3);
 
   return { likesCount: likes.length, dislikesCount, myStatus, newestLikes };

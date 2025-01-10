@@ -1,49 +1,81 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { IPostModel, Post } from '../domain/posts.schema';
-import { ILikeModel, Like } from '../../likes/domain/likes.schema';
 import { getLikesInfo } from '../../utils/get-likes-info';
 import { PostsViewDto } from '../api/view-dto/posts-view-dto';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 import { GetPostsQueryParams } from '../api/input-dto/get-posts-query-params';
 import { DataSource } from 'typeorm';
+import { Post } from '../domain/posts.schema-typeorm';
+import { Like } from '../../likes/domain/likes.schema-typeorm';
 
 @Injectable()
 export class PostsQueryRepository {
-  constructor(
-    @InjectModel(Post.name) private PostModel: IPostModel,
-    @InjectModel(Like.name) private LikeModel: ILikeModel,
-    private dataSource: DataSource,
-  ) {}
+  constructor(private dataSource: DataSource) {}
 
   async getAllPosts(
     query: GetPostsQueryParams,
     currentUserId: string | undefined = '',
     blogId?: string,
   ): Promise<BasePaginatedView<PostsViewDto>> {
-    const { pageNumber: page, pageSize } = query;
-    const { sortOptions, limit, skip } = query.processQueryParams();
-    const find = blogId ? { blogId } : {};
+    const { pageNumber: page, pageSize, sortBy, sortDirection } = query;
 
-    // const posts = await this.PostModel.find(find).sort(sortOptions).skip(skip).limit(limit).lean();
-    const posts = await this.dataSource.query(
-      `
-        SELECT * FROM posts
-        
-      `
-    );
+    const offset = (page - 1) * pageSize;
 
-    const totalCount = await this.PostModel.countDocuments(find);
+    let posts;
+    // __ASK__
+    if (blogId) {
+      posts = await this.dataSource.query<Post[]>(
+        `
+          SELECT * FROM posts
+          WHERE blog_id = $1
+          ORDER BY ${sortBy} ${sortDirection}
+          LIMIT $2 OFFSET $3
+        `,
+        [blogId, pageSize, offset],
+      );
+    } else {
+      posts = await this.dataSource.query<Post[]>(
+        `
+          SELECT * FROM posts
+          ORDER BY ${sortBy} ${sortDirection}
+          LIMIT $1 OFFSET $2
+        `,
+        [pageSize, offset],
+      );
+    }
+
+    let totalCountRes;
+    if (blogId) {
+      totalCountRes = await this.dataSource.query<{ count: string }[]>(
+        `
+        SELECT COUNT(*) FROM posts
+        WHERE blog_id = $1
+        `,
+        [blogId],
+      );
+    } else {
+      totalCountRes = await this.dataSource.query<{ count: string }[]>(
+        `
+        SELECT COUNT(*) FROM posts
+        `,
+      );
+    }
+
+    const totalCount = parseInt(totalCountRes[0].count);
     const pagesCount = Math.ceil(totalCount / pageSize);
 
-    const postIds = posts.map((post) => post._id.toString());
+    const postIds = posts.map((post) => post.id.toString());
 
-    const likes = await this.LikeModel.find({ likedEntityId: { $in: postIds } })
-      .sort({ updatedAt: -1 })
-      .lean();
+    const likes = await this.dataSource.query<Like[]>(
+      `
+        SELECT * FROM likes
+        WHERE liked_entity_id = ANY($1)
+        ORDER BY updated_at DESC
+      `,
+      [postIds],
+    );
 
     const postsLikesInfo = postIds.map((postId) => {
-      const allPostLikes = likes.filter((like) => like.likedEntityId.toString() === postId.toString());
+      const allPostLikes = likes.filter((like) => like.liked_entity_id.toString() === postId.toString());
       const likesInfo = getLikesInfo(allPostLikes, currentUserId);
 
       return { postId, ...likesInfo };
@@ -51,7 +83,7 @@ export class PostsQueryRepository {
 
     const finalItems = posts.map((basePost) => {
       const { likesCount, dislikesCount, myStatus, newestLikes } = postsLikesInfo.find(
-        (post) => post.postId.toString() === basePost._id.toString(),
+        (post) => post.postId.toString() === basePost.id.toString(),
       )!;
       return {
         ...basePost,
@@ -69,10 +101,26 @@ export class PostsQueryRepository {
   }
 
   async getPostById(postId: string, currentUserId: string | undefined = ''): Promise<PostsViewDto | null> {
-    const post = await this.PostModel.findOne({ _id: postId }).lean();
+    const _post = await this.dataSource.query<Post[]>(
+      `
+        SELECT * FROM posts
+        WHERE id = $1 
+      `,
+      [postId],
+    );
+
+    const post = _post[0];
+
     if (!post) return null;
 
-    const allLikes = await this.LikeModel.find({ likedEntityId: postId }).sort({ updatedAt: -1 }).lean();
+    const allLikes = await this.dataSource.query<Like[]>(
+      `
+        SELECT * FROM likes
+        WHERE liked_entity_id = $1
+        ORDER BY updated_at DESC
+      `,
+      [postId],
+    );
 
     const extendedLikesInfo = getLikesInfo(allLikes, currentUserId);
 

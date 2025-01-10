@@ -35,6 +35,7 @@ export class CommentsQueryRepository {
 
     const commentsLikesInfo = commentIds.map((commentId) => {
       const commentLikes = likes.filter((like) => like.likedEntityId.toString() === commentId);
+      // @ts-ignore
       const likesInfo = getLikesInfo(commentLikes, currentUserId);
 
       return { commentId, ...likesInfo };
@@ -67,6 +68,7 @@ export class CommentsQueryRepository {
       likedEntityId: commentId,
     }).lean();
 
+    // @ts-ignore
     const { newestLikes, ...likesInfo } = getLikesInfo(commentLikes, currentUserId);
 
     return new CommentsViewDto({ ...comment, likesInfo });

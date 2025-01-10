@@ -1,7 +1,6 @@
-import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
-import { Post } from '../../domain/posts.schema';
-import { Like } from 'src/modules/bloggers-platform/likes/domain/likes.schema';
 import { LikesBaseViewDto } from 'src/modules/bloggers-platform/likes/api/likes-view.dto';
+import { Like } from 'src/modules/bloggers-platform/likes/domain/likes.schema-typeorm';
+import { Post } from '../../domain/posts.schema-typeorm';
 
 interface IExtendedLikesInfoView {
   extendedLikesInfo: LikesBaseViewDto & {
@@ -10,7 +9,7 @@ interface IExtendedLikesInfoView {
 }
 
 interface IPostDBWIthExtendedLikesInfo extends Post, IExtendedLikesInfoView {
-  _id: MongooseObjtId;
+  // _id: MongooseObjtId;
 }
 
 export class PostsViewDto {
@@ -30,21 +29,21 @@ export class PostsViewDto {
   };
 
   constructor(post: IPostDBWIthExtendedLikesInfo) {
-    this.id = post._id.toString();
+    this.id = post.id.toString();
     this.title = post.title;
     this.content = post.content;
-    this.shortDescription = post.shortDescription;
-    this.blogId = post.blogId.toString();
-    this.blogName = post.blogName;
-    this.createdAt = post.createdAt;
+    this.shortDescription = post.short_description;
+    this.blogId = post.blog_id.toString();
+    this.blogName = post.blog_name;
+    this.createdAt = post.created_at;
     this.extendedLikesInfo = {
       likesCount: post.extendedLikesInfo.likesCount,
       dislikesCount: post.extendedLikesInfo.dislikesCount,
       myStatus: post.extendedLikesInfo.myStatus,
       newestLikes: post.extendedLikesInfo.newestLikes.map((like) => ({
-        addedAt: like.updatedAt,
-        userId: like.userId.toString(),
-        login: like.userLogin,
+        addedAt: like.updated_at,
+        userId: like.user_id.toString(),
+        login: like.user_login,
       })),
     };
   }

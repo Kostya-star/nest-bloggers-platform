@@ -59,7 +59,7 @@ export class PostsController {
   @Get(':postId')
   @UseGuards(JwtAuthOptionalGuard)
   async getPostById(
-    @Param('postId', ObjectIdValidationPipe) postId: string,
+    @Param('postId') postId: string,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<PostsViewDto> {
     const post = await this.postsQueryRepository.getPostById(postId, user?.userId);
