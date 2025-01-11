@@ -1,6 +1,7 @@
 import { IsNotEmpty, Matches, MaxLength } from 'class-validator';
 import { CheckIsStringAndTrim } from 'src/core/decorators/check-is-string-and-trim.decorator';
 import { blogDescriptionConstraints, blogNameConstraints, blogWebsiteUrlConstraints } from '../../domain/blogs.schema';
+import { Expose } from 'class-transformer';
 
 export class CreateBlogDto {
   @CheckIsStringAndTrim()

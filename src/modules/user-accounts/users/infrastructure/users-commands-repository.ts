@@ -83,14 +83,6 @@ export class UsersCommandsRepository {
     return user[0] ?? null;
   }
 
-  // async updateUserEmailConfirmation(userId: string, emailConfirmation: UserEmailConfirmationDto): Promise<void> {
-  //   await this.UserModel.updateOne({ _id: userId }, { emailConfirmation });
-  // }
-
-  // async updateUserPasswordRecovery(userId: string, passwordRecovery: UserPasswordRecoveryDto): Promise<void> {
-  //   await this.UserModel.updateOne({ _id: userId }, { passwordRecovery });
-  // }
-
   async updateUser(userId: string, updates: Partial<User>): Promise<void> {
     const keys = Object.keys(updates);
     const values = Object.values(updates);

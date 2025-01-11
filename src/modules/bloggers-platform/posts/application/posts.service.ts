@@ -13,7 +13,7 @@ export class PostsService {
     private blogsCommandsRepository: BlogsCommandsRepository,
   ) {}
 
-  async createPost(post: CreatePostInputDto): Promise<MongooseObjtId> {
+  async createPost(post: CreatePostInputDto): Promise<string> {
     const blog = await this.blogsCommandsRepository.getBlogById(post.blogId);
 
     // this only checks for blog presence via /blod/:blogId/posts.

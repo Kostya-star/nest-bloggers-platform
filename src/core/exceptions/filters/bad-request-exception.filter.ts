@@ -14,6 +14,8 @@ export class BadRequestExceptionFilter implements ExceptionFilter {
     const errorsMessages =
       exceptionResponse instanceof Object && 'message' in exceptionResponse ? exceptionResponse['message'] : [];
 
+    console.error({ errorsMessages });
+
     response.status(status).json({ errorsMessages });
   }
 }

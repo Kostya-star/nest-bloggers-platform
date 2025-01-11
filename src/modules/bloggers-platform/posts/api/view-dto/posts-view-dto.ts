@@ -1,16 +1,14 @@
 import { LikesBaseViewDto } from 'src/modules/bloggers-platform/likes/api/likes-view.dto';
-import { Like } from 'src/modules/bloggers-platform/likes/domain/likes.schema-typeorm';
 import { Post } from '../../domain/posts.schema-typeorm';
+import { JoinedLike } from '../../dto/joined-like';
 
 interface IExtendedLikesInfoView {
   extendedLikesInfo: LikesBaseViewDto & {
-    newestLikes: Like[];
+    newestLikes: JoinedLike[];
   };
 }
 
-interface IPostDBWIthExtendedLikesInfo extends Post, IExtendedLikesInfoView {
-  // _id: MongooseObjtId;
-}
+interface IPostDBWIthExtendedLikesInfo extends Post, IExtendedLikesInfoView {}
 
 export class PostsViewDto {
   id: string;

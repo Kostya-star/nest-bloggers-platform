@@ -8,13 +8,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
 
-    response.status(status).json({
+    const error = {
       timestamp: new Date().toISOString(),
       path: request.url,
       message: (exception as any).message || 'Internal server error',
       status,
       // code: exception.code || 'UNKNOWN_ERROR',
       // extensions: ,
-    });
+    };
+
+    console.error(error);
+
+    response.status(status).json(error);
   }
 }

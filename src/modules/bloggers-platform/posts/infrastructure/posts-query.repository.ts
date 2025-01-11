@@ -6,6 +6,8 @@ import { GetPostsQueryParams } from '../api/input-dto/get-posts-query-params';
 import { DataSource } from 'typeorm';
 import { Post } from '../domain/posts.schema-typeorm';
 import { Like } from '../../likes/domain/likes.schema-typeorm';
+import { JoinedLike } from '../dto/joined-like';
+import { PostsSortBy } from '../api/input-dto/posts-sort-by';
 
 @Injectable()
 export class PostsQueryRepository {
@@ -20,56 +22,41 @@ export class PostsQueryRepository {
 
     const offset = (page - 1) * pageSize;
 
-    let posts;
     // __ASK__
-    if (blogId) {
-      posts = await this.dataSource.query<Post[]>(
-        `
-          SELECT * FROM posts
-          WHERE blog_id = $1
-          ORDER BY ${sortBy} ${sortDirection}
-          LIMIT $2 OFFSET $3
-        `,
-        [blogId, pageSize, offset],
-      );
-    } else {
-      posts = await this.dataSource.query<Post[]>(
-        `
-          SELECT * FROM posts
-          ORDER BY ${sortBy} ${sortDirection}
-          LIMIT $1 OFFSET $2
-        `,
-        [pageSize, offset],
-      );
-    }
+    // @ts-ignore
+    const safeSortBy = sortBy === 'blogName' ? PostsSortBy.BlogName : sortBy
+    const postsParams = blogId ? [pageSize, offset, blogId] : [pageSize, offset];
+    const posts = await this.dataSource.query<Post[]>(
+      `
+        SELECT * FROM posts
+        ${blogId ? 'WHERE blog_id = $3' : ''}
+        ORDER BY ${safeSortBy} ${sortDirection}
+        LIMIT $1 OFFSET $2
+      `,
+      postsParams,
+    );
 
-    let totalCountRes;
-    if (blogId) {
-      totalCountRes = await this.dataSource.query<{ count: string }[]>(
-        `
-        SELECT COUNT(*) FROM posts
-        WHERE blog_id = $1
-        `,
-        [blogId],
-      );
-    } else {
-      totalCountRes = await this.dataSource.query<{ count: string }[]>(
-        `
-        SELECT COUNT(*) FROM posts
-        `,
-      );
-    }
+    const countParams = blogId ? [blogId] : [];
+    const totalCountRes = await this.dataSource.query<{ count: string }[]>(
+      `
+      SELECT COUNT(*) FROM posts
+      ${blogId ? 'WHERE blog_id = $1' : ''}
+      `,
+      countParams,
+    );
 
     const totalCount = parseInt(totalCountRes[0].count);
     const pagesCount = Math.ceil(totalCount / pageSize);
 
     const postIds = posts.map((post) => post.id.toString());
 
-    const likes = await this.dataSource.query<Like[]>(
+    const likes = await this.dataSource.query<JoinedLike[]>(
       `
-        SELECT * FROM likes
+        SELECT l.*, u.login as user_login FROM likes l
+        LEFT JOIN users u
+        ON l.user_id = u.id
         WHERE liked_entity_id = ANY($1)
-        ORDER BY updated_at DESC
+        ORDER BY l.updated_at DESC
       `,
       [postIds],
     );
@@ -113,9 +100,11 @@ export class PostsQueryRepository {
 
     if (!post) return null;
 
-    const allLikes = await this.dataSource.query<Like[]>(
+    const allLikes = await this.dataSource.query<JoinedLike[]>(
       `
-        SELECT * FROM likes
+        SELECT l.*, u.login as user_login FROM likes l
+        LEFT JOIN users u
+        ON l.user_id = u.id
         WHERE liked_entity_id = $1
         ORDER BY updated_at DESC
       `,
