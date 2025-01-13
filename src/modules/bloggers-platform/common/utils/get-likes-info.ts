@@ -1,5 +1,5 @@
-import { LikeStatus } from '../likes/const/like-status';
-import { JoinedLike } from '../posts/dto/joined-like';
+import { LikeStatus } from '../../likes/const/like-status';
+import { JoinedLike } from '../dto/joined-like';
 
 interface ILikesInfoReturned {
   likesCount: number;

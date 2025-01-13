@@ -117,7 +117,7 @@ export class PostsController {
   @Post(':postId/comments')
   @UseGuards(AuthGuard('jwt-auth-guard'))
   async createCommentForPost(
-    @Param('postId', ObjectIdValidationPipe) postId: string,
+    @Param('postId') postId: string,
     @Body() commBody: CreatePostCommentInputDto,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<CommentsViewDto> {
@@ -127,10 +127,10 @@ export class PostsController {
       throw new NotFoundException('post not found');
     }
 
-    const commentId = await this.commandBus.execute<CreatePostCommentCommand, MongooseObjtId>(
+    const commentId = await this.commandBus.execute<CreatePostCommentCommand, string>(
       new CreatePostCommentCommand(postId, commBody.content, user.userId),
     );
-    const comment = await this.commentsQueryRepository.getCommentById(commentId.toString(), user.userId);
+    const comment = await this.commentsQueryRepository.getCommentById(commentId, user.userId);
 
     if (!comment) {
       throw new NotFoundException('comment not found');
@@ -142,7 +142,7 @@ export class PostsController {
   @Get(':postId/comments')
   @UseGuards(JwtAuthOptionalGuard)
   async getCommentsOfPost(
-    @Param('postId', ObjectIdValidationPipe) postId: string,
+    @Param('postId') postId: string,
     @Query() query: GetCommentsQueryParams,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<BasePaginatedView<CommentsViewDto>> {
@@ -159,7 +159,7 @@ export class PostsController {
   @UseGuards(AuthGuard('jwt-auth-guard'))
   @HttpCode(HttpStatus.NO_CONTENT)
   async likePost(
-    @Param('postId', ObjectIdValidationPipe) postId: string,
+    @Param('postId') postId: string,
     @Body() body: LikePostStatusInputDto,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<void> {
@@ -169,14 +169,6 @@ export class PostsController {
       throw new NotFoundException('post not found');
     }
 
-    const userInfo = await this.usersQueryRepository.getUserById(user.userId);
-
-    if (!userInfo) {
-      throw new NotFoundException('user not found');
-    }
-
-    await this.commandBus.execute<HandleLikeCommand, void>(
-      new HandleLikeCommand(postId, body.likeStatus, user.userId, userInfo.login),
-    );
+    await this.commandBus.execute<HandleLikeCommand, void>(new HandleLikeCommand(postId, body.likeStatus, user.userId));
   }
 }

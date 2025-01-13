@@ -1,13 +1,13 @@
-import { Comment } from '../../domain/comments.schema';
-import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { LikesBaseViewDto } from 'src/modules/bloggers-platform/likes/api/likes-view.dto';
+import { Comment } from '../../domain/comments.schema-typeorm';
+import { JoinedComment } from '../../dto/joined-comment';
 
 interface ILikesInfoView {
   likesInfo: LikesBaseViewDto;
 }
 
-interface ICommentDBWIthLikesInfo extends Comment, ILikesInfoView {
-  _id: MongooseObjtId;
+interface ICommentDBWIthLikesInfo extends JoinedComment, ILikesInfoView {
+  // _id: MongooseObjtId;
 }
 
 export class CommentsViewDto {
@@ -21,11 +21,11 @@ export class CommentsViewDto {
   createdAt: Date;
 
   constructor(comment: ICommentDBWIthLikesInfo) {
-    this.id = comment._id.toString();
+    this.id = comment.id.toString();
     this.content = comment.content;
     this.commentatorInfo = {
-      userId: comment.commentatorInfo.userId.toString(),
-      userLogin: comment.commentatorInfo.userLogin,
+      userId: comment.userId.toString(),
+      userLogin: comment.user_login,
     };
     this.likesInfo = {
       likesCount: comment.likesInfo.likesCount,

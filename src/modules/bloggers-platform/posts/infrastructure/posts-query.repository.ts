@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { getLikesInfo } from '../../utils/get-likes-info';
+import { getLikesInfo } from '../../common/utils/get-likes-info';
 import { PostsViewDto } from '../api/view-dto/posts-view-dto';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 import { GetPostsQueryParams } from '../api/input-dto/get-posts-query-params';
 import { DataSource } from 'typeorm';
 import { Post } from '../domain/posts.schema-typeorm';
 import { Like } from '../../likes/domain/likes.schema-typeorm';
-import { JoinedLike } from '../dto/joined-like';
+import { JoinedLike } from '../../common/dto/joined-like';
 import { PostsSortBy } from '../api/input-dto/posts-sort-by';
 
 @Injectable()
@@ -22,9 +22,8 @@ export class PostsQueryRepository {
 
     const offset = (page - 1) * pageSize;
 
-    // __ASK__
     // @ts-ignore
-    const safeSortBy = sortBy === 'blogName' ? PostsSortBy.BlogName : sortBy
+    const safeSortBy = sortBy === 'blogName' ? PostsSortBy.BlogName : sortBy;
     const postsParams = blogId ? [pageSize, offset, blogId] : [pageSize, offset];
     const posts = await this.dataSource.query<Post[]>(
       `

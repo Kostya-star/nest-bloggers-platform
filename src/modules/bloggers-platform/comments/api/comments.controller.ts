@@ -109,14 +109,8 @@ export class CommnetsController {
       throw new NotFoundException('comment not found');
     }
 
-    const userInfo = await this.usersQueryRepository.getUserById(user.userId);
-
-    if (!userInfo) {
-      throw new NotFoundException('user not found');
-    }
-
     await this.commandBus.execute<HandleLikeCommand, void>(
-      new HandleLikeCommand(commentId, body.likeStatus, user.userId, userInfo.login),
+      new HandleLikeCommand(commentId, body.likeStatus, user.userId),
     );
   }
 }

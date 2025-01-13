@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { UpdatePostDto } from '../api/input-dto/update-post.dto';
 
 export const postTitleConstraints = {
   maxLength: 30,

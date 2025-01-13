@@ -1,49 +1,74 @@
 import { Injectable } from '@nestjs/common';
 import { GetCommentsQueryParams } from '../api/input-dto/get-comments-query-params';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, ICommentModel } from '../domain/comments.schema';
-import { ILikeModel, Like } from '../../likes/domain/likes.schema';
-import { getLikesInfo } from '../../utils/get-likes-info';
+import { getLikesInfo } from '../../common/utils/get-likes-info';
 import { CommentsViewDto } from '../api/view-dto/comments-view.dto';
+import { DataSource } from 'typeorm';
+import { JoinedLike } from '../../common/dto/joined-like';
+import { JoinedComment } from '../dto/joined-comment';
 
 @Injectable()
 export class CommentsQueryRepository {
-  constructor(
-    @InjectModel(Comment.name) private CommentModel: ICommentModel,
-    @InjectModel(Like.name) private LikeModel: ILikeModel,
-  ) {}
+  constructor(private dataSource: DataSource) {}
 
   async getCommentsForPost(
     query: GetCommentsQueryParams,
     postId: string,
     currentUserId: string | undefined = '',
   ): Promise<BasePaginatedView<CommentsViewDto>> {
-    const { pageNumber: page, pageSize } = query;
-    const { sortOptions, limit, skip } = query.processQueryParams();
+    const { pageNumber: page, pageSize, sortBy, sortDirection } = query;
 
-    const items = await this.CommentModel.find({ postId }).sort(sortOptions).skip(skip).limit(limit).lean();
+    const offset = (page - 1) * pageSize;
 
-    const totalCount = await this.CommentModel.countDocuments({ postId });
-    const pagesCount = Math.ceil(totalCount / query.pageSize);
+    const comments = await this.dataSource.query<(JoinedComment & { count: string })[]>(
+      `
+        SELECT c.*, u.login as user_login, 
+        (SELECT COUNT(*) FROM comments WHERE "postId" = $1) AS count
+        FROM comments c
 
-    const commentIds = items.map((comm) => comm._id.toString());
+        LEFT JOIN users u
+        ON c."userId" = u.id
+        WHERE c."postId" = $1
+        ORDER BY c."${sortBy}" ${sortDirection}
+        LIMIT $2 OFFSET $3
+        `,
+      [postId, pageSize, offset],
+    );
 
-    const likes = await this.LikeModel.find({
-      likedEntityId: { $in: commentIds },
-    }).lean();
+    // const totalCountRes = await this.dataSource.query<{ count: string }[]>(
+    //   `
+    //     SELECT COUNT(*) FROM comments
+    //     WHERE "postId" = $1
+    //   `,
+    //   [postId],
+    // );
+
+    const totalCount = parseInt(comments[0].count);
+
+    const pagesCount = Math.ceil(totalCount / pageSize);
+
+    const commentIds = comments.map((comm) => comm.id);
+
+    const likes = await this.dataSource.query<JoinedLike[]>(
+      `
+        SELECT l.*, u.login as user_login FROM likes l
+        LEFT JOIN users u
+        ON l.user_id = u.id
+        WHERE liked_entity_id = ANY($1)
+      `,
+      [commentIds],
+    );
 
     const commentsLikesInfo = commentIds.map((commentId) => {
-      const commentLikes = likes.filter((like) => like.likedEntityId.toString() === commentId);
-      // @ts-ignore
+      const commentLikes = likes.filter((like) => like.liked_entity_id.toString() === commentId);
       const likesInfo = getLikesInfo(commentLikes, currentUserId);
 
       return { commentId, ...likesInfo };
     });
 
-    const finalItems = items.map((baseComm) => {
+    const finalItems = comments.map((baseComm) => {
       const { likesCount, dislikesCount, myStatus } = commentsLikesInfo.find(
-        (comm) => comm.commentId.toString() === baseComm._id.toString(),
+        (comm) => comm.commentId.toString() === baseComm.id.toString(),
       )!;
       return {
         ...baseComm,
@@ -61,14 +86,30 @@ export class CommentsQueryRepository {
   }
 
   async getCommentById(commentId: string, currentUserId: string | undefined = ''): Promise<CommentsViewDto | null> {
-    const comment = await this.CommentModel.findOne({ _id: commentId }).lean();
+    const comm = await this.dataSource.query<JoinedComment[]>(
+      `
+      SELECT c.*, u.login as user_login FROM comments c
+      LEFT JOIN users u
+      ON c."userId" = u.id
+      WHERE c.id = $1 
+      `,
+      [commentId],
+    );
+
+    const comment = comm[0];
+
     if (!comment) return null;
 
-    const commentLikes = await this.LikeModel.find({
-      likedEntityId: commentId,
-    }).lean();
+    const commentLikes = await this.dataSource.query<JoinedLike[]>(
+      `
+        SELECT l.*, u.login as user_login FROM likes l
+        LEFT JOIN users u
+        ON l.user_id = u.id
+        WHERE l.liked_entity_id = $1
+      `,
+      [commentId],
+    );
 
-    // @ts-ignore
     const { newestLikes, ...likesInfo } = getLikesInfo(commentLikes, currentUserId);
 
     return new CommentsViewDto({ ...comment, likesInfo });

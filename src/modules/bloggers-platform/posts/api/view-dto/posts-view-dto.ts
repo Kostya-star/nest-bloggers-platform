@@ -1,6 +1,6 @@
 import { LikesBaseViewDto } from 'src/modules/bloggers-platform/likes/api/likes-view.dto';
 import { Post } from '../../domain/posts.schema-typeorm';
-import { JoinedLike } from '../../dto/joined-like';
+import { JoinedLike } from '../../../common/dto/joined-like';
 
 interface IExtendedLikesInfoView {
   extendedLikesInfo: LikesBaseViewDto & {

@@ -1,17 +1,20 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { ILikeModel, Like } from '../domain/likes.schema';
 import { Injectable } from '@nestjs/common';
 import { LikeStatus } from '../const/like-status';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class LikesCommandRepository {
-  constructor(@InjectModel(Like.name) private LikeModel: ILikeModel) {}
+  constructor(private dataSource: DataSource) {}
 
-  async updateLike(likedEntityId: string, status: LikeStatus, userId: string, userLogin: string): Promise<void> {
-    await this.LikeModel.findOneAndUpdate(
-      { userId, likedEntityId, userLogin },
-      { likedEntityId, userId, status, userLogin },
-      { upsert: true },
+  async updateLike(likedEntityId: string, status: LikeStatus, userId: string): Promise<void> {
+    await this.dataSource.query(
+      `
+        INSERT INTO likes ("liked_entity_id", "status", "user_id")
+        VALUES ($1, $2, $3)
+        ON CONFLICT ("liked_entity_id", "user_id")
+        DO UPDATE SET "status" = EXCLUDED."status";
+      `,
+      [likedEntityId, status, userId],
     );
   }
 }
