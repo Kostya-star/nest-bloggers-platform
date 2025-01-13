@@ -38,7 +38,7 @@ export class CommnetsController {
   @Get(':commId')
   @UseGuards(JwtAuthOptionalGuard)
   async getCommentById(
-    @Param('commId', ObjectIdValidationPipe) commId: string,
+    @Param('commId') commId: string,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<CommentsViewDto> {
     const comment = await this.commentsQueryRepository.getCommentById(commId, user?.userId);
@@ -54,7 +54,7 @@ export class CommnetsController {
   @UseGuards(AuthGuard('jwt-auth-guard'))
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateComment(
-    @Param('commentId', ObjectIdValidationPipe) commentId: string,
+    @Param('commentId') commentId: string,
     @Body() updates: UpdateCommentInputDto,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<void> {
@@ -77,7 +77,7 @@ export class CommnetsController {
   @UseGuards(AuthGuard('jwt-auth-guard'))
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteComment(
-    @Param('commentId', ObjectIdValidationPipe) commentId: string,
+    @Param('commentId') commentId: string,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<void> {
     const comment = await this.commentsQueryRepository.getCommentById(commentId);
@@ -99,7 +99,7 @@ export class CommnetsController {
   @UseGuards(AuthGuard('jwt-auth-guard'))
   @HttpCode(HttpStatus.NO_CONTENT)
   async likeComment(
-    @Param('commentId', ObjectIdValidationPipe) commentId: string,
+    @Param('commentId') commentId: string,
     @Body() body: LikeCommentStatusInputDto,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<void> {

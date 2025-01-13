@@ -31,10 +31,27 @@ export class CommentsCommandsRepository {
   }
 
   async updateComment(commentId: string, updates: UpdateCommentInputDto): Promise<void> {
-    await this.CommentModel.updateOne({ _id: commentId }, updates);
+    const keys = Object.keys(updates);
+    const values = Object.values(updates);
+    const setClause = keys.map((key, index) => `"${key}" = $${index + 2}`).join(', ');
+
+    await this.dataSource.query(
+      `
+        UPDATE comments
+        SET ${setClause}
+        WHERE id = $1
+      `,
+      [commentId, ...values],
+    );
   }
 
   async deleteComment(commentId: string): Promise<void> {
-    await this.CommentModel.deleteOne({ _id: commentId });
+    await this.dataSource.query(
+      `
+        DELETE FROM comments
+        WHERE id = $1
+      `,
+      [commentId],
+    );
   }
 }

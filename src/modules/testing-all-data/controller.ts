@@ -1,15 +1,9 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, ICommentModel } from '../bloggers-platform/comments/domain/comments.schema';
 import { DataSource } from 'typeorm';
 
 @Controller('testing/all-data')
 export class TestingAllDataController {
-  constructor(
-    @InjectModel(Comment.name) private CommentModel: ICommentModel,
-
-    private dataSource: DataSource,
-  ) {}
+  constructor(private dataSource: DataSource) {}
 
   @Delete()
   @HttpCode(204)
@@ -34,6 +28,8 @@ export class TestingAllDataController {
         DELETE FROM likes
       `);
 
-    await this.CommentModel.deleteMany();
+    await this.dataSource.query(`
+        DELETE FROM comments
+      `);
   }
 }
