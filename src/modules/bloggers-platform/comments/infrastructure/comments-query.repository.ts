@@ -60,7 +60,7 @@ export class CommentsQueryRepository {
     );
 
     const commentsLikesInfo = commentIds.map((commentId) => {
-      const commentLikes = likes.filter((like) => like.liked_entity_id.toString() === commentId);
+      const commentLikes = likes.filter((like) => like.liked_entity_id.toString() === commentId.toString());
       const likesInfo = getLikesInfo(commentLikes, currentUserId);
 
       return { commentId, ...likesInfo };

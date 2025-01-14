@@ -8,7 +8,7 @@ export const commentContentConstraints = {
 @Entity('comments')
 export class Comment {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({
     type: 'char varying',

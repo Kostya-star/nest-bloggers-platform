@@ -12,7 +12,10 @@ export function getLikesInfo(allLikes: JoinedLike[], currentUserId: string): ILi
   const likes = allLikes.filter((like) => like.status === LikeStatus.Like);
   const dislikesCount = allLikes.filter((like) => like.status === LikeStatus.Dislike).length;
   const myStatus =
-    allLikes.find((like) => currentUserId.toString() === like.user_id.toString())?.status ?? LikeStatus.None;
+    allLikes.find((like) => {
+      return currentUserId.toString() === like.user_id.toString();
+    })?.status ?? LikeStatus.None;
+
   const newestLikes = likes.slice(0, 3);
 
   return { likesCount: likes.length, dislikesCount, myStatus, newestLikes };
