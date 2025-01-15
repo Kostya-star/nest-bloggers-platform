@@ -1,7 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
-import { IPostDocument, IPostModel } from '../domain/posts.schema';
 import { UpdatePostDto } from '../api/input-dto/update-post.dto';
 import { CreatePostDto } from '../api/input-dto/create-post.dto';
 import { DataSource } from 'typeorm';
@@ -9,14 +6,11 @@ import { Post } from '../domain/posts.schema-typeorm';
 
 @Injectable()
 export class PostsCommandsRepository {
-  constructor(
-    @InjectModel(Post.name) private PostModel: IPostModel,
-    private dataSource: DataSource,
-  ) {}
+  constructor(private dataSource: DataSource) {}
 
-  async getPostById(postId: string): Promise<IPostDocument | null> {
-    return await this.PostModel.findOne({ _id: postId });
-  }
+  // async getPostById(postId: string): Promise<IPostDocument | null> {
+  //   return await this.PostModel.findOne({ _id: postId });
+  // }
 
   async createPost({ title, shortDescription, content, blogName, blogId }: CreatePostDto): Promise<string> {
     const post = await this.dataSource.query<Post[]>(

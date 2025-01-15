@@ -18,21 +18,21 @@ export class Blog {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @Column({ type: 'char varying', length: blogNameConstraints.maxLength, nullable: false })
+  @Column({ type: 'varchar', length: blogNameConstraints.maxLength, nullable: false })
   name: string;
 
-  @Column({ type: 'char varying', length: blogDescriptionConstraints.maxLength, nullable: false })
+  @Column({ type: 'varchar', length: blogDescriptionConstraints.maxLength, nullable: false })
   description: string;
 
-  @Column({ type: 'char varying', length: blogWebsiteUrlConstraints.maxLength, nullable: false })
-  website_url: string;
+  @Column({ type: 'varchar', length: blogWebsiteUrlConstraints.maxLength, nullable: false })
+  websiteUrl: string;
 
-  @Column({ type: 'boolean', default: false })
-  is_membership: boolean;
+  @Column({ type: 'boolean', default: false, nullable: false })
+  isMembership: boolean;
 
   @CreateDateColumn({ type: 'timestamptz' })
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
-  updated_at: Date;
+  updatedAt: Date;
 }

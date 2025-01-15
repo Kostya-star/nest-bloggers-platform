@@ -1,18 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePostCommentDto } from '../dto/create-post-comment.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { ICommentModel } from '../domain/comments.schema';
-import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { UpdateCommentInputDto } from '../api/input-dto/update-comment-input.dto';
 import { Comment } from '../domain/comments.schema-typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsCommandsRepository {
-  constructor(
-    @InjectModel(Comment.name) private CommentModel: ICommentModel,
-    private dataSource: DataSource,
-  ) {}
+  constructor(private dataSource: DataSource) {}
   // async getCommentById(commentId: string): Promise<ICommentDB | null> {
   //   return await CommentModel.findOne({ _id: commentId });
   // }

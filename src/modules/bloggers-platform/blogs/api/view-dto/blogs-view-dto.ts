@@ -12,8 +12,8 @@ export class BlogsViewDto {
     this.id = blog.id.toString();
     this.name = blog.name;
     this.description = blog.description;
-    this.websiteUrl = blog.website_url;
-    this.createdAt = blog.created_at;
-    this.isMembership = blog.is_membership;
+    this.websiteUrl = blog.websiteUrl;
+    this.isMembership = blog.isMembership;
+    this.createdAt = blog.createdAt;
   }
 }
