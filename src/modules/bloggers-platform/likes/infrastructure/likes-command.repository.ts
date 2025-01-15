@@ -6,7 +6,7 @@ import { DataSource } from 'typeorm';
 export class LikesCommandRepository {
   constructor(private dataSource: DataSource) {}
 
-  async updateLike(likedEntityId: string, status: LikeStatus, userId: string): Promise<void> {
+  async updateLike(likedEntityId: string, status: LikeStatus, userId: number): Promise<void> {
     await this.dataSource.query(
       `
         INSERT INTO likes ("liked_entity_id", "status", "user_id")

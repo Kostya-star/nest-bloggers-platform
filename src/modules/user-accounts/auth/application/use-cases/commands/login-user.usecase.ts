@@ -42,7 +42,7 @@ export class LoginUserUseCase
       throw new UnauthorizedException();
     }
 
-    const isPasswordValid = await bcrypt.compare(creds.password, user.hashed_password);
+    const isPasswordValid = await bcrypt.compare(creds.password, user.hashedPassword);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException();

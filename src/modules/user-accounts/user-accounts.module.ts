@@ -22,7 +22,6 @@ import {
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from './auth/const/auth-tokens-consts.injection';
 import { UserAccountsConfig } from './config/user-accounts.config';
-import { Device, DeviceSchema } from './devices/domain/device.schema';
 import { DevicesCommandsRepository } from './devices/infrastructure/devices-commands.repository';
 import { RefreshTokenUseCase } from './auth/application/use-cases/commands/refresh-token.usecase';
 import { LogoutUserUseCase } from './auth/application/use-cases/commands/logout-user.usecase';
@@ -34,6 +33,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/domain/user.schema-typeorm';
+import { Device } from './devices/domain/device.schema-typeorm';
 
 const repositories = [UsersCommandsRepository, UsersQueryRepository, DevicesCommandsRepository, DevicesQueryRepository];
 const commands = [
@@ -58,7 +58,7 @@ const guards = [JwtAuthGuard, BasicAuthGuard];
     NotificationsModule,
     // MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     // MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Device]),
     // __ASK__
     // ThrottlerModule.forRootAsync({
     //   inject: [UserAccountsConfig],

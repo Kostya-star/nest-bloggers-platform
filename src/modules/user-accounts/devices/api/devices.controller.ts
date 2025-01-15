@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { DevicesQueryRepository } from '../infrastructure/devices-query.repository';
 import { AuthGuard } from '@nestjs/passport';
 import { ExtractUserFromRequest } from 'src/core/decorators/extract-user-from-req.decorator';
@@ -25,7 +25,7 @@ export class DevicesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async terminateDevice(
     @ExtractUserFromRequest() userTokenPayload: RefreshJwtPayload,
-    @Param('deviceId') deviceId: string,
+    @Param('deviceId', ParseUUIDPipe) deviceId: string,
   ) {
     await this.commandBus.execute<TerminateUserDeviceCommand, void>(
       new TerminateUserDeviceCommand(userTokenPayload.userId, deviceId),

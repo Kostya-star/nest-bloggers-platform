@@ -9,7 +9,7 @@ export class EmailService {
     return await this.mailerService.sendMail({ from, to, subject, html: message });
   }
 
-  getEmailMessageTemplate(link: string, subj: string, queryParam: string, code: string): string {
+  static getEmailMessageTemplate(link: string, subj: string, queryParam: string, code: string): string {
     return `
       <h1>${subj}</h1>
       <p>To finish, please follow the link below:

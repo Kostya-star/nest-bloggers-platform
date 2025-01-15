@@ -41,7 +41,7 @@ export class CommnetsController {
     @Param('commId') commId: string,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<CommentsViewDto> {
-    const comment = await this.commentsQueryRepository.getCommentById(commId, user?.userId);
+    const comment = await this.commentsQueryRepository.getCommentById(commId, user?.userId.toString());
 
     if (!comment) {
       throw new NotFoundException('comment not found');
@@ -64,7 +64,7 @@ export class CommnetsController {
       throw new NotFoundException('comment not found');
     }
 
-    const isOwner = user.userId === comment.commentatorInfo.userId;
+    const isOwner = user.userId.toString() === comment.commentatorInfo.userId.toString();
 
     if (!isOwner) {
       throw new ForbiddenException();
@@ -86,7 +86,7 @@ export class CommnetsController {
       throw new NotFoundException('comment not found');
     }
 
-    const isOwner = user.userId === comment.commentatorInfo.userId;
+    const isOwner = user.userId.toString() === comment.commentatorInfo.userId.toString();
 
     if (!isOwner) {
       throw new ForbiddenException();

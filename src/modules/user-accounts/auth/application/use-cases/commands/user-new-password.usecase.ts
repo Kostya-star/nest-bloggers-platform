@@ -22,7 +22,7 @@ export class UserNewPasswordUseCase implements ICommandHandler<UserNewPasswordCo
       throw new BadRequestException([{ field: 'recoveryCode', message: 'Code is incorrect' }]);
     }
 
-    const isExpired = isAfter(new Date(), user.password_recovery_exp_date!);
+    const isExpired = isAfter(new Date(), user.passwordRecoveryExpDate!);
 
     if (isExpired) {
       throw new BadRequestException([{ field: 'recoveryCode', message: 'Code has expired' }]);
@@ -31,11 +31,11 @@ export class UserNewPasswordUseCase implements ICommandHandler<UserNewPasswordCo
     const newHashedPassword = await bcrypt.hash(newPassword, 10);
 
     const updates: Partial<User> = {
-      hashed_password: newHashedPassword,
-      password_recovery_code: null,
-      password_recovery_exp_date: null,
+      hashedPassword: newHashedPassword,
+      passwordRecoveryCode: null,
+      passwordRecoveryExpDate: null,
     };
 
-    await this.usersCommandsRepository.updateUser(user.id.toString(), updates);
+    await this.usersCommandsRepository.updateUser(user.id, updates);
   }
 }

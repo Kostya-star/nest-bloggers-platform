@@ -4,7 +4,7 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 export class TerminateUserDeviceCommand {
   constructor(
-    public userId: string,
+    public userId: number,
     public deviceId: string,
   ) {}
 }

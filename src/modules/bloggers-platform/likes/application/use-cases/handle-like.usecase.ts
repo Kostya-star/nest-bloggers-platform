@@ -6,7 +6,7 @@ export class HandleLikeCommand {
   constructor(
     public readonly likedEntityId: string,
     public readonly likeStatus: LikeStatus,
-    public readonly userId: string,
+    public readonly userId: number,
   ) {}
 }
 

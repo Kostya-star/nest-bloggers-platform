@@ -138,7 +138,7 @@ export class BlogsController {
       throw new NotFoundException('blog not found');
     }
 
-    return await this.postsQueryRepository.getAllPosts(query, user?.userId, blogId);
+    return await this.postsQueryRepository.getAllPosts(query, user?.userId.toString(), blogId);
   }
 
   @Get('blogs/:blogId/posts')
@@ -154,7 +154,7 @@ export class BlogsController {
       throw new NotFoundException('blog not found');
     }
 
-    return await this.postsQueryRepository.getAllPosts(query, user?.userId, blogId);
+    return await this.postsQueryRepository.getAllPosts(query, user?.userId.toString(), blogId);
   }
 
   @Put('sa/blogs/:blogId/posts/:postId')

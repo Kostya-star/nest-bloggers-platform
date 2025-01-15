@@ -1,25 +1,41 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { User } from '../../users/domain/user.schema-typeorm';
 
 @Entity('devices')
 export class Device {
-  @Column({ type: 'char varying', nullable: false })
+  @PrimaryColumn({ type: 'uuid', nullable: false })
   deviceId: string;
 
   @Column({ type: 'int', nullable: false })
   userId: number;
 
-  @Column({ type: 'char varying', nullable: false })
+  @ManyToOne(() => User)
+  user: User;
+
+  @Column({ type: 'timestamptz', nullable: false })
   issuedAt: string;
 
-  @Column({ type: 'char varying', nullable: false })
+  @Column({ type: 'timestamptz', nullable: false })
   expiresAt: string;
 
-  @Column({ type: 'char varying', nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   userAgent: string;
 
-  @Column({ type: 'char varying', nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   ipAddress: string;
 
-  @Column({ type: 'char varying', nullable: false })
+  @Column({ type: 'timestamptz', nullable: false })
   lastActiveDate: string;
+
+  @CreateDateColumn({
+    type: 'timestamptz',
+    nullable: false,
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamptz',
+    nullable: false,
+  })
+  updatedAt: Date;
 }

@@ -6,7 +6,7 @@ export class CreatePostCommentCommand {
   constructor(
     public readonly postId: string,
     public readonly content: string,
-    public readonly userId: string,
+    public readonly userId: number,
   ) {}
 }
 

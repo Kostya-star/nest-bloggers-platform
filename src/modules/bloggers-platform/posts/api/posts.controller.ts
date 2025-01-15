@@ -53,7 +53,7 @@ export class PostsController {
     @Query() query: GetPostsQueryParams,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<BasePaginatedView<PostsViewDto>> {
-    return await this.postsQueryRepository.getAllPosts(query, user?.userId);
+    return await this.postsQueryRepository.getAllPosts(query, user?.userId.toString());
   }
 
   @Get(':postId')
@@ -62,7 +62,7 @@ export class PostsController {
     @Param('postId') postId: string,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<PostsViewDto> {
-    const post = await this.postsQueryRepository.getPostById(postId, user?.userId);
+    const post = await this.postsQueryRepository.getPostById(postId, user?.userId.toString());
 
     if (!post) {
       throw new NotFoundException('post not found');
@@ -130,7 +130,7 @@ export class PostsController {
     const commentId = await this.commandBus.execute<CreatePostCommentCommand, string>(
       new CreatePostCommentCommand(postId, commBody.content, user.userId),
     );
-    const comment = await this.commentsQueryRepository.getCommentById(commentId, user.userId);
+    const comment = await this.commentsQueryRepository.getCommentById(commentId, user.userId.toString());
 
     if (!comment) {
       throw new NotFoundException('comment not found');
@@ -152,7 +152,7 @@ export class PostsController {
       throw new NotFoundException('post not found');
     }
 
-    return await this.commentsQueryRepository.getCommentsForPost(query, postId, user?.userId);
+    return await this.commentsQueryRepository.getCommentsForPost(query, postId, user?.userId.toString());
   }
 
   @Put(':postId/like-status')

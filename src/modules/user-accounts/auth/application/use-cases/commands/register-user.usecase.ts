@@ -16,7 +16,6 @@ export class RegisterUserUseCase implements ICommandHandler<RegisterUserCommand,
   constructor(
     private commandBus: CommandBus,
     private eventBus: EventBus,
-    private emailService: EmailService,
   ) {}
 
   async execute({ userBody }: RegisterUserCommand): Promise<void> {
@@ -24,7 +23,7 @@ export class RegisterUserUseCase implements ICommandHandler<RegisterUserCommand,
 
     await this.commandBus.execute<CreateUserCommand, string>(new CreateUserCommand(userBody, emailConfirmation));
 
-    const message = this.emailService.getEmailMessageTemplate(
+    const message = EmailService.getEmailMessageTemplate(
       'registration-confirmation',
       'Confirm registration',
       'code',

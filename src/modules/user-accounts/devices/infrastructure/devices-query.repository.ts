@@ -1,21 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { DeviceViewDto } from '../api/view-dto/device-view.dto';
-import { DataSource } from 'typeorm';
 import { Device } from '../domain/device.schema-typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class DevicesQueryRepository {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Device)
+    private readonly devicesRepository: Repository<Device>,
+  ) {}
 
-  async findUserDevices(userId: string): Promise<DeviceViewDto[]> {
-    // const devices = await this.DeviceModel.find({ userId });
-    const devices = await this.dataSource.query<Device[]>(
-      `
-        SELECT * FROM devices
-        WHERE "userId" = $1
-      `,
-      [userId],
-    );
+  async findUserDevices(userId: number): Promise<DeviceViewDto[]> {
+    const devices = await this.devicesRepository.find({ where: { userId } });
     return devices.map((d) => new DeviceViewDto(d));
   }
 

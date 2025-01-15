@@ -15,7 +15,6 @@ export class UserPasswordRecoveryUseCase implements ICommandHandler<UserPassword
   constructor(
     private usersCommandsRepository: UsersCommandsRepository,
     private eventsBus: EventBus,
-    private emailService: EmailService,
   ) {}
   async execute({ body }: UserPasswordRecoveryCommand): Promise<void> {
     const { email } = body;
@@ -25,18 +24,13 @@ export class UserPasswordRecoveryUseCase implements ICommandHandler<UserPassword
     const { code, expDate }: UserPasswordRecoveryDto = User.generatePasswordRecoveryDetails();
 
     if (user) {
-      await this.usersCommandsRepository.updateUser(user.id.toString(), {
-        password_recovery_code: code,
-        password_recovery_exp_date: expDate,
+      await this.usersCommandsRepository.updateUser(user.id, {
+        passwordRecoveryCode: code,
+        passwordRecoveryExpDate: expDate,
       });
     } else return;
 
-    const message = this.emailService.getEmailMessageTemplate(
-      'password-recovery',
-      'Recover password',
-      'recoveryCode',
-      code,
-    );
+    const message = EmailService.getEmailMessageTemplate('password-recovery', 'Recover password', 'recoveryCode', code);
 
     this.eventsBus.publish(
       new UserPasswordRecoveryEmailEvent("'Kolya' kostya.danilov.99@mail.ru", email, 'Recover password', message),

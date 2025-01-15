@@ -83,14 +83,8 @@ export class UsersQueryRepository {
     return user ? new UserViewDto(user) : null;
   }
 
-  async getMe(userId: string): Promise<GetMeViewDto | null> {
-    const user = await this.dataSource.query(
-      `
-        SELECT * FROM users
-        WHERE id = $1
-      `,
-      [userId],
-    );
-    return user[0] ? new GetMeViewDto(user[0]) : null;
+  async getMe(meId: number): Promise<GetMeViewDto | null> {
+    const me = await this.usersRepository.findOne({ where: { id: meId } });
+    return me ? new GetMeViewDto(me) : null;
   }
 }

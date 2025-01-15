@@ -12,15 +12,8 @@ export class UsersCommandsRepository {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async findUserById(userId: string): Promise<User | null> {
-    const user = await this.dataSource.query<User[]>(
-      `
-        SELECT * FROM users
-        WHERE id = $1 
-      `,
-      [userId],
-    );
-    return user[0] ?? null;
+  async findUserById(userId: number): Promise<User | null> {
+    return await this.usersRepository.findOne({ where: { id: userId } });
   }
 
   async findUserByLogin(login: string): Promise<User | null> {
@@ -32,54 +25,23 @@ export class UsersCommandsRepository {
   }
 
   async findUserByEmailConfirmationCode(code: string): Promise<User | null> {
-    const user = await this.dataSource.query<User[]>(
-      `
-        SELECT * FROM users
-        WHERE email_confirmation_code = $1 
-      `,
-      [code],
-    );
-    return user[0] ?? null;
+    return await this.usersRepository.findOne({ where: { emailConfirmationCode: code } });
   }
 
   async findUserByPasswordRecoveryCode(code: string): Promise<User | null> {
-    const user = await this.dataSource.query<User[]>(
-      `
-        SELECT * FROM users
-        WHERE password_recovery_code = $1
-      `,
-      [code],
-    );
-
-    return user[0] ?? null;
+    return await this.usersRepository.findOne({ where: { passwordRecoveryCode: code } });
   }
 
   async findUserByLoginOrEmail(loginOrEmail: string): Promise<User | null> {
-    const user = await this.dataSource.query<User[]>(
-      `
-        SELECT * FROM users
-        WHERE login = $1
-        OR email = $1
-      `,
-      [loginOrEmail],
-    );
+    const user = await this.usersRepository.findOne({
+      where: [{ login: loginOrEmail }, { email: loginOrEmail }],
+    });
 
-    return user[0] ?? null;
+    return user ?? null;
   }
 
-  async updateUser(userId: string, updates: Partial<User>): Promise<void> {
-    const keys = Object.keys(updates);
-    const values = Object.values(updates);
-    const setClause = keys.map((key, index) => `${key} = $${index + 2}`).join(', ');
-
-    await this.dataSource.query(
-      `
-        UPDATE users
-        SET ${setClause}
-        WHERE id = $1
-      `,
-      [userId, ...values],
-    );
+  async updateUser(userId: number, updates: Partial<User>): Promise<void> {
+    await this.usersRepository.update(userId, updates);
   }
 
   async createUser(newUser: CreateUserDto): Promise<number> {

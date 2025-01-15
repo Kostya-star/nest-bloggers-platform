@@ -26,8 +26,8 @@ export class RefreshTokenUseCase implements ICommandHandler<RefreshTokenCommand,
   async execute({ tokenPayload }: RefreshTokenCommand): Promise<TokensPairDto> {
     const { deviceId, userId } = tokenPayload;
 
-    const accessToken = this.accessTokenContext.sign({ userId });
-    const refreshToken = this.refreshTokenContext.sign({ userId, deviceId });
+    const accessToken = this.accessTokenContext.sign({ userId: userId.toString() });
+    const refreshToken = this.refreshTokenContext.sign({ userId: userId.toString(), deviceId });
 
     {
       const { iat, exp } = this.refreshTokenContext.decode(refreshToken) as RefreshJwtContext;

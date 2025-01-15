@@ -13,7 +13,6 @@ export class RegistrationEmailResendingCommand {
 export class RegistrationEmailResendingUseCase implements ICommandHandler<RegistrationEmailResendingCommand, void> {
   constructor(
     private usersCommandsRepository: UsersCommandsRepository,
-    private eventBus: EventBus,
     private emailService: EmailService,
   ) {}
 
@@ -24,19 +23,19 @@ export class RegistrationEmailResendingUseCase implements ICommandHandler<Regist
       throw new BadRequestException([{ field: 'email', message: 'Email is incorrect' }]);
     }
 
-    if (user.email_confirmation_is_confirmed) {
+    if (user.emailConfirmationIsConfirmed) {
       throw new BadRequestException([{ field: 'email', message: 'Code has been applied' }]);
     }
 
     const { code, expDate, isConfirmed }: UserEmailConfirmationDto = User.generateEmailConfirmationDetails();
 
-    await this.usersCommandsRepository.updateUser(user.id.toString(), {
-      email_confirmation_code: code,
-      email_confirmation_exp_date: expDate,
-      email_confirmation_is_confirmed: isConfirmed,
+    await this.usersCommandsRepository.updateUser(user.id, {
+      emailConfirmationCode: code,
+      emailConfirmationExpDate: expDate,
+      emailConfirmationIsConfirmed: isConfirmed,
     });
 
-    const message = this.emailService.getEmailMessageTemplate(
+    const message = EmailService.getEmailMessageTemplate(
       'registration-confirmation',
       'Confirm registration',
       'code',
