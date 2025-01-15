@@ -3,7 +3,7 @@ import { Device } from '../../domain/device.schema-typeorm';
 export class DeviceViewDto {
   ip: string;
   title: string;
-  lastActiveDate: string;
+  lastActiveDate: Date;
   deviceId: string;
 
   constructor(device: Device) {

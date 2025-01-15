@@ -13,10 +13,10 @@ export class Device {
   user: User;
 
   @Column({ type: 'timestamptz', nullable: false })
-  issuedAt: string;
+  issuedAt: Date;
 
   @Column({ type: 'timestamptz', nullable: false })
-  expiresAt: string;
+  expiresAt: Date;
 
   @Column({ type: 'varchar', nullable: false })
   userAgent: string;
@@ -25,7 +25,7 @@ export class Device {
   ipAddress: string;
 
   @Column({ type: 'timestamptz', nullable: false })
-  lastActiveDate: string;
+  lastActiveDate: Date;
 
   @CreateDateColumn({
     type: 'timestamptz',

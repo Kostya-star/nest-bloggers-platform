@@ -48,7 +48,7 @@ export class RefreshJwtAuthGuard extends PassportStrategy(Strategy, 'refresh-jwt
 
     // make sure the token isn't revoked
     // TODO maybe move getISOFromUnixSeconds outside of the module
-    if (getISOFromUnixSeconds(iat) !== device.issuedAt) {
+    if (getISOFromUnixSeconds(iat) !== device.issuedAt.toISOString()) {
       throw new UnauthorizedException();
     }
 

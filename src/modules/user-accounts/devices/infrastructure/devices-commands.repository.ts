@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RegisterDeviceDto } from '../dto/register-device.dto';
 import { UpdateDeviceDto } from '../dto/update-device.dto';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Device } from '../domain/device.schema-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -34,8 +34,11 @@ export class DevicesCommandsRepository {
     await this.devicesRepository.update(deviceId, updates);
   }
 
-  async deleteOtherDevicesExceptCurrent(deviceId: string): Promise<void> {
-    await this.devicesRepository.delete({ deviceId });
+  async deleteOtherDevicesExceptCurrent(deviceId: string, userId: number): Promise<void> {
+    await this.devicesRepository.delete({
+      deviceId: Not(deviceId),
+      userId,
+    });
   }
 
   async deleteDeviceByDeviceId(deviceId: string): Promise<void> {

@@ -7,7 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 @Injectable()
 export class UsersCommandsRepository {
   constructor(
-    private dataSource: DataSource,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) {}

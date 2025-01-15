@@ -42,13 +42,8 @@ export class RegistrationEmailResendingUseCase implements ICommandHandler<Regist
       code,
     );
 
-    await this.emailService.sendMail(
-      "'Petr' kostya.danilov.99@mail.ru",
-      user.email,
-      'Registration Confirmation',
-      message,
-    );
+    this.emailService.sendMail("'Petr' kostya.danilov.99@mail.ru", user.email, 'Registration Confirmation', message);
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 }
