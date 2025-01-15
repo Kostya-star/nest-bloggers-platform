@@ -1,5 +1,4 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { User, UserSchema } from './users/domain/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersController } from './users/api/users.controller';
 import { UsersCommandsRepository } from './users/infrastructure/users-commands-repository';
@@ -33,6 +32,8 @@ import { TerminateUserDeviceUseCase } from './devices/application/use-cases/comm
 import { TerminateOtherUserDevicesUseCase } from './devices/application/use-cases/commands/terminate-other-user-devices-except-current.usecase';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './users/domain/user.schema-typeorm';
 
 const repositories = [UsersCommandsRepository, UsersQueryRepository, DevicesCommandsRepository, DevicesQueryRepository];
 const commands = [
@@ -55,8 +56,9 @@ const guards = [JwtAuthGuard, BasicAuthGuard];
   imports: [
     JwtModule,
     NotificationsModule,
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
+    // MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    // MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
+    TypeOrmModule.forFeature([User]),
     // __ASK__
     // ThrottlerModule.forRootAsync({
     //   inject: [UserAccountsConfig],

@@ -1,65 +1,85 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
+export const loginConstraints = {
+  minLength: 3,
+  maxLength: 10,
+  match: /^[a-zA-Z0-9_-]*$/,
+};
+
+export const passwordConstraints = {
+  minLength: 6,
+  maxLength: 20,
+};
+
+export const emailConstraints = {
+  match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+};
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
-    type: 'char varying',
-    // length: 10,
-    // unique: true,
+    type: 'varchar',
+    length: loginConstraints.maxLength,
+    unique: true,
+    nullable: false,
   })
   login: string;
 
   @Column({
-    type: 'char varying',
-    // unique: true,
+    type: 'varchar',
+    unique: true,
+    nullable: false,
   })
   email: string;
 
   @Column({
-    type: 'char varying',
+    type: 'varchar',
+    // nullable: false,
   })
-  hashed_password: string;
+  hashedPassword: string;
 
   @Column({
     type: 'uuid',
     nullable: true,
   })
-  email_confirmation_code: string;
+  emailConfirmationCode: string | null;
 
   @Column({
     type: 'timestamptz',
     nullable: true,
   })
-  email_confirmation_exp_date: Date;
+  emailConfirmationExpDate: Date | null;
 
   @Column({
     type: 'boolean',
     default: true,
   })
-  email_confirmation_is_confirmed: boolean;
+  emailConfirmationIsConfirmed: boolean;
 
   @Column({
     type: 'uuid',
     nullable: true,
   })
-  password_recovery_code: string | null;
+  passwordRecoveryCode: string | null;
 
   @Column({
     type: 'timestamptz',
     nullable: true,
   })
-  password_recovery_exp_date: Date | null;
+  passwordRecoveryExpDate: Date | null;
 
   @CreateDateColumn({
     type: 'timestamptz',
+    nullable: false,
   })
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({
     type: 'timestamptz',
+    nullable: false,
   })
-  updated_at: Date;
+  updatedAt: Date;
 }

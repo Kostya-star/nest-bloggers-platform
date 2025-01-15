@@ -7,6 +7,7 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   UseGuards,
@@ -39,7 +40,7 @@ export class UsersController {
 
   @Post()
   async adminCreatesUser(@Body() userBody: CreateUserInputDto): Promise<UserViewDto> {
-    const userId = await this.commandBus.execute<CreateUserCommand, string>(new CreateUserCommand(userBody));
+    const userId = await this.commandBus.execute<CreateUserCommand, number>(new CreateUserCommand(userBody));
     const user = await this.usersQueryRepository.getUserById(userId);
 
     if (!user) {
@@ -51,7 +52,7 @@ export class UsersController {
 
   @Delete(':userId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@Param('userId') userId: string): Promise<void> {
+  async deleteUser(@Param('userId', ParseIntPipe) userId: number): Promise<void> {
     const user = await this.usersQueryRepository.getUserById(userId);
 
     if (!user) {

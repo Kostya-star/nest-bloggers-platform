@@ -19,8 +19,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: 'postgres',
       password: 'admin',
       database: 'bloggers',
-      autoLoadEntities: false,
-      synchronize: false,
+      autoLoadEntities: true,
+      synchronize: true,
     }),
     MongooseModule.forRootAsync({
       useFactory: (coreConfig: CoreConfig) => ({

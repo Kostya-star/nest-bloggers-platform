@@ -15,10 +15,10 @@ export class CreateUserCommand {
 }
 
 @CommandHandler(CreateUserCommand)
-export class CreateUserUseCase implements ICommandHandler<CreateUserCommand, string> {
+export class CreateUserUseCase implements ICommandHandler<CreateUserCommand, number> {
   constructor(private usersCommandsRepository: UsersCommandsRepository) {}
 
-  async execute(command: CreateUserCommand): Promise<string> {
+  async execute(command: CreateUserCommand): Promise<number> {
     const { email, login, password } = command.user;
     const emailConfirmation = command.emailConfirmation;
 
@@ -34,14 +34,14 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand, str
       throw new BadRequestException([{ field, message }]);
     }
 
-    const hashed_password = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser: CreateUserDto = {
       login,
       email,
-      hashed_password,
-      email_confirmation_code: emailConfirmation?.code ?? null,
-      email_confirmation_exp_date: emailConfirmation?.expDate ?? null,
-      email_confirmation_is_confirmed: emailConfirmation?.isConfirmed ?? true,
+      hashedPassword,
+      emailConfirmationCode: emailConfirmation?.code ?? null,
+      emailConfirmationExpDate: emailConfirmation?.expDate ?? null,
+      emailConfirmationIsConfirmed: emailConfirmation?.isConfirmed ?? true,
     };
 
     return await this.usersCommandsRepository.createUser(newUser);
