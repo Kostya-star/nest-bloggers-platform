@@ -44,7 +44,7 @@ export class User {
   hashedPassword: string;
 
   @Column({
-    type: 'uuid',
+    type: 'varchar',
     nullable: true,
   })
   emailConfirmationCode: string | null;

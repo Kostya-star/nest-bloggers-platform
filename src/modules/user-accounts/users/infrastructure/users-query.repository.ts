@@ -3,14 +3,13 @@ import { GetUsersQueryParams } from '../api/input-dto/get-users-query-params';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 import { UserViewDto } from '../api/view-dto/users-view.dto';
 import { GetMeViewDto } from '../api/view-dto/get-me-view.dto';
-import { DataSource, Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { User } from '../domain/user.schema-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UsersQueryRepository {
   constructor(
-    private dataSource: DataSource,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) {}
@@ -60,8 +59,13 @@ export class UsersQueryRepository {
 
     const skip = (page - 1) * pageSize;
 
+    const whereClause: FindOptionsWhere<User> | FindOptionsWhere<User>[] = [];
+
+    if (searchLoginTerm) whereClause.push({ login: ILike(`%${searchLoginTerm}%`) });
+    if (searchEmailTerm) whereClause.push({ email: ILike(`%${searchEmailTerm}%`) });
+
     const [users, totalCount] = await this.usersRepository.findAndCount({
-      where: [{ login: `ILIKE '%${searchLoginTerm}%'` }, { email: `ILIKE '%${searchEmailTerm}%'` }],
+      where: whereClause,
       order: { [sortBy]: sortDirection },
       skip,
       take: pageSize,

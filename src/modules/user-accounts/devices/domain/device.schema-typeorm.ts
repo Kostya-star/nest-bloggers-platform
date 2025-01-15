@@ -9,7 +9,7 @@ export class Device {
   @Column({ type: 'int', nullable: false })
   userId: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   user: User;
 
   @Column({ type: 'timestamptz', nullable: false })
