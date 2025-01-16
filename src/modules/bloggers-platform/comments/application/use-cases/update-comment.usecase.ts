@@ -4,7 +4,7 @@ import { UpdateCommentInputDto } from '../../api/input-dto/update-comment-input.
 
 export class UpdateCommentCommand {
   constructor(
-    public readonly commentId: string,
+    public readonly commentId: number,
     public readonly updates: UpdateCommentInputDto,
   ) {}
 }
