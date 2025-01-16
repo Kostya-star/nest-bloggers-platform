@@ -29,12 +29,12 @@ export class CommentsQueryRepository {
     const rawComments = await this.commentsRepository
       .createQueryBuilder('comm')
       .leftJoinAndSelect('comm.user', 'u')
-      .where('comm.postId = :postId', { postId })
       .select('comm')
       .addSelect('u.login', 'userLogin')
+      .where('comm.postId = :postId', { postId })
       .orderBy(`comm.${sortBy}`, sortDirection.toUpperCase() as 'ASC' | 'DESC')
-      .skip(skip)
-      .take(pageSize)
+      .offset(skip)
+      .limit(pageSize)
       .getRawMany();
 
     const comments = rawComments.map(
@@ -50,7 +50,10 @@ export class CommentsQueryRepository {
         }) as JoinedComment,
     );
 
-    const [_, totalCount] = await this.commentsRepository.findAndCount({ where: { postId } });
+    const totalCount = await this.commentsRepository
+      .createQueryBuilder('comm')
+      .where('comm.postId = :postId', { postId })
+      .getCount();
 
     const pagesCount = Math.ceil(totalCount / pageSize);
 
@@ -96,6 +99,8 @@ export class CommentsQueryRepository {
       .where('comm.id = :commentId', { commentId })
       .getRawOne();
 
+    if (!rawComment) return null;
+
     const comment = {
       id: rawComment.comm_id,
       content: rawComment.comm_content,
@@ -105,8 +110,6 @@ export class CommentsQueryRepository {
       createdAt: rawComment.comm_createdAt,
       updatedAt: rawComment.comm_updatedAt,
     } as JoinedComment;
-
-    if (!comment) return null;
 
     const rawCommentLikes = await this.likesRepository
       .createQueryBuilder('like')
