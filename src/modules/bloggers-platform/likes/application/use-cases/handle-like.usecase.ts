@@ -4,7 +4,7 @@ import { LikeStatus } from '../../const/like-status';
 
 export class HandleLikeCommand {
   constructor(
-    public readonly likedEntityId: string,
+    public readonly likedEntityId: number,
     public readonly likeStatus: LikeStatus,
     public readonly userId: number,
   ) {}

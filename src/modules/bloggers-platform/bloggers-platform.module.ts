@@ -21,6 +21,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Blog } from './blogs/domain/blogs.schema-typeorm';
 import { Post } from './posts/domain/posts.schema-typeorm';
 import { Like } from './likes/domain/likes.schema-typeorm';
+import { Comment } from './comments/domain/comments.schema-typeorm';
 
 const commands = [CreatePostCommentUseCase, HandleLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase];
 const repos = [
@@ -42,7 +43,7 @@ const services = [BlogsService, PostsService];
     //   { name: Like.name, schema: LikeSchema },
     //   { name: Comment.name, schema: CommentSchema },
     // ]),
-    TypeOrmModule.forFeature([Blog, Post, Like]),
+    TypeOrmModule.forFeature([Blog, Post, Like, Comment]),
     UserAccountsModule,
   ],
   controllers: [BlogsController, PostsController, CommnetsController],

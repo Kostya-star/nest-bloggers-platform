@@ -4,17 +4,17 @@ import { CommentsCommandsRepository } from '../../infrastructure/comments-comman
 
 export class CreatePostCommentCommand {
   constructor(
-    public readonly postId: string,
+    public readonly postId: number,
     public readonly content: string,
     public readonly userId: number,
   ) {}
 }
 
 @CommandHandler(CreatePostCommentCommand)
-export class CreatePostCommentUseCase implements ICommandHandler<CreatePostCommentCommand, string> {
+export class CreatePostCommentUseCase implements ICommandHandler<CreatePostCommentCommand, number> {
   constructor(private readonly commentsCommandRepository: CommentsCommandsRepository) {}
 
-  async execute({ userId, postId, content }: CreatePostCommentCommand): Promise<string> {
+  async execute({ userId, postId, content }: CreatePostCommentCommand): Promise<number> {
     const postComment: CreatePostCommentDto = {
       content,
       postId,

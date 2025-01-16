@@ -29,9 +29,7 @@ import { ExtractUserFromRequest } from 'src/core/decorators/extract-user-from-re
 import { UserContext } from 'src/core/dto/user-context';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreatePostCommentCommand } from '../../comments/application/use-cases/create-post-comment.usecase';
-import { MongooseObjtId } from 'src/core/types/mongoose-objectId';
 import { AuthGuard } from '@nestjs/passport';
-import { UsersQueryRepository } from 'src/modules/user-accounts/users/infrastructure/users-query.repository';
 import { HandleLikeCommand } from '../../likes/application/use-cases/handle-like.usecase';
 import { LikePostStatusInputDto } from './input-dto/like-post-status-input.dto';
 import { JwtAuthOptionalGuard } from 'src/core/guards/jwt-auth-optional.guard';
@@ -103,7 +101,7 @@ export class PostsController {
   @Delete(':postId')
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePost(@Param('postId', ObjectIdValidationPipe) postId: string): Promise<void> {
+  async deletePost(@Param('postId') postId: string): Promise<void> {
     const post = await this.postsQueryRepository.getPostById(+postId);
 
     if (!post) {
@@ -126,10 +124,10 @@ export class PostsController {
       throw new NotFoundException('post not found');
     }
 
-    const commentId = await this.commandBus.execute<CreatePostCommentCommand, string>(
-      // @ts-ignore
-      new CreatePostCommentCommand(postId, commBody.content, user.userId),
+    const commentId = await this.commandBus.execute<CreatePostCommentCommand, number>(
+      new CreatePostCommentCommand(+postId, commBody.content, +user.userId),
     );
+
     const comment = await this.commentsQueryRepository.getCommentById(commentId, user.userId);
 
     if (!comment) {
@@ -152,7 +150,7 @@ export class PostsController {
       throw new NotFoundException('post not found');
     }
 
-    return await this.commentsQueryRepository.getCommentsForPost(query, postId, user?.userId);
+    return await this.commentsQueryRepository.getCommentsForPost(query, +postId, user?.userId);
   }
 
   @Put(':postId/like-status')
@@ -169,7 +167,8 @@ export class PostsController {
       throw new NotFoundException('post not found');
     }
 
-    // @ts-ignore
-    await this.commandBus.execute<HandleLikeCommand, void>(new HandleLikeCommand(postId, body.likeStatus, user.userId));
+    await this.commandBus.execute<HandleLikeCommand, void>(
+      new HandleLikeCommand(+postId, body.likeStatus, +user.userId),
+    );
   }
 }

@@ -6,11 +6,13 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  Unique,
 } from 'typeorm';
 import { LikeStatus } from '../const/like-status';
 import { User } from 'src/modules/user-accounts/users/domain/user.schema-typeorm';
 
 @Entity('likes')
+@Unique(['likedEntityId', 'userId'])
 export class Like {
   @PrimaryGeneratedColumn()
   id: number;

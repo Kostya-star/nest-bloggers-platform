@@ -41,7 +41,7 @@ export class CommnetsController {
     @Param('commId') commId: string,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<CommentsViewDto> {
-    const comment = await this.commentsQueryRepository.getCommentById(commId, user?.userId.toString());
+    const comment = await this.commentsQueryRepository.getCommentById(+commId, user?.userId.toString());
 
     if (!comment) {
       throw new NotFoundException('comment not found');
@@ -58,7 +58,7 @@ export class CommnetsController {
     @Body() updates: UpdateCommentInputDto,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<void> {
-    const comment = await this.commentsQueryRepository.getCommentById(commentId);
+    const comment = await this.commentsQueryRepository.getCommentById(+commentId);
 
     if (!comment) {
       throw new NotFoundException('comment not found');
@@ -80,7 +80,7 @@ export class CommnetsController {
     @Param('commentId') commentId: string,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<void> {
-    const comment = await this.commentsQueryRepository.getCommentById(commentId);
+    const comment = await this.commentsQueryRepository.getCommentById(+commentId);
 
     if (!comment) {
       throw new NotFoundException('comment not found');
@@ -103,14 +103,14 @@ export class CommnetsController {
     @Body() body: LikeCommentStatusInputDto,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<void> {
-    const comment = await this.commentsQueryRepository.getCommentById(commentId);
+    const comment = await this.commentsQueryRepository.getCommentById(+commentId);
 
     if (!comment) {
       throw new NotFoundException('comment not found');
     }
 
     await this.commandBus.execute<HandleLikeCommand, void>(
-      new HandleLikeCommand(commentId, body.likeStatus, +user.userId),
+      new HandleLikeCommand(+commentId, body.likeStatus, +user.userId),
     );
   }
 }

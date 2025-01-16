@@ -25,7 +25,7 @@ export class CommentsViewDto {
     this.content = comment.content;
     this.commentatorInfo = {
       userId: comment.userId.toString(),
-      userLogin: comment.user_login,
+      userLogin: comment.userLogin,
     };
     this.likesInfo = {
       likesCount: comment.likesInfo.likesCount,

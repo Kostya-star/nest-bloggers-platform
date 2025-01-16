@@ -4,6 +4,6 @@
 // }
 export class CreatePostCommentDto {
   content: string;
-  postId: string;
+  postId: number;
   userId: number;
 }

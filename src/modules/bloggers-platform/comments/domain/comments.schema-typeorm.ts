@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Post } from '../../posts/domain/posts.schema-typeorm';
+import { User } from 'src/modules/user-accounts/users/domain/user.schema-typeorm';
 
 export const commentContentConstraints = {
   minLength: 20,
@@ -11,7 +13,7 @@ export class Comment {
   id: number;
 
   @Column({
-    type: 'char varying',
+    type: 'varchar',
     length: commentContentConstraints.maxLength,
   })
   content: string;
@@ -21,18 +23,18 @@ export class Comment {
   })
   postId: number;
 
+  @ManyToOne(() => Post, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  post: Post;
+
   @Column({ type: 'integer' })
   userId: number;
 
-  // @Column('jsonb')
-  // commentatorInfo: {
-  //   userId: string;
-  //   userLogin: string;
-  // };
+  @ManyToOne(() => User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  user: User;
 
-  @CreateDateColumn({ type: 'timestamp with time zone' })
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp with time zone' })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

@@ -3,61 +3,63 @@ import { GetCommentsQueryParams } from '../api/input-dto/get-comments-query-para
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
 import { getLikesInfo } from '../../common/utils/get-likes-info';
 import { CommentsViewDto } from '../api/view-dto/comments-view.dto';
-import { DataSource } from 'typeorm';
+import { Repository } from 'typeorm';
 import { JoinedLike } from '../../common/dto/joined-like';
 import { JoinedComment } from '../dto/joined-comment';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Comment } from '../domain/comments.schema-typeorm';
+import { Like } from '../../likes/domain/likes.schema-typeorm';
 
 @Injectable()
 export class CommentsQueryRepository {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Comment) private commentsRepository: Repository<Comment>,
+    @InjectRepository(Like) private likesRepository: Repository<Like>,
+  ) {}
 
   async getCommentsForPost(
     query: GetCommentsQueryParams,
-    postId: string,
+    postId: number,
     currentUserId: string | undefined = '',
   ): Promise<BasePaginatedView<CommentsViewDto>> {
     const { pageNumber: page, pageSize, sortBy, sortDirection } = query;
 
-    const offset = (page - 1) * pageSize;
+    const skip = (page - 1) * pageSize;
 
-    const comments = await this.dataSource.query<(JoinedComment & { count: string })[]>(
-      `
-        SELECT c.*, u.login as user_login, 
-        (SELECT COUNT(*) FROM comments WHERE "postId" = $1) AS count
-        FROM comments c
+    const rawComments = await this.commentsRepository
+      .createQueryBuilder('comm')
+      .leftJoinAndSelect('comm.user', 'u')
+      .where('comm.postId = :postId', { postId })
+      .select('comm')
+      .addSelect('u.login', 'userLogin')
+      .orderBy(`comm.${sortBy}`, sortDirection.toUpperCase() as 'ASC' | 'DESC')
+      .skip(skip)
+      .take(pageSize)
+      .getRawMany();
 
-        LEFT JOIN users u
-        ON c."userId" = u.id
-        WHERE c."postId" = $1
-        ORDER BY c."${sortBy}" ${sortDirection}
-        LIMIT $2 OFFSET $3
-        `,
-      [postId, pageSize, offset],
+    const comments = rawComments.map(
+      (comm) =>
+        ({
+          id: comm.comm_id,
+          content: comm.comm_content,
+          postId: comm.comm_postId,
+          userId: comm.comm_userId,
+          userLogin: comm.userLogin,
+          createdAt: comm.comm_createdAt,
+          updatedAt: comm.comm_updatedAt,
+        }) as JoinedComment,
     );
 
-    // const totalCountRes = await this.dataSource.query<{ count: string }[]>(
-    //   `
-    //     SELECT COUNT(*) FROM comments
-    //     WHERE "postId" = $1
-    //   `,
-    //   [postId],
-    // );
-
-    const totalCount = parseInt(comments[0].count);
+    const [_, totalCount] = await this.commentsRepository.findAndCount({ where: { postId } });
 
     const pagesCount = Math.ceil(totalCount / pageSize);
 
     const commentIds = comments.map((comm) => comm.id);
 
-    const likes = await this.dataSource.query<JoinedLike[]>(
-      `
-        SELECT l.*, u.login as user_login FROM likes l
-        LEFT JOIN users u
-        ON l.user_id = u.id
-        WHERE liked_entity_id = ANY($1)
-      `,
-      [commentIds],
-    );
+    const likes = await this.likesRepository
+      .createQueryBuilder('like')
+      .where('like.likedEntityId = ANY(:commentIds)', { commentIds })
+      .getMany();
 
     const commentsLikesInfo = commentIds.map((commentId) => {
       const commentLikes = likes.filter((like) => like.likedEntityId.toString() === commentId.toString());
@@ -85,29 +87,46 @@ export class CommentsQueryRepository {
     };
   }
 
-  async getCommentById(commentId: string, currentUserId: string | undefined = ''): Promise<CommentsViewDto | null> {
-    const comm = await this.dataSource.query<JoinedComment[]>(
-      `
-      SELECT c.*, u.login as user_login FROM comments c
-      LEFT JOIN users u
-      ON c."userId" = u.id
-      WHERE c.id = $1 
-      `,
-      [commentId],
-    );
+  async getCommentById(commentId: number, currentUserId: string | undefined = ''): Promise<CommentsViewDto | null> {
+    const rawComment = await this.commentsRepository
+      .createQueryBuilder('comm')
+      .leftJoinAndSelect('comm.user', 'u')
+      .select('comm')
+      .addSelect('u.login', 'userLogin')
+      .where('comm.id = :commentId', { commentId })
+      .getRawOne();
 
-    const comment = comm[0];
+    const comment = {
+      id: rawComment.comm_id,
+      content: rawComment.comm_content,
+      postId: rawComment.comm_postId,
+      userId: rawComment.comm_userId,
+      userLogin: rawComment.userLogin,
+      createdAt: rawComment.comm_createdAt,
+      updatedAt: rawComment.comm_updatedAt,
+    } as JoinedComment;
 
     if (!comment) return null;
 
-    const commentLikes = await this.dataSource.query<JoinedLike[]>(
-      `
-        SELECT l.*, u.login as user_login FROM likes l
-        LEFT JOIN users u
-        ON l.user_id = u.id
-        WHERE l.liked_entity_id = $1
-      `,
-      [commentId],
+    const rawCommentLikes = await this.likesRepository
+      .createQueryBuilder('like')
+      .leftJoinAndSelect('like.user', 'u')
+      .select('like')
+      .addSelect('u.login', 'userLogin')
+      .where('like.likedEntityId = :commentId', { commentId })
+      .getRawMany();
+
+    const commentLikes = rawCommentLikes.map(
+      (like) =>
+        ({
+          id: like.like_id,
+          status: like.like_status,
+          userId: like.like_userId,
+          likedEntityId: like.like_likedEntityId,
+          createdAt: like.like_createdAt,
+          updatedAt: like.like_updatedAt,
+          userLogin: like.userLogin,
+        }) as JoinedLike,
     );
 
     const { newestLikes, ...likesInfo } = getLikesInfo(commentLikes, currentUserId);

@@ -1,14 +1,15 @@
 import { LikeStatus } from '../../likes/const/like-status';
-import { JoinedLike } from '../dto/joined-like';
+import { Like } from '../../likes/domain/likes.schema-typeorm';
 
-interface ILikesInfoReturned {
+interface ILikesInfoReturned<L> {
   likesCount: number;
   dislikesCount: number;
   myStatus: LikeStatus;
-  newestLikes: JoinedLike[];
+  // newestLikes: JoinedLike[];
+  newestLikes: L[];
 }
 
-export function getLikesInfo(allLikes: JoinedLike[], currentUserId: string): ILikesInfoReturned {
+export function getLikesInfo<L extends Like>(allLikes: L[], currentUserId: string): ILikesInfoReturned<L> {
   const likes = allLikes.filter((like) => like.status === LikeStatus.Like);
   const dislikesCount = allLikes.filter((like) => like.status === LikeStatus.Dislike).length;
   const myStatus =
