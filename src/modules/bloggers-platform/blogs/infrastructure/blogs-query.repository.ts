@@ -34,7 +34,7 @@ export class BlogsQueryRepository {
     };
   }
 
-  async getBlogById(blogId: string): Promise<BlogsViewDto | null> {
+  async getBlogById(blogId: number): Promise<BlogsViewDto | null> {
     const blog = await this.blogsRepository.findOne({ where: { id: blogId } });
     return blog ? new BlogsViewDto(blog) : null;
   }

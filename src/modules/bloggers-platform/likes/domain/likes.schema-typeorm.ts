@@ -13,12 +13,11 @@ import { User } from 'src/modules/user-accounts/users/domain/user.schema-typeorm
 @Entity('likes')
 export class Like {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({ type: 'enum', enum: LikeStatus, nullable: false })
   status: LikeStatus;
 
-  // __ASK__ we could not include this field?
   @Column({ type: 'integer', nullable: false })
   userId: number;
 

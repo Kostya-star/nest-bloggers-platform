@@ -43,7 +43,6 @@ export class PostsController {
     private postsQueryRepository: PostsQueryRepository,
     private postsService: PostsService,
     private commentsQueryRepository: CommentsQueryRepository,
-    private usersQueryRepository: UsersQueryRepository,
     private readonly commandBus: CommandBus,
   ) {}
 
@@ -53,7 +52,7 @@ export class PostsController {
     @Query() query: GetPostsQueryParams,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<BasePaginatedView<PostsViewDto>> {
-    return await this.postsQueryRepository.getAllPosts(query, user?.userId.toString());
+    return await this.postsQueryRepository.getAllPosts(query, user?.userId);
   }
 
   @Get(':postId')
@@ -62,7 +61,7 @@ export class PostsController {
     @Param('postId') postId: string,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<PostsViewDto> {
-    const post = await this.postsQueryRepository.getPostById(postId, user?.userId.toString());
+    const post = await this.postsQueryRepository.getPostById(+postId, user?.userId);
 
     if (!post) {
       throw new NotFoundException('post not found');
@@ -76,7 +75,7 @@ export class PostsController {
   async createPost(@Body() post: CreatePostInputDto): Promise<PostsViewDto> {
     const postId = await this.postsService.createPost(post);
 
-    const newPost = await this.postsQueryRepository.getPostById(postId.toString());
+    const newPost = await this.postsQueryRepository.getPostById(+postId);
 
     if (!newPost) {
       throw new NotFoundException('post not found');
@@ -92,7 +91,7 @@ export class PostsController {
     @Param('postId', ObjectIdValidationPipe) postId: string,
     @Body() updates: UpdatePostDto,
   ): Promise<void> {
-    const post = await this.postsQueryRepository.getPostById(postId);
+    const post = await this.postsQueryRepository.getPostById(+postId);
 
     if (!post) {
       throw new NotFoundException('post not found');
@@ -105,7 +104,7 @@ export class PostsController {
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePost(@Param('postId', ObjectIdValidationPipe) postId: string): Promise<void> {
-    const post = await this.postsQueryRepository.getPostById(postId);
+    const post = await this.postsQueryRepository.getPostById(+postId);
 
     if (!post) {
       throw new NotFoundException('post not found');
@@ -121,16 +120,17 @@ export class PostsController {
     @Body() commBody: CreatePostCommentInputDto,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<CommentsViewDto> {
-    const post = await this.postsQueryRepository.getPostById(postId);
+    const post = await this.postsQueryRepository.getPostById(+postId);
 
     if (!post) {
       throw new NotFoundException('post not found');
     }
 
     const commentId = await this.commandBus.execute<CreatePostCommentCommand, string>(
+      // @ts-ignore
       new CreatePostCommentCommand(postId, commBody.content, user.userId),
     );
-    const comment = await this.commentsQueryRepository.getCommentById(commentId, user.userId.toString());
+    const comment = await this.commentsQueryRepository.getCommentById(commentId, user.userId);
 
     if (!comment) {
       throw new NotFoundException('comment not found');
@@ -146,13 +146,13 @@ export class PostsController {
     @Query() query: GetCommentsQueryParams,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<BasePaginatedView<CommentsViewDto>> {
-    const post = await this.postsQueryRepository.getPostById(postId);
+    const post = await this.postsQueryRepository.getPostById(+postId);
 
     if (!post) {
       throw new NotFoundException('post not found');
     }
 
-    return await this.commentsQueryRepository.getCommentsForPost(query, postId, user?.userId.toString());
+    return await this.commentsQueryRepository.getCommentsForPost(query, postId, user?.userId);
   }
 
   @Put(':postId/like-status')
@@ -163,12 +163,13 @@ export class PostsController {
     @Body() body: LikePostStatusInputDto,
     @ExtractUserFromRequest() user: UserContext,
   ): Promise<void> {
-    const post = await this.postsQueryRepository.getPostById(postId);
+    const post = await this.postsQueryRepository.getPostById(+postId);
 
     if (!post) {
       throw new NotFoundException('post not found');
     }
 
+    // @ts-ignore
     await this.commandBus.execute<HandleLikeCommand, void>(new HandleLikeCommand(postId, body.likeStatus, user.userId));
   }
 }

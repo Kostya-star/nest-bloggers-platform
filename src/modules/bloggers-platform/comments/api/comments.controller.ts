@@ -110,7 +110,7 @@ export class CommnetsController {
     }
 
     await this.commandBus.execute<HandleLikeCommand, void>(
-      new HandleLikeCommand(commentId, body.likeStatus, user.userId),
+      new HandleLikeCommand(commentId, body.likeStatus, +user.userId),
     );
   }
 }

@@ -1,11 +1,4 @@
-import {
-  IsNotEmpty,
-  MaxLength,
-  Validate,
-  ValidationArguments,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from 'class-validator';
+import { IsNotEmpty, MaxLength, Validate } from 'class-validator';
 import { CheckIsStringAndTrim } from 'src/core/decorators/check-is-string-and-trim.decorator';
 import { postContentConstraints, postDescriptionConstraints, postTitleConstraints } from '../../domain/posts.schema';
 import { IsBlogIdValidAndExist } from '../validation/is-blogId-valid-and-exist-custom-validator.constraint';

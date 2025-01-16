@@ -1,59 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { UpdatePostDto } from '../api/input-dto/update-post.dto';
 import { CreatePostDto } from '../api/input-dto/create-post.dto';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Post } from '../domain/posts.schema-typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostsCommandsRepository {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    private dataSource: DataSource,
+    @InjectRepository(Post) private readonly postsRepository: Repository<Post>,
+  ) {}
 
   // async getPostById(postId: string): Promise<IPostDocument | null> {
   //   return await this.PostModel.findOne({ _id: postId });
   // }
 
-  async createPost({ title, shortDescription, content, blogName, blogId }: CreatePostDto): Promise<string> {
-    const post = await this.dataSource.query<Post[]>(
-      `
-        INSERT INTO posts (
-          title, short_description, content, blog_id, blog_name
-        )
-        VALUES($1, $2, $3, $4, $5)
-        RETURNING *;
-      `,
-      [title, shortDescription, content, blogId, blogName],
-    );
+  async createPost(newPost: CreatePostDto): Promise<number> {
+    const post = this.postsRepository.create({
+      title: newPost.title,
+      shortDescription: newPost.shortDescription,
+      content: newPost.content,
+      blogId: +newPost.blogId,
+      blogName: newPost.blogName,
+    });
 
-    return post[0].id.toString();
+    const savedPost = await this.postsRepository.save(post);
+    return savedPost.id;
   }
 
   async updatePost(postId: string, updates: UpdatePostDto): Promise<void> {
-    const keys = Object.keys(updates);
-    const values = Object.values(updates);
-    const setClause = keys
-      .map((key, index) => {
-        if (key === 'shortDescription') key = 'short_description';
-        return `${key} = $${index + 2}`;
-      })
-      .join(', ');
-
-    await this.dataSource.query(
-      `
-        UPDATE posts
-        SET ${setClause}
-        WHERE id = $1
-      `,
-      [postId, ...values],
-    );
+    await this.postsRepository.update(postId, updates);
   }
 
   async deletePost(postId: string): Promise<void> {
-    await this.dataSource.query(
-      `
-        DELETE FROM posts
-        WHERE id = $1
-      `,
-      [postId],
-    );
+    await this.postsRepository.delete(postId);
   }
 }

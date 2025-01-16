@@ -16,7 +16,7 @@ export const blogWebsiteUrlConstraints = {
 @Entity('blogs')
 export class Blog {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({ type: 'varchar', length: blogNameConstraints.maxLength, nullable: false })
   name: string;

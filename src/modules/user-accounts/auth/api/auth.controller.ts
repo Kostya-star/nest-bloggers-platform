@@ -145,7 +145,7 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt-auth-guard'))
   async me(@ExtractUserFromRequest() user: UserContext): Promise<GetMeViewDto> {
-    const me = await this.usersQueryRepository.getMe(user.userId);
+    const me = await this.usersQueryRepository.getMe(+user.userId);
 
     if (!me) {
       throw new NotFoundException('user not found');

@@ -34,7 +34,7 @@ export class RefreshJwtAuthGuard extends PassportStrategy(Strategy, 'refresh-jwt
   async validate(payload: RefreshJwtContext): Promise<RefreshJwtPayload> {
     const { deviceId, iat, userId } = payload;
 
-    const user = await this.usersCommandsRepository.findUserById(userId);
+    const user = await this.usersCommandsRepository.findUserById(+userId);
 
     if (!user) {
       throw new UnauthorizedException();

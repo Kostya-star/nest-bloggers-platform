@@ -8,7 +8,7 @@ import { UpdateBlogDto } from '../api/input-dto/update-blog.dto';
 export class BlogsService {
   constructor(private blogsCommandsRepository: BlogsCommandsRepository) {}
 
-  async createBlog(blog: CreateBlogDto): Promise<string> {
+  async createBlog(blog: CreateBlogDto): Promise<number> {
     return await this.blogsCommandsRepository.createBlog(blog);
   }
 

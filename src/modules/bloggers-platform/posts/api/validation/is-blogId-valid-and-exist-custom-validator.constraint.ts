@@ -8,7 +8,7 @@ export class IsBlogIdValidAndExist implements ValidatorConstraintInterface {
   constructor(private blogsQueryRepository: BlogsQueryRepository) {}
 
   async validate(blogId: string, args: ValidationArguments): Promise<boolean> {
-    const blog = await this.blogsQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsQueryRepository.getBlogById(+blogId);
 
     if (!blog) {
       return false;

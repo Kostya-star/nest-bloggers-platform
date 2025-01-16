@@ -24,7 +24,7 @@ export const postContentConstraints = {
 @Entity('posts')
 export class Post {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({ type: 'varchar', length: postTitleConstraints.maxLength, nullable: false })
   title: string;
@@ -46,7 +46,6 @@ export class Post {
   @JoinColumn()
   blog: Blog;
 
-  // __ASK__ just coz of the tests we must keep this field, otherwise according to the NF, we should get rid of it?
   @Column({ type: 'varchar', nullable: false })
   blogName: string;
 

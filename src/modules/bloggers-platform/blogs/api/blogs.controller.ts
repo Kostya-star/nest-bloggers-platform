@@ -7,6 +7,7 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -55,7 +56,7 @@ export class BlogsController {
 
   @Get('blogs/:blogId')
   async getBlogById(@Param('blogId') blogId: string): Promise<BlogsViewDto> {
-    const blog = await this.blogsQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsQueryRepository.getBlogById(+blogId);
 
     if (!blog) {
       throw new NotFoundException('blog not found');
@@ -68,7 +69,7 @@ export class BlogsController {
   @Post('sa/blogs')
   async createBlog(@Body() blog: CreateBlogDto): Promise<BlogsViewDto> {
     const blogId = await this.blogsService.createBlog(blog);
-    const newBlog = await this.blogsQueryRepository.getBlogById(blogId.toString());
+    const newBlog = await this.blogsQueryRepository.getBlogById(blogId);
 
     if (!newBlog) {
       throw new NotFoundException('blog not found');
@@ -81,7 +82,7 @@ export class BlogsController {
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(@Param('blogId') blogId: string, @Body() updates: UpdateBlogDto): Promise<void> {
-    const blog = await this.blogsQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsQueryRepository.getBlogById(+blogId);
 
     if (!blog) {
       throw new NotFoundException('blog not found');
@@ -94,7 +95,7 @@ export class BlogsController {
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
-    const blog = await this.blogsQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsQueryRepository.getBlogById(+blogId);
 
     if (!blog) {
       throw new NotFoundException('blog not found');
@@ -132,13 +133,13 @@ export class BlogsController {
     @Query() query: GetPostsQueryParams,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<BasePaginatedView<PostsViewDto>> {
-    const blog = await this.blogsQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsQueryRepository.getBlogById(+blogId);
 
     if (!blog) {
       throw new NotFoundException('blog not found');
     }
 
-    return await this.postsQueryRepository.getAllPosts(query, user?.userId.toString(), blogId);
+    return await this.postsQueryRepository.getAllPosts(query, user?.userId, +blogId);
   }
 
   @Get('blogs/:blogId/posts')
@@ -148,13 +149,13 @@ export class BlogsController {
     @Query() query: GetPostsQueryParams,
     @ExtractUserFromRequestIfExist() user: UserContext | null,
   ): Promise<BasePaginatedView<PostsViewDto>> {
-    const blog = await this.blogsQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsQueryRepository.getBlogById(+blogId);
 
     if (!blog) {
       throw new NotFoundException('blog not found');
     }
 
-    return await this.postsQueryRepository.getAllPosts(query, user?.userId.toString(), blogId);
+    return await this.postsQueryRepository.getAllPosts(query, user?.userId, +blogId);
   }
 
   @Put('sa/blogs/:blogId/posts/:postId')
@@ -165,13 +166,13 @@ export class BlogsController {
     @Param('postId') postId: string,
     @Body() updates: UpdatePostForBlogInputDto,
   ): Promise<void> {
-    const blog = await this.blogsQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsQueryRepository.getBlogById(+blogId);
 
     if (!blog) {
       throw new NotFoundException('blog not found');
     }
 
-    const post = await this.postsQueryRepository.getPostById(postId);
+    const post = await this.postsQueryRepository.getPostById(+postId);
 
     if (!post) {
       throw new NotFoundException('post not found');
@@ -184,13 +185,13 @@ export class BlogsController {
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePostForBlog(@Param('blogId') blogId: string, @Param('postId') postId: string): Promise<void> {
-    const blog = await this.blogsQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsQueryRepository.getBlogById(+blogId);
 
     if (!blog) {
       throw new NotFoundException('blog not found');
     }
 
-    const post = await this.postsQueryRepository.getPostById(postId);
+    const post = await this.postsQueryRepository.getPostById(+postId);
 
     if (!post) {
       throw new NotFoundException('post not found');

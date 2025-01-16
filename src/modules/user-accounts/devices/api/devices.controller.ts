@@ -17,7 +17,7 @@ export class DevicesController {
   @Get()
   @UseGuards(AuthGuard('refresh-jwt-auth-guard'))
   async getUserDevices(@ExtractUserFromRequest() userTokenPayload: RefreshJwtPayload) {
-    return await this.devicesQueryRepository.findUserDevices(userTokenPayload.userId);
+    return await this.devicesQueryRepository.findUserDevices(+userTokenPayload.userId);
   }
 
   @Delete(':deviceId')
@@ -29,7 +29,7 @@ export class DevicesController {
     deviceId: string,
   ) {
     await this.commandBus.execute<TerminateUserDeviceCommand, void>(
-      new TerminateUserDeviceCommand(userTokenPayload.userId, deviceId),
+      new TerminateUserDeviceCommand(+userTokenPayload.userId, deviceId),
     );
   }
 
@@ -40,7 +40,7 @@ export class DevicesController {
     const { deviceId, userId } = userTokenPayload;
 
     await this.commandBus.execute<TerminateOtherDevicesCommand, void>(
-      new TerminateOtherDevicesCommand(deviceId, userId),
+      new TerminateOtherDevicesCommand(deviceId, +userId),
     );
   }
 }
