@@ -1,5 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { LikeStatus } from '../const/like-status';
+import { User } from 'src/modules/user-accounts/users/domain/user.schema-typeorm';
 
 @Entity('likes')
 export class Like {
@@ -9,18 +18,23 @@ export class Like {
   @Column({ type: 'enum', enum: LikeStatus, nullable: false })
   status: LikeStatus;
 
+  // __ASK__ we could not include this field?
   @Column({ type: 'integer', nullable: false })
-  user_id: number;
+  userId: number;
+
+  @ManyToOne(() => User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn()
+  user: User;
 
   @Column({ type: 'integer', nullable: false })
-  liked_entity_id: number;
+  likedEntityId: number;
 
   // @Column({ type: 'char varying', nullable: false })
   // user_login: string;
 
   @CreateDateColumn({ type: 'timestamptz', nullable: false })
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz', nullable: false })
-  updated_at: Date;
+  updatedAt: Date;
 }

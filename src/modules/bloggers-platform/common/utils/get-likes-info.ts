@@ -13,7 +13,7 @@ export function getLikesInfo(allLikes: JoinedLike[], currentUserId: string): ILi
   const dislikesCount = allLikes.filter((like) => like.status === LikeStatus.Dislike).length;
   const myStatus =
     allLikes.find((like) => {
-      return currentUserId.toString() === like.user_id.toString();
+      return currentUserId.toString() === like.userId.toString();
     })?.status ?? LikeStatus.None;
 
   const newestLikes = likes.slice(0, 3);

@@ -19,6 +19,8 @@ import { DeleteCommentUseCase } from './comments/application/use-cases/delete-co
 import { IsBlogIdValidAndExist } from './posts/api/validation/is-blogId-valid-and-exist-custom-validator.constraint';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Blog } from './blogs/domain/blogs.schema-typeorm';
+import { Post } from './posts/domain/posts.schema-typeorm';
+import { Like } from './likes/domain/likes.schema-typeorm';
 
 const commands = [CreatePostCommentUseCase, HandleLikeUseCase, UpdateCommentUseCase, DeleteCommentUseCase];
 const repos = [
@@ -40,7 +42,7 @@ const services = [BlogsService, PostsService];
     //   { name: Like.name, schema: LikeSchema },
     //   { name: Comment.name, schema: CommentSchema },
     // ]),
-    TypeOrmModule.forFeature([Blog]),
+    TypeOrmModule.forFeature([Blog, Post, Like]),
     UserAccountsModule,
   ],
   controllers: [BlogsController, PostsController, CommnetsController],

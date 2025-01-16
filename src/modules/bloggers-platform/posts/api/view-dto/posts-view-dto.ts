@@ -30,18 +30,18 @@ export class PostsViewDto {
     this.id = post.id.toString();
     this.title = post.title;
     this.content = post.content;
-    this.shortDescription = post.short_description;
-    this.blogId = post.blog_id.toString();
-    this.blogName = post.blog_name;
-    this.createdAt = post.created_at;
+    this.shortDescription = post.shortDescription;
+    this.blogId = post.blogId.toString();
+    this.blogName = post.blogName;
+    this.createdAt = post.createdAt;
     this.extendedLikesInfo = {
       likesCount: post.extendedLikesInfo.likesCount,
       dislikesCount: post.extendedLikesInfo.dislikesCount,
       myStatus: post.extendedLikesInfo.myStatus,
       newestLikes: post.extendedLikesInfo.newestLikes.map((like) => ({
-        addedAt: like.updated_at,
-        userId: like.user_id.toString(),
-        login: like.user_login,
+        addedAt: like.updatedAt,
+        userId: like.userId.toString(),
+        login: like.userLogin,
       })),
     };
   }
