@@ -1,10 +1,21 @@
-import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
 import { CreateQuestionInputDto } from './input-dto/create-question-input.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateQuestionCommand } from '../application/use-cases/create-question.usecase';
 import { QuestionsViewDto } from './view-dto/questions-view.dto';
 import { QuestionsQueryRepository } from '../infrastructure/questions-query.repository';
+import { DeleteQuestionCommand } from '../application/use-cases/delete-question.usecase';
 
 @Controller('sa/quiz/questions')
 export class QuizQuestionsController {
@@ -28,5 +39,18 @@ export class QuizQuestionsController {
     }
 
     return newQuestion;
+  }
+
+  @Delete(':questionId')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteQuestion(@Param('questionId') questionId: string): Promise<void> {
+    const question = await this.questionsQueryRepository.getQuestionById(+questionId);
+
+    if (!question) {
+      throw new NotFoundException('question not found');
+    }
+
+    await this.commandBus.execute<DeleteQuestionCommand, void>(new DeleteQuestionCommand(+questionId));
   }
 }

@@ -13,4 +13,8 @@ export class QuestionsCommandsRepository {
     const savedQuestion = await this.questionsRepository.save(createdQuestion);
     return savedQuestion.id;
   }
+
+  async deleteQuestion(questionId: number): Promise<void> {
+    await this.questionsRepository.delete(questionId);
+  }
 }
