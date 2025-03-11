@@ -17,9 +17,8 @@ export class QuestionsQueryRepository {
 
     const skip = (page - 1) * pageSize;
 
-    let mappedPublishedStatus: boolean | null = null;
-    if (publishedStatus === QuestionPublishStatus.NotPublished) mappedPublishedStatus = false;
-    if (publishedStatus === QuestionPublishStatus.Published) mappedPublishedStatus = true;
+    const mappedPublishedStatus =
+      publishedStatus === QuestionPublishStatus.All ? null : publishedStatus === QuestionPublishStatus.Published;
 
     const queryBuilder = this.questionRepository
       .createQueryBuilder('question')
