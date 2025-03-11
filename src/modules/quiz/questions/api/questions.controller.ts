@@ -7,6 +7,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
@@ -16,6 +17,8 @@ import { CreateQuestionCommand } from '../application/use-cases/create-question.
 import { QuestionsViewDto } from './view-dto/questions-view.dto';
 import { QuestionsQueryRepository } from '../infrastructure/questions-query.repository';
 import { DeleteQuestionCommand } from '../application/use-cases/delete-question.usecase';
+import { UpdateQuestionInputDto } from './input-dto/update-question-input.dto';
+import { UpdateQuestionCommand } from '../application/use-cases/update-question.usecase';
 
 @Controller('sa/quiz/questions')
 export class QuizQuestionsController {
@@ -39,6 +42,22 @@ export class QuizQuestionsController {
     }
 
     return newQuestion;
+  }
+
+  @Put(':questionId')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateQuestion(
+    @Param('questionId') questionId: string,
+    @Body() updates: UpdateQuestionInputDto,
+  ): Promise<void> {
+    const question = await this.questionsQueryRepository.getQuestionById(+questionId);
+
+    if (!question) {
+      throw new NotFoundException('question not found');
+    }
+
+    await this.commandBus.execute<UpdateQuestionCommand, void>(new UpdateQuestionCommand(+questionId, updates));
   }
 
   @Delete(':questionId')

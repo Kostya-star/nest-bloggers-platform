@@ -6,8 +6,9 @@ import { CreateQuestionUseCase } from './questions/application/use-cases/create-
 import { QuestionsCommandsRepository } from './questions/infrastructure/questions-commands.repository';
 import { QuestionsQueryRepository } from './questions/infrastructure/questions-query.repository';
 import { DeleteQuestionUseCase } from './questions/application/use-cases/delete-question.usecase';
+import { UpdateQuestionUseCase } from './questions/application/use-cases/update-question.usecase';
 
-const commands = [CreateQuestionUseCase, DeleteQuestionUseCase];
+const commands = [CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase];
 const repos = [QuestionsCommandsRepository, QuestionsQueryRepository];
 const services = [];
 

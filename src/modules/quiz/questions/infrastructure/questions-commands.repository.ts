@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Question } from '../domain/question.schema';
 import { CreateQuestionDto } from '../api/input-dto/create-question.dto';
+import { UpdateQuestionInputDto } from '../api/input-dto/update-question-input.dto';
 
 @Injectable()
 export class QuestionsCommandsRepository {
@@ -14,6 +15,9 @@ export class QuestionsCommandsRepository {
     return savedQuestion.id;
   }
 
+  async updateQuestion(questionId: number, updates: UpdateQuestionInputDto): Promise<void> {
+    await this.questionsRepository.update(questionId, updates);
+  }
   async deleteQuestion(questionId: number): Promise<void> {
     await this.questionsRepository.delete(questionId);
   }
