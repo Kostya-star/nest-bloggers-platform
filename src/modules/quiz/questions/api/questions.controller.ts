@@ -2,12 +2,14 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   NotFoundException,
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
@@ -21,6 +23,9 @@ import { UpdateQuestionInputDto } from './input-dto/update-question-input.dto';
 import { UpdateQuestionCommand } from '../application/use-cases/update-question.usecase';
 import { PublishQuestionInputDto } from './input-dto/publish-question-input.dto';
 import { PublishQuestionCommand } from '../application/use-cases/publish-question.usecase';
+import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
+import { GetQuestionsViewDto } from './view-dto/get-questions-view.dto';
+import { GetQuestionsQueryParams } from './input-dto/get-questions-query-params';
 
 @Controller('sa/quiz/questions')
 export class QuizQuestionsController {
@@ -28,6 +33,13 @@ export class QuizQuestionsController {
     private commandBus: CommandBus,
     private questionsQueryRepository: QuestionsQueryRepository,
   ) {}
+
+  @Get()
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async getAllQuestions(@Query() query: GetQuestionsQueryParams): Promise<BasePaginatedView<GetQuestionsViewDto>> {
+    return await this.questionsQueryRepository.getAllQuestions(query);
+  }
 
   @Post()
   @UseGuards(BasicAuthGuard)

@@ -28,13 +28,13 @@ export abstract class BaseSortablePaginationParams<T extends string> extends Pag
   abstract sortBy: T;
 
   // TODO delete
-  processQueryParams() {
-    const skip = (this.pageNumber - 1) * this.pageSize;
-    const limit = this.pageSize;
-    const sortOptions = {
-      [this.sortBy]: (this.sortDirection === SortDirection.Asc ? 1 : -1) as SortOrder,
-    };
+  // processQueryParams() {
+  //   const skip = (this.pageNumber - 1) * this.pageSize;
+  //   const limit = this.pageSize;
+  //   const sortOptions = {
+  //     [this.sortBy]: (this.sortDirection === SortDirection.Asc ? 1 : -1) as SortOrder,
+  //   };
 
-    return { skip, limit, sortOptions };
-  }
+  //   return { skip, limit, sortOptions };
+  // }
 }
