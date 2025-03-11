@@ -6,13 +6,13 @@ export const questionBodyConstraints = {
 };
 
 @Entity('questions')
-export class  {
+export class Question {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     type: 'text',
-    length: questionBodyConstraints.maxLength,
+    // length: questionBodyConstraints.maxLength,
   })
   body: string;
 
@@ -20,6 +20,9 @@ export class  {
     type: 'json',
   })
   correctAnswers: string[];
+
+  @Column({ type: 'boolean' })
+  published: boolean;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

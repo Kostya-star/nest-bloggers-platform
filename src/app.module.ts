@@ -9,6 +9,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { CoreConfig } from './core/core.config';
 import { CoreModule } from './core/core.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { QuizModule } from './modules/quiz/quiz.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     BloggersPlatformModule,
     UserAccountsModule,
     NotificationsModule,
+    QuizModule,
     TestingAllDataModule,
     CoreModule,
     configModule,
