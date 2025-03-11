@@ -19,6 +19,8 @@ import { QuestionsQueryRepository } from '../infrastructure/questions-query.repo
 import { DeleteQuestionCommand } from '../application/use-cases/delete-question.usecase';
 import { UpdateQuestionInputDto } from './input-dto/update-question-input.dto';
 import { UpdateQuestionCommand } from '../application/use-cases/update-question.usecase';
+import { PublishQuestionInputDto } from './input-dto/publish-question-input.dto';
+import { PublishQuestionCommand } from '../application/use-cases/publish-question.usecase';
 
 @Controller('sa/quiz/questions')
 export class QuizQuestionsController {
@@ -58,6 +60,24 @@ export class QuizQuestionsController {
     }
 
     await this.commandBus.execute<UpdateQuestionCommand, void>(new UpdateQuestionCommand(+questionId, updates));
+  }
+
+  @Put(':questionId/publish')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async publishQuestion(
+    @Param('questionId') questionId: string,
+    @Body() updates: PublishQuestionInputDto,
+  ): Promise<void> {
+    // ASK
+    // почему не должно быть этой логики согласно тз?
+    // const question = await this.questionsQueryRepository.getQuestionById(+questionId);
+
+    // if (!question) {
+    //   throw new NotFoundException('question not found');
+    // }
+
+    await this.commandBus.execute<PublishQuestionCommand, void>(new PublishQuestionCommand(+questionId, updates));
   }
 
   @Delete(':questionId')
