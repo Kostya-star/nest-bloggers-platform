@@ -24,7 +24,6 @@ import { UpdateQuestionCommand } from '../application/use-cases/update-question.
 import { PublishQuestionInputDto } from './input-dto/publish-question-input.dto';
 import { PublishQuestionCommand } from '../application/use-cases/publish-question.usecase';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
-import { GetQuestionsViewDto } from './view-dto/get-questions-view.dto';
 import { GetQuestionsQueryParams } from './input-dto/get-questions-query-params';
 
 @Controller('sa/quiz/questions')
@@ -37,7 +36,7 @@ export class QuizQuestionsController {
   @Get()
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async getAllQuestions(@Query() query: GetQuestionsQueryParams): Promise<BasePaginatedView<GetQuestionsViewDto>> {
+  async getAllQuestions(@Query() query: GetQuestionsQueryParams): Promise<BasePaginatedView<QuestionsViewDto>> {
     return await this.questionsQueryRepository.getAllQuestions(query);
   }
 
@@ -65,12 +64,6 @@ export class QuizQuestionsController {
     @Param('questionId') questionId: string,
     @Body() updates: UpdateQuestionInputDto,
   ): Promise<void> {
-    const question = await this.questionsQueryRepository.getQuestionById(+questionId);
-
-    if (!question) {
-      throw new NotFoundException('question not found');
-    }
-
     await this.commandBus.execute<UpdateQuestionCommand, void>(new UpdateQuestionCommand(+questionId, updates));
   }
 
@@ -81,14 +74,6 @@ export class QuizQuestionsController {
     @Param('questionId') questionId: string,
     @Body() updates: PublishQuestionInputDto,
   ): Promise<void> {
-    // ASK
-    // почему не должно быть этой логики согласно тз?
-    // const question = await this.questionsQueryRepository.getQuestionById(+questionId);
-
-    // if (!question) {
-    //   throw new NotFoundException('question not found');
-    // }
-
     await this.commandBus.execute<PublishQuestionCommand, void>(new PublishQuestionCommand(+questionId, updates));
   }
 

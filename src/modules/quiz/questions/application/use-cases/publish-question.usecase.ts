@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuestionsCommandsRepository } from '../../infrastructure/questions-commands.repository';
 import { PublishQuestionInputDto } from '../../api/input-dto/publish-question-input.dto';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 export class PublishQuestionCommand {
   constructor(
@@ -8,17 +9,22 @@ export class PublishQuestionCommand {
     public updates: PublishQuestionInputDto,
   ) {}
 }
-// ASK
-// есть 2 одинаковых +- ендпоинта на обновление вопроса которые обновляют вопрос а также публткуют.
-// эта логика должна быть разделена или вместе быть?
-// просто там еще есть нюансы в этих запросах(бизнесс логика которая может выкидывать 400 ошибку)
-// и если эти нюансы (бизнесс лоргика) будет описана еще до запросов(в дто валидаторах) то как понимаю
-// можно совместить остальную логику(юз кейсы+команды + хэндлеры репозитория) обычного редактирования и публикования
+
 @CommandHandler(PublishQuestionCommand)
 export class PublishQuestionUseCase implements ICommandHandler<PublishQuestionCommand, void> {
   constructor(private questionsCommandsRepository: QuestionsCommandsRepository) {}
 
   async execute({ questionId, updates }: PublishQuestionCommand): Promise<void> {
+    const question = await this.questionsCommandsRepository.getQuestionById(+questionId);
+
+    if (!question) {
+      throw new NotFoundException('question not found');
+    }
+
+    if (!question.correctAnswers.length) {
+      throw new BadRequestException([{ field: 'correctAnswers', message: 'question doesnt have correct answers' }]);
+    }
+
     await this.questionsCommandsRepository.publishQuestion(questionId, updates);
   }
 }

@@ -10,6 +10,10 @@ import { PublishQuestionInputDto } from '../api/input-dto/publish-question-input
 export class QuestionsCommandsRepository {
   constructor(@InjectRepository(Question) private questionsRepository: Repository<Question>) {}
 
+  async getQuestionById(questionId: number): Promise<Question | null> {
+    return await this.questionsRepository.findOne({ where: { id: questionId } })
+  }
+
   async createQuestion(newQuestion: CreateQuestionDto): Promise<number> {
     const createdQuestion = this.questionsRepository.create(newQuestion);
     const savedQuestion = await this.questionsRepository.save(createdQuestion);

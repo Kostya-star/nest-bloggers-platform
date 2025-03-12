@@ -5,14 +5,13 @@ import { Repository } from 'typeorm';
 import { QuestionsViewDto } from '../api/view-dto/questions-view.dto';
 import { GetQuestionsQueryParams } from '../api/input-dto/get-questions-query-params';
 import { BasePaginatedView } from 'src/core/dto/base-paginated-view';
-import { GetQuestionsViewDto } from '../api/view-dto/get-questions-view.dto';
 import { QuestionPublishStatus } from '../api/input-dto/questions-publish-status';
 
 @Injectable()
 export class QuestionsQueryRepository {
   constructor(@InjectRepository(Question) private readonly questionRepository: Repository<Question>) {}
 
-  async getAllQuestions(query: GetQuestionsQueryParams): Promise<BasePaginatedView<GetQuestionsViewDto>> {
+  async getAllQuestions(query: GetQuestionsQueryParams): Promise<BasePaginatedView<QuestionsViewDto>> {
     const { pageNumber: page, pageSize, bodySearchTerm, publishedStatus, sortBy, sortDirection } = query;
 
     const skip = (page - 1) * pageSize;
@@ -41,7 +40,7 @@ export class QuestionsQueryRepository {
       page,
       pageSize,
       totalCount,
-      items: questions.map((b) => new GetQuestionsViewDto(b)),
+      items: questions.map((b) => new QuestionsViewDto(b)),
     };
   }
 

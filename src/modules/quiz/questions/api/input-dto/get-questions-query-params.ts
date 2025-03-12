@@ -9,7 +9,6 @@ export class GetQuestionsQueryParams extends BaseSortablePaginationParams<Questi
 
   @IsString()
   @IsOptional()
-  // ASK is this query optional or not? according to TT its not
   bodySearchTerm: string | null = null;
 
   @IsEnum(QuestionPublishStatus)
