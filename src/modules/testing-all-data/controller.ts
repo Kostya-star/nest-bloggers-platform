@@ -31,5 +31,9 @@ export class TestingAllDataController {
     await this.dataSource.query(`
         DELETE FROM comments
       `);
+
+    await this.dataSource.query(`
+        DELETE FROM questions
+      `);
   }
 }

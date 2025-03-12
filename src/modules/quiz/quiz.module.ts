@@ -8,14 +8,21 @@ import { QuestionsQueryRepository } from './questions/infrastructure/questions-q
 import { DeleteQuestionUseCase } from './questions/application/use-cases/delete-question.usecase';
 import { UpdateQuestionUseCase } from './questions/application/use-cases/update-question.usecase';
 import { PublishQuestionUseCase } from './questions/application/use-cases/publish-question.usecase';
+import { CreateConnectionUseCase } from './game/application/create-connection.usecase';
+import { PlayerCommandsRepository } from './game/infrastructure/player-commands.repository';
+import { Player } from './game/domain/player.schema';
+import { GameController } from './game/api/game.controller';
 
-const commands = [CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase, PublishQuestionUseCase];
-const repos = [QuestionsCommandsRepository, QuestionsQueryRepository];
+const questionCommands = [CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase, PublishQuestionUseCase];
+const gameCommands = [CreateConnectionUseCase];
+const commands = [...questionCommands, ...gameCommands];
+
+const repos = [QuestionsCommandsRepository, QuestionsQueryRepository, PlayerCommandsRepository];
 const services = [];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Question])],
-  controllers: [QuizQuestionsController],
+  imports: [TypeOrmModule.forFeature([Question, Player])],
+  controllers: [QuizQuestionsController, GameController],
   providers: [...services, ...repos, ...commands],
   exports: [],
 })
