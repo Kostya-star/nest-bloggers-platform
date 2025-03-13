@@ -35,5 +35,17 @@ export class TestingAllDataController {
     await this.dataSource.query(`
         DELETE FROM questions
       `);
+
+    await this.dataSource.query(`
+        DELETE FROM game_questions
+      `);
+
+    await this.dataSource.query(`
+        DELETE FROM game
+      `);
+
+    await this.dataSource.query(`
+        DELETE FROM player
+      `);
   }
 }

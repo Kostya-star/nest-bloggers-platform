@@ -21,7 +21,7 @@ export class Question {
   })
   correctAnswers: string[];
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: false })
   published: boolean;
 
   @CreateDateColumn({ type: 'timestamptz' })

@@ -13,8 +13,10 @@ export class GameController {
   @UseGuards(AuthGuard('jwt-auth-guard'))
   @HttpCode(HttpStatus.OK)
   async createConnection(@ExtractUserFromRequest() user: UserContext): Promise<any> {
-    const connection = await this.commandBus.execute<CreateConnectionCommand, void>(
+    const gameId = await this.commandBus.execute<CreateConnectionCommand, void>(
       new CreateConnectionCommand(+user.userId),
     );
+
+    // fetch for current game by gameId and return response...
   }
 }

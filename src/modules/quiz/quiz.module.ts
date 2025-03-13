@@ -12,16 +12,25 @@ import { CreateConnectionUseCase } from './game/application/create-connection.us
 import { PlayerCommandsRepository } from './game/infrastructure/player-commands.repository';
 import { Player } from './game/domain/player.schema';
 import { GameController } from './game/api/game.controller';
+import { Game } from './game/domain/game.schema';
+import { GameCommandsRepository } from './game/infrastructure/game-commands.repository';
+import { GameQuestions } from './game/domain/game-questions.schema';
+import { GameQuestionsCommandsRepository } from './game/infrastructure/game-questions-commands.repository';
 
 const questionCommands = [CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase, PublishQuestionUseCase];
-const gameCommands = [CreateConnectionUseCase];
+const gameCommands = [CreateConnectionUseCase, GameCommandsRepository];
 const commands = [...questionCommands, ...gameCommands];
 
-const repos = [QuestionsCommandsRepository, QuestionsQueryRepository, PlayerCommandsRepository];
+const repos = [
+  QuestionsCommandsRepository,
+  QuestionsQueryRepository,
+  PlayerCommandsRepository,
+  GameQuestionsCommandsRepository,
+];
 const services = [];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Question, Player])],
+  imports: [TypeOrmModule.forFeature([Question, Player, Game, GameQuestions])],
   controllers: [QuizQuestionsController, GameController],
   providers: [...services, ...repos, ...commands],
   exports: [],

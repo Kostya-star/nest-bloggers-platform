@@ -8,9 +8,9 @@ import { CreatePlayerDto } from '../api/input-dto/create-player.dto';
 export class PlayerCommandsRepository {
   constructor(@InjectRepository(Player) private playerRepository: Repository<Player>) {}
 
-  // async getQuestionById(questionId: number): Promise<Question | null> {
-  //   return await this.questionsRepository.findOne({ where: { id: questionId } })
-  // }
+  async getPlayerByUserId(userId: number): Promise<Player | null> {
+    return await this.playerRepository.findOne({ where: { userId } });
+  }
 
   async createPlayer(player: CreatePlayerDto): Promise<number> {
     const createdPlayer = this.playerRepository.create(player);
@@ -21,7 +21,6 @@ export class PlayerCommandsRepository {
   // async updateQuestion(questionId: number, updates: UpdateQuestionInputDto): Promise<void> {
   //   await this.questionsRepository.update(questionId, updates);
   // }
-
 
   // async deleteQuestion(questionId: number): Promise<void> {
   //   await this.questionsRepository.delete(questionId);

@@ -11,7 +11,11 @@ export class QuestionsCommandsRepository {
   constructor(@InjectRepository(Question) private questionsRepository: Repository<Question>) {}
 
   async getQuestionById(questionId: number): Promise<Question | null> {
-    return await this.questionsRepository.findOne({ where: { id: questionId } })
+    return await this.questionsRepository.findOne({ where: { id: questionId } });
+  }
+
+  async getFiveRandomQuestions(): Promise<Question[]> {
+    return await this.questionsRepository.createQueryBuilder('randoms').orderBy('RANDOM()').limit(5).getMany();
   }
 
   async createQuestion(newQuestion: CreateQuestionDto): Promise<number> {

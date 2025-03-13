@@ -1,5 +1,13 @@
 import { User } from 'src/modules/user-accounts/users/domain/user.schema-typeorm';
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('player')
 export class Player {
@@ -14,6 +22,9 @@ export class Player {
 
   @Column({ type: 'integer', default: 0 })
   score: number;
+
+  // @OneToMany(() => Answers)...
+  // answers;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
