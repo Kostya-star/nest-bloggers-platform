@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { CreatePlayerDto } from '../api/input-dto/create-player.dto';
+import { CreatePlayerDto } from '../dto/create-player.dto';
 import { PlayerCommandsRepository } from '../infrastructure/player-commands.repository';
 import { GameCommandsRepository } from '../infrastructure/game-commands.repository';
 import { QuestionsCommandsRepository } from '../../questions/infrastructure/questions-commands.repository';
 import { GameQuestionsCommandsRepository } from '../infrastructure/game-questions-commands.repository';
-import { SetRandomGameQuestionDto } from '../api/input-dto/set-random-game-question.dto';
+import { SetRandomGameQuestionDto } from '../dto/set-random-game-question.dto';
 import { ForbiddenException } from '@nestjs/common';
 
 export class CreateConnectionCommand {

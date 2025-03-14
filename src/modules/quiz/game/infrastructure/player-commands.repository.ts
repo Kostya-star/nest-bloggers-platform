@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Player } from '../domain/player.schema';
-import { CreatePlayerDto } from '../api/input-dto/create-player.dto';
+import { CreatePlayerDto } from '../dto/create-player.dto';
 
 @Injectable()
 export class PlayerCommandsRepository {

@@ -16,9 +16,11 @@ import { Game } from './game/domain/game.schema';
 import { GameCommandsRepository } from './game/infrastructure/game-commands.repository';
 import { GameQuestions } from './game/domain/game-questions.schema';
 import { GameQuestionsCommandsRepository } from './game/infrastructure/game-questions-commands.repository';
+import { GameQueryRepository } from './game/infrastructure/game-query.repository';
+import { Answer } from './game/domain/answer.schema';
 
 const questionCommands = [CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase, PublishQuestionUseCase];
-const gameCommands = [CreateConnectionUseCase, GameCommandsRepository];
+const gameCommands = [CreateConnectionUseCase];
 const commands = [...questionCommands, ...gameCommands];
 
 const repos = [
@@ -26,13 +28,14 @@ const repos = [
   QuestionsQueryRepository,
   PlayerCommandsRepository,
   GameQuestionsCommandsRepository,
+  GameCommandsRepository,
+  GameQueryRepository,
 ];
-const services = [];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Question, Player, Game, GameQuestions])],
+  imports: [TypeOrmModule.forFeature([Question, Player, Game, GameQuestions, Answer])],
   controllers: [QuizQuestionsController, GameController],
-  providers: [...services, ...repos, ...commands],
+  providers: [...repos, ...commands],
   exports: [],
 })
 export class QuizModule {}

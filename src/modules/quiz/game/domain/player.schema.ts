@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Answer } from './answer.schema';
 
 @Entity('player')
 export class Player {
@@ -23,8 +24,8 @@ export class Player {
   @Column({ type: 'integer', default: 0 })
   score: number;
 
-  // @OneToMany(() => Answers)...
-  // answers;
+  @OneToMany(() => Answer, (answers) => answers.player)
+  answers: Answer[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

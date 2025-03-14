@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
 import { Game } from '../domain/game.schema';
-import { GameStatuses } from '../api/input-dto/game-statuses';
+import { GameStatuses } from '../dto/game-statuses';
 
 @Injectable()
 export class GameCommandsRepository {
@@ -33,13 +33,14 @@ export class GameCommandsRepository {
       firstPlayerId,
       secondPlayerId: null,
       status: GameStatuses.PendingSecondPlayer,
+      // questions: null,
     });
     const savedGame = await this.gameRepository.save(createdGame);
     return savedGame.id;
   }
 
   async addPlayerToPendingGame(gameId: number, secondPlayerId: number): Promise<void> {
-    await this.gameRepository.update(gameId, { secondPlayerId, status: GameStatuses.Active });
+    await this.gameRepository.update(gameId, { secondPlayerId, status: GameStatuses.Active, startDate: new Date() });
   }
 
   // async updateQuestion(questionId: number, updates: UpdateQuestionInputDto): Promise<void> {

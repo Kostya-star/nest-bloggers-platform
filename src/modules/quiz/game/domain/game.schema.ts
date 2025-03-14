@@ -3,12 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Player } from './player.schema';
-import { GameStatuses } from '../api/input-dto/game-statuses';
+import { GameStatuses } from '../dto/game-statuses';
+import { GameQuestions } from './game-questions.schema';
 
 @Entity('game')
 export class Game {
@@ -32,8 +34,14 @@ export class Game {
   @Column({ type: 'enum', enum: GameStatuses })
   status: GameStatuses;
 
-  // @Column({ type: 'json' })
-  // questions: number[];
+  @Column({ type: 'timestamptz', nullable: true })
+  startDate: Date | null;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  finishDate: Date | null;
+
+  @OneToMany(() => GameQuestions, (gameQuestion) => gameQuestion.game)
+  questions: GameQuestions[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

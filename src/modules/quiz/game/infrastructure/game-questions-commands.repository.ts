@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GameQuestions } from '../domain/game-questions.schema';
-import { SetRandomGameQuestionDto } from '../api/input-dto/set-random-game-question.dto';
+import { SetRandomGameQuestionDto } from '../dto/set-random-game-question.dto';
 
 @Injectable()
 export class GameQuestionsCommandsRepository {
