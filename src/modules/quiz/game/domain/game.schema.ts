@@ -41,6 +41,7 @@ export class Game {
   finishDate: Date | null;
 
   @OneToMany(() => GameQuestions, (gameQuestion) => gameQuestion.game)
+  // @Transform(({ value }) => (Array.isArray(value) && value.length === 0 ? null : value))
   questions: GameQuestions[];
 
   @CreateDateColumn({ type: 'timestamptz' })

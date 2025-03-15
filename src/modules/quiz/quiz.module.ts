@@ -18,9 +18,11 @@ import { GameQuestions } from './game/domain/game-questions.schema';
 import { GameQuestionsCommandsRepository } from './game/infrastructure/game-questions-commands.repository';
 import { GameQueryRepository } from './game/infrastructure/game-query.repository';
 import { Answer } from './game/domain/answer.schema';
+import { ProcessAnswerUseCase } from './game/application/process-answer.usecase';
+import { AnswersCommandsRepository } from './game/infrastructure/answers-commands.repository';
 
 const questionCommands = [CreateQuestionUseCase, DeleteQuestionUseCase, UpdateQuestionUseCase, PublishQuestionUseCase];
-const gameCommands = [CreateConnectionUseCase];
+const gameCommands = [CreateConnectionUseCase, ProcessAnswerUseCase];
 const commands = [...questionCommands, ...gameCommands];
 
 const repos = [
@@ -30,6 +32,7 @@ const repos = [
   GameQuestionsCommandsRepository,
   GameCommandsRepository,
   GameQueryRepository,
+  AnswersCommandsRepository
 ];
 
 @Module({

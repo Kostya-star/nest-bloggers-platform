@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
 import { Game } from '../domain/game.schema';
 import { GameStatuses } from '../dto/game-statuses';
+import { AnswerBodyInputDto } from '../api/input-dto/answer-body-input.dto';
 
 @Injectable()
 export class GameCommandsRepository {
@@ -26,6 +27,39 @@ export class GameCommandsRepository {
         active: GameStatuses.Active,
       })
       .getMany();
+  }
+
+  // find user's active game where they havent answered all the questions
+  async findActiveUserGame(userId: number): Promise<Game | null> {
+    const activeGame = await this.gameRepository
+      .createQueryBuilder('game')
+
+      .leftJoin('game.firstPlayer', 'firstPlayer')
+      .leftJoin('game.secondPlayer', 'secondPlayer')
+
+      .leftJoinAndSelect('firstPlayer.answers', 'firstPlayerAnswers')
+      .leftJoinAndSelect('secondPlayer.answers', 'secondPlayerAnswers')
+
+      .where('("firstPlayer"."userId" = :userId OR "secondPlayer"."userId" = :userId)', { userId })
+      .andWhere(`(game.status = :active)`, {
+        active: GameStatuses.Active,
+      })
+      .groupBy('game.id, firstPlayer.id, secondPlayer.id')
+      .having(
+        `
+          ("firstPlayer"."userId" = :userId AND COUNT("firstPlayerAnswers".id) < 5) 
+          OR 
+          (secondPlayer.userId = :userId AND COUNT("secondPlayerAnswers".id) < 5)
+        `,
+      )
+      // .select(['game', 'firstPlayer', 'secondPlayer'])
+      // ASK how to get player answers here too?
+      .select(['game'])
+      .getOne();
+
+    // console.log(JSON.stringify(activeGame, null, 3));
+
+    return activeGame;
   }
 
   async createPendingGame(firstPlayerId: number): Promise<number> {
